@@ -54,6 +54,7 @@ describe("Unit test for Orders component", () => {
         jest.clearAllMocks();
     });
 
+
     test("Orders component calls orders API", async () => {
         // Arrange
         useAuth.mockReturnValue([{ token: "valid-token" }, jest.fn()]);
@@ -105,6 +106,7 @@ describe("Unit test for Orders component", () => {
         });
     });
 
+
     test("Orders component receives no order data", async () => {
         // Arrange
         useAuth.mockReturnValue([{ token: "token" }, jest.fn()]);
@@ -119,6 +121,7 @@ describe("Unit test for Orders component", () => {
         });
     });
 
+    
     test("Orders component does not call backend without user token", async () => {
         // Arrange
         useAuth.mockReturnValue([null, jest.fn()]);

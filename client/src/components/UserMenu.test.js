@@ -4,58 +4,61 @@ import { MemoryRouter } from "react-router-dom";
 import UserMenu from "./UserMenu";
 
 const renderUserMenu = () =>
-  render(
-    // Use MemoryRouter as a fake for NavLink
-    <MemoryRouter>
-      <UserMenu />
-    </MemoryRouter>
-  );
+    render(
+        // Use MemoryRouter as a fake for NavLink
+        <MemoryRouter>
+          <UserMenu />
+        </MemoryRouter>
+    );
 
 describe("Unit test for UserMenu component", () => {
-  test("UserMenu shows shows h4 text", () => {
-    // Arrange
-    const { container } = renderUserMenu();
+    test("UserMenu shows shows h4 text", () => {
+        // Arrange
+        const { container } = renderUserMenu();
 
-    // Act 
-    const text = container.textContent;
+        // Act 
+        const text = container.textContent;
 
-    // Assert
-    expect(text).toContain("Dashboard");
-  });
+        // Assert
+        expect(text).toContain("Dashboard");
+    });
 
- test("Routing for Profile and Orders pages", () => {
-    // Arrange
-    const { container } = renderUserMenu();
 
-    // Act
-    const links = container.querySelectorAll("a");
-    const hrefs = Array.from(links).map(link => link.getAttribute("href"));
+    test("Routing for Profile and Orders pages", () => {
+        // Arrange
+        const { container } = renderUserMenu();
 
-    // Assert
-    expect(hrefs).toContain("/dashboard/user/profile");
-    expect(hrefs).toContain("/dashboard/user/orders");
-  });
+        // Act
+        const links = container.querySelectorAll("a");
+        const hrefs = Array.from(links).map(link => link.getAttribute("href"));
 
-  test("UserMenu has Profile navigation link", () => {
-    // Arrange
-    const { container } = renderUserMenu();
+        // Assert
+        expect(hrefs).toContain("/dashboard/user/profile");
+        expect(hrefs).toContain("/dashboard/user/orders");
+    });
 
-    // Act
-    const text = container.textContent;
 
-    // Assert
-    expect(text).toContain("Profile");
-  });
+    test("UserMenu has Profile navigation link", () => {
+        // Arrange
+        const { container } = renderUserMenu();
 
-  test("UserMenu has Orders navigation link", () => {
-    // Arrange
-    const { container } = renderUserMenu();
+        // Act
+        const text = container.textContent;
 
-    // Act
-    const text = container.textContent;
+        // Assert
+        expect(text).toContain("Profile");
+    });
 
-    // Assert
-    expect(text).toContain("Orders");
-  });
+
+    test("UserMenu has Orders navigation link", () => {
+        // Arrange
+        const { container } = renderUserMenu();
+
+        // Act
+        const text = container.textContent;
+
+        // Assert
+        expect(text).toContain("Orders");
+    });
 
 });
