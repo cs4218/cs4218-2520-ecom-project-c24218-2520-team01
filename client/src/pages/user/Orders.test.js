@@ -9,120 +9,124 @@ jest.mock("axios");
 
 // Use a Stub for moment dependency
 jest.mock("moment", () => () => ({
-  fromNow: () => "2 days ago",
+    fromNow: () => "2 days ago",
 }));
 
 // Add a stub for useAuth
 jest.mock("../../context/auth", () => ({
-  useAuth: jest.fn(),
+    useAuth: jest.fn(),
 }));
 
 // Use a Fake for Layout
 jest.mock("../../components/Layout", () => ({ children }) => (
-  <div>{children}</div>
+    <div>{children}</div>
 ));
 
 // Use a Fake for UserMenu
 jest.mock("../../components/UserMenu", () => () => (
-  <div>User Menu</div>
+    <div>User Menu</div>
 ));
 
-describe("Unit test for Orders component", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test("Orders component calls orders API", async () => {
-    // Arrange
-    useAuth.mockReturnValue([{ token: "valid-token" }, jest.fn()]);
-    axios.get.mockResolvedValue({ data: [] });
-
-    // Act
-    render(<Orders />);
-
-    // Assert
-    await waitFor(() => {
-      expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/orders");
-    });
-  });
-
-
-  test("Orders component shows order data fetched", async () => {
-    // Arrange
-    const ordersData = [
-      {
+const ordersData = [
+    {
+        _id: "3411",
         status: "Processing",
         buyer: { name: "Adam" },
         createAt: "2025-05-07",
         payment: { success: true },
         products: [
-            { _id: "1", name: "Watch", description: "Casio", price: "100" }, 
-            { _id: "2", name: "Shirt", description: "Uniqlo", price: "30" }
+            { 
+                _id: "1", 
+                name: "Watch", 
+                description: "Casio", 
+                price: "100" }, 
+            { 
+                _id: "2", 
+                name: "Shirt", 
+                description: "Uniqlo", 
+                price: "30" }
         ],
-      },
-    ];
+    },
+];
 
-    useAuth.mockReturnValue([{ token: "token" }, jest.fn()]);
-    axios.get.mockResolvedValue({ data: ordersData });
-
-    // Act
-    const { container } = render(<Orders />);
-
-    // Assert
-    await waitFor(() => {
-      const text = container.textContent;
-      expect(text).toContain("Processing"); // status
-      expect(text).toContain("Adam"); // buyer name 
-      expect(text).toContain("Success"); // payment success
-      expect(text).toContain("2"); // products length
+describe("Unit test for Orders component", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
     });
-  });
 
+    test("Orders component calls orders API", async () => {
+        // Arrange
+        useAuth.mockReturnValue([{ token: "valid-token" }, jest.fn()]);
+        axios.get.mockResolvedValue({ data: ordersData });
 
-  test("Orders component shows info for each order", async () => {
-    // Arrange
-    const ordersData = [
-      {
-        status: "Delivered",
-        buyer: { name: "John" },
-        createAt: "2026-12-11",
-        payment: { success: true },
-        products: [
-          {
-            _id: "5627",
-            name: "Notebook",
-            description: "Black, Typo",
-            price: 8,
-          },
-        ],
-      },
-    ];
+        // Act
+        render(<Orders />);
 
-    useAuth.mockReturnValue([{ token: "token" }, jest.fn()]);
-    axios.get.mockResolvedValue({ data: ordersData });
-
-    // Act
-    const { container } = render(<Orders />);
-
-    // Assert
-    await waitFor(() => {
-      const text = container.textContent;
-      expect(text).toContain("Notebook");  // name
-      expect(text).toContain("Black, Typo");  // description 
-      expect(text).toContain("Price : 8");  // price
+        // Assert
+        await waitFor(() => {
+        expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/orders");
+        });
     });
-  });
 
 
-  test("Orders component does not call backend without authentication token", async () => {
-    // Arrange
-    useAuth.mockReturnValue([null, jest.fn()]);
+    test("Orders component shows order data fetched", async () => {
+        // Arrange
+        useAuth.mockReturnValue([{ token: "token" }, jest.fn()]);
+        axios.get.mockResolvedValue({ data: ordersData });
 
-    // Act
-    render(<Orders />);
+        // Act
+        const { container } = render(<Orders />);
 
-    // Assert
-    expect(axios.get).not.toHaveBeenCalled();
-  });
+        // Assert
+        await waitFor(() => {
+            const text = container.textContent;
+            expect(text).toContain("Processing"); // status
+            expect(text).toContain("Adam"); // buyer name 
+            expect(text).toContain("Success"); // payment success
+            expect(text).toContain("2"); // products length
+        });
+    });
 
+
+    test("Orders component shows info for each order", async () => {
+        // Arrange
+        useAuth.mockReturnValue([{ token: "token" }, jest.fn()]);
+        axios.get.mockResolvedValue({ data: ordersData });
+
+        // Act
+        const { container } = render(<Orders />);
+
+        // Assert
+        await waitFor(() => {
+            const text = container.textContent;
+            expect(text).toContain("Watch");  // name
+            expect(text).toContain("Casio");  // description 
+            expect(text).toContain("Price : 100");  // price
+        });
+    });
+
+    test("Orders component receives no order data", async () => {
+        // Arrange
+        useAuth.mockReturnValue([{ token: "token" }, jest.fn()]);
+        axios.get.mockResolvedValue({ data: [] });
+
+        // Act
+        const { container } = render(<Orders />);
+
+        // Assert
+        await waitFor(() => {
+            expect(container.textContent).toContain("All Orders");
+        });
+    });
+
+    test("Orders component does not call backend without user token", async () => {
+        // Arrange
+        useAuth.mockReturnValue([null, jest.fn()]);
+
+        // Act
+        render(<Orders />);
+
+        // Assert
+        expect(axios.get).not.toHaveBeenCalled();
+    });
 });
