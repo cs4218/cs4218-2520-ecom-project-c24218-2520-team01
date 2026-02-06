@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1770369296339" clover="3.2.0">
-  <project timestamp="1770369296339" name="All files">
+<coverage generated="1770369375495" clover="3.2.0">
+  <project timestamp="1770369375495" name="All files">
     <metrics statements="260" coveredstatements="16" conditionals="80" coveredconditionals="4" methods="30" coveredmethods="1" elements="370" coveredelements="21" complexity="0" loc="260" ncloc="260" packages="1" files="3" classes="3"/>
     <file name="authController.js" path="C:\Users\NiCheng\OneDrive - National University of Singapore\Desktop\NUS Stuff\Year 3\Sem 2\CS4218 - Software Testing\Group Project\cs4218-2520-ecom-project-c24218-2520-team01\controllers\authController.js">
       <metrics statements="91" coveredstatements="0" conditionals="44" coveredconditionals="0" methods="8" coveredmethods="0"/>
