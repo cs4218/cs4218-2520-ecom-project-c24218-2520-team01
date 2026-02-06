@@ -1,5 +1,5 @@
 import categoryModel from "../models/categoryModel.js";
-import { createCategoryController } from "../controllers/categoryController.js";
+import { createCategoryController, updateCategoryController } from "../controllers/categoryController.js";
 import slugify from "slugify";
 
 // Need to mock categoryModel & slugify
@@ -103,3 +103,66 @@ describe("Tests for createCateogryController", () => {
     });
 });
 
+describe("Tests for updateCateogryController", () => {
+
+    // Set up variables for our test cases
+    let req, res;
+
+    beforeEach(() => {
+        req = {
+            params: {},
+            body: {}
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn(),
+        };
+        jest.clearAllMocks();
+    });
+
+    test("Update category successfully and return 200", async () => {
+        // Arrange
+        req.params.id = 1;
+        req.body.name = "updatedCategory";
+        const updatedCategory = { _id: 1, name: "updatedCategory", slug: "updatedcategory" };
+
+        // Mock slugify function
+        slugify.mockReturnValue("updatedcategory");
+
+        // Mock categoryModel.findByIdAndUpdate to return the updated category
+        categoryModel.findByIdAndUpdate.mockResolvedValue(updatedCategory);
+
+        // Act
+        await updateCategoryController(req, res);
+
+        // Assert
+        expect(categoryModel.findByIdAndUpdate).toHaveBeenCalledWith(1, { name: "updatedCategory", slug: "updatedcategory" }, { new: true });
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith({
+            success: true,
+            message: "Category updated successfully",
+            category: updatedCategory,
+        });
+    });
+
+    it("Return 500 when an error occurs", async () => {
+        // Arrange
+        const mockError = new Error("Some error");
+
+        categoryModel.findByIdAndUpdate.mockRejectedValue(mockError);
+        // Console is a dependency so just mock it
+        console.log = jest.fn();
+
+        // Act
+        await updateCategoryController(req, res);
+
+        // Assert
+        expect(console.log).toHaveBeenCalledWith(mockError);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({
+            success: false,
+            error: mockError,
+            message: "Error while updating category",
+        });
+    });
+});
