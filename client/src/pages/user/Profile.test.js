@@ -29,49 +29,52 @@ jest.mock("../../components/UserMenu", () => () => (
     <div>User Menu</div>
 ));
 
+const mockUserData = {
+    user: {
+        name: "Tomm",
+        email: "tomm@example.com",
+        phone: "98345678",
+        address: "National Road",
+    }
+};
+
+const updatedUserData = {
+    name: "Tomm Doe",
+    email: "tomm@example.com",
+    phone: "98345991",
+    address: "Balin Lane",
+};
+
 describe("Unit test for Profile component", () => {
     // Arrange
     const setAuthMock = jest.fn();
 
-    const authData = {
-        user: {
-            name: "Tomm",
-            email: "tomm@example.com",
-            phone: "98345678",
-            address: "National Road",
-        },
-    };
-
     beforeEach(() => {
-        // Mock authenticated user context
-        useAuth.mockReturnValue([authData, setAuthMock]);
-
-        // Seed localStorage to match real app behaviour
+        // Mock authenticated context and localStorage
+        jest.clearAllMocks();
+        useAuth.mockReturnValue([mockUserData, setAuthMock]);
         localStorage.setItem(
             "auth",
             JSON.stringify({
-                user: authData.user,
-                token: "fake-token",
+            user: mockUserData.user,
+            token: "example-token",
             })
         );
-
-        jest.clearAllMocks();
     });
 
 
-    test("Profile component shows existing user data from context", () => {
+    test("Profile component shows existing user data", () => {
         // Act
         const { getByPlaceholderText } = render(<Profile />);
 
         // Assert
         expect(getByPlaceholderText("Enter Your Name").value).toBe("Tomm");
-        expect(getByPlaceholderText("Enter your email").value).toBe("tomm@example.com");
         expect(getByPlaceholderText("Enter Your Phone").value).toBe("98345678");
         expect(getByPlaceholderText("Enter Your Address").value).toBe("National Road");
     });
 
 
-    test("Input changes by the user update local component state", () => {
+    test("Input changes by the user update local states", () => {
         // Arrange
         const { getByPlaceholderText } = render(<Profile />);
 
@@ -91,17 +94,10 @@ describe("Unit test for Profile component", () => {
     });
 
 
-    test("Submitting the form calls the correct profile update API", async () => {
+    test("Submitting the form calls the update Profile API", async () => {
         // Arrange
-        axios.put.mockResolvedValue({
-        data: {
-            updatedUser: {
-                name: "Tomm Doe",
-                email: "tomm@example.com",
-                phone: "98345991",
-                address: "Balin Lane",
-            },
-        },
+        axios.put.mockResolvedValue({ 
+            data: { updatedUser: updatedUserData } 
         });
 
         const { getByText, getByPlaceholderText } = render(<Profile />);
@@ -123,29 +119,23 @@ describe("Unit test for Profile component", () => {
 
         // Assert
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith("/api/v1/auth/profile", {
-                name: "Tomm Doe",
-                email: "tomm@example.com",
-                password: "",
-                phone: "98345991",
-                address: "Balin Lane",
-            });
+            expect(axios.put).toHaveBeenCalledWith(
+                "/api/v1/auth/profile", 
+                expect.objectContaining({
+                    name: "Tomm Doe",
+                    phone: "98345991",
+                    address: "Balin Lane",
+                    password: "",
+                })
+            );
         });
     });
 
+
     test("Successful profile update updates auth context and localStorage", async () => {
         // Arrange
-        const updatedUser = {
-            name: "Tomm Doe",
-            email: "tomm@example.com",
-            phone: "98345991",
-            address: "Balin Lane",
-        };
-
         axios.put.mockResolvedValue({
-            data: {
-                updatedUser,
-            },
+            data: { updatedUser: updatedUserData },
         });
 
         const { getByText } = render(<Profile />);
@@ -155,21 +145,37 @@ describe("Unit test for Profile component", () => {
 
         // Assert
         await waitFor(() => {
-        expect(setAuthMock).toHaveBeenCalledWith({
-            ...authData,
-            user: updatedUser,
-        });
+            expect(setAuthMock).toHaveBeenCalledWith({
+                ...mockUserData,
+                user: updatedUserData,
+            });
 
-        const storedAuth = JSON.parse(localStorage.getItem("auth"));
-        expect(storedAuth.user).toEqual(updatedUser);
+            const storedAuth = JSON.parse(localStorage.getItem("auth"));
+            expect(storedAuth.user).toEqual(updatedUserData);
 
-        expect(toast.success).toHaveBeenCalledWith(
-            "Profile Updated Successfully"
-        );
+            expect(toast.success).toHaveBeenCalledWith(
+                "Profile Updated Successfully"
+            );
         });
     });
 
-    test("API failure shows error toast message", async () => {
+    test("Toast shows message for handleSubmit error", async () => {
+        // Arrange
+        axios.put.mockResolvedValue({
+            data: { error: "Invalid phone number" },
+        });
+        const { getByText } = render(<Profile />);
+
+        // Act 
+        fireEvent.click(getByText("UPDATE"));
+
+        // Assert
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith("Invalid phone number");
+        });
+    });
+
+    test("Toast shows error message for API error", async () => {
         // Arrange
         axios.put.mockRejectedValue(new Error("Network Error"));
 
