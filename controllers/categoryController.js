@@ -36,6 +36,12 @@ export const updateCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
     const { id } = req.params;
+    if (!name) {
+      return res.status(400).send({ message: "Name is required" });
+    }
+    if (!id) {
+      return res.status(400).send({ message: "Id is required" });
+    }
     const category = await categoryModel.findByIdAndUpdate(
       id,
       { name, slug: slugify(name) },

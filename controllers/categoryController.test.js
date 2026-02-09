@@ -1,5 +1,5 @@
 import categoryModel from "../models/categoryModel.js";
-import { createCategoryController, updateCategoryController, categoryControlller } from "../controllers/categoryController.js";
+import { createCategoryController, updateCategoryController, categoryControlller, singleCategoryController } from "../controllers/categoryController.js";
 import slugify from "slugify";
 
 // Need to mock categoryModel & slugify
@@ -182,9 +182,39 @@ describe("Tests for updateCateogryController", () => {
         });
     });
 
+    test("Return 400 when id is not provided", async () => {
+        // Arrange
+        req.body.name = "someCategory";
+
+        // Act
+        await updateCategoryController(req, res);
+
+        // Assert
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.send).toHaveBeenCalledWith({
+            message: "Id is required",
+        });
+    });
+
+    test("Return 400 when name is not provided", async () => {
+        // Arrange
+        req.params.id = "1";
+
+        // Act
+        await updateCategoryController(req, res);
+
+        // Assert
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.send).toHaveBeenCalledWith({
+            message: "Name is required",
+        });
+    });
+
 
     test("Return 500 when an error occurs", async () => {
         // Arrange
+        req.params.id = 1;
+        req.body.name = "someCategory";
         const mockError = new Error("Some error");
 
         categoryModel.findByIdAndUpdate.mockRejectedValue(mockError);
@@ -222,18 +252,13 @@ describe("Tests for categoryControlller (Get all categories)", () => {
         jest.clearAllMocks();
     });
 
-    /* 
-    Assumption: If the database connection is not established any function to MongoDB
-    will raise an error and not return null.
-    */
-
     test("Fetch all categories successfully and return 200", async () => {
         // Arrange
         const fetchedCategory = [
             { _id: 1, name: "Electronics", slug: "electronics" },
             { _id: 2, name: "Clothes", slug: "clothes" }
         ];
-        // Mock categoryModel.findByIdAndUpdate to return the updated category
+        // Mock categoryModel.find to return the fetched categories
         categoryModel.find.mockResolvedValue(fetchedCategory);
 
         // Act
@@ -250,6 +275,11 @@ describe("Tests for categoryControlller (Get all categories)", () => {
     });
 
     test("Return 500 when an error occurs", async () => {
+        /* 
+        Assumption: If the database connection is not established any function to MongoDB
+        will raise an error and not return null.
+        */
+
         // Arrange
         const mockError = new Error("Some error");
 
@@ -267,6 +297,92 @@ describe("Tests for categoryControlller (Get all categories)", () => {
             success: false,
             error: mockError,
             message: "Error while getting all categories",
+        });
+    });
+
+    describe("Tests for singleCategoryController", () => {
+
+        // Set up variables for our test cases
+        let req, res;
+
+        beforeEach(() => {
+            req = {
+                params: {},
+                body: {}
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn(),
+            };
+            jest.clearAllMocks();
+        });
+
+        test("Fetch a single category successfully and return 200", async () => {
+            // Arrange
+            req.params.slug = "electronics";
+            const fetchedCategory = { _id: 1, name: "Electronics", slug: "electronics" };
+
+            // Mock categoryModel.findOne to return the fetched category
+            categoryModel.findOne.mockResolvedValue(fetchedCategory);
+
+            // Act
+            await singleCategoryController(req, res);
+
+            // Assert
+            expect(categoryModel.findOne).toHaveBeenCalledWith({ slug: "electronics" });
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith({
+                success: true,
+                message: "Single category fetched successfully",
+                category: fetchedCategory,
+            });
+        });
+
+        test("Return a 400 when slug is not provided", async () => {
+            /*
+            Assumption: The app should inform the user that the slug is required.
+            And also an empty string is valid because an empty string is a valid string
+            which MongoDB can still store / process without any issues.
+            */
+
+            // Arrange
+            req.params.slug = null;
+
+
+            // Act
+            await singleCategoryController(req, res);
+
+            // Assert
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith({
+                message: "Category name is not provided",
+            });
+        });
+
+        test("Return 500 when an error occurs", async () => {
+            /* 
+            Assumption: If the database connection is not established any function to MongoDB
+            will raise an error and not return null.
+            */
+
+            // Arrange
+            const mockError = new Error("Some error");
+
+            categoryModel.findOne.mockRejectedValue(mockError);
+            // Console is a dependency so just mock it
+            console.log = jest.fn();
+
+            // Act
+            await singleCategoryController(req, res);
+
+            // Assert
+            expect(console.log).toHaveBeenCalledWith(mockError);
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                error: mockError,
+                message: "Error while getting single category",
+            });
         });
     });
 });
