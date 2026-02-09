@@ -4,12 +4,11 @@ export const createCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) {
-      return res.status(401).send({ message: "Name is required" });
+      return res.status(400).send({ message: "Name is required" });
     }
     const existingCategory = await categoryModel.findOne({ name });
     if (existingCategory) {
-      return res.status(200).send({
-        success: true,
+      return res.status(409).send({
         message: "Category already exists",
       });
     }
@@ -42,6 +41,11 @@ export const updateCategoryController = async (req, res) => {
       { name, slug: slugify(name) },
       { new: true }
     );
+    if (!category) {
+      return res.status(404).send({
+        message: "Id does not exist",
+      });
+    }
     res.status(200).send({
       success: true,
       message: "Category updated successfully",

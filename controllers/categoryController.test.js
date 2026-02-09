@@ -50,7 +50,13 @@ describe("Tests for createCateogryController", () => {
         });
     });
 
-    test("Return 200 when category exists", async () => {
+    test("Return 409 when category exists", async () => {
+        /*
+        Assumption:Status code 409 is conflicts ususally request cannot
+        be completed because it conflicts with the current state of the
+        target resource on the serverly
+        */
+
         // Arrange
         req.body.name = "existingCategory";
 
@@ -62,19 +68,23 @@ describe("Tests for createCateogryController", () => {
 
         // Assert
         expect(categoryModel.findOne).toHaveBeenCalledWith({ name: "existingCategory" });
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith({
-            success: true,
+        expect(res.status).toHaveBeenCalledWith(409);
+        expect(res.send).toHaveBeenCalledWith({ // Status should be blank because the request was not even executed
             message: "Category already exists",
         });
     });
 
-    test("Return 401 when category name not provided", async () => {
+    test("Return 400 when category name not provided", async () => {
+        /*
+        Assumpton: status code 400 is bad request usually used when the request
+        is invalid or cannot be processed
+        */
+
         // Act
         await createCategoryController(req, res);
 
         // Assert
-        expect(res.status).toHaveBeenCalledWith(401);
+        expect(res.status).toHaveBeenCalledWith(400);
         expect(res.send).toHaveBeenCalledWith({
             message: "Name is required",
         });
@@ -145,7 +155,35 @@ describe("Tests for updateCateogryController", () => {
         });
     });
 
-    it("Return 500 when an error occurs", async () => {
+    test("Return 404 when id cannot be found", async () => {
+        /*
+        Assumption: The app should inform the user that the category id does not exist
+        and no update was made. So return status code 404 is not found usually used when the request
+        resource cannot be found.
+        */
+
+        // Arrange
+        req.params.id = -1;
+        req.body.name = "someCateogry";
+        const updatedCategory = null;
+
+        slugify.mockReturnValue("somecateogry");
+
+        categoryModel.findByIdAndUpdate.mockResolvedValue(updatedCategory);
+
+        // Act
+        await updateCategoryController(req, res);
+
+        // Assert
+        expect(categoryModel.findByIdAndUpdate).toHaveBeenCalledWith(-1, { name: "someCateogry", slug: "somecateogry" }, { new: true });
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith({
+            message: "Id does not exist",
+        });
+    });
+
+
+    test("Return 500 when an error occurs", async () => {
         // Arrange
         const mockError = new Error("Some error");
 
