@@ -299,90 +299,91 @@ describe("Tests for categoryControlller (Get all categories)", () => {
             message: "Error while getting all categories",
         });
     });
+});
 
-    describe("Tests for singleCategoryController", () => {
+describe("Tests for singleCategoryController", () => {
 
-        // Set up variables for our test cases
-        let req, res;
+    // Set up variables for our test cases
+    let req, res;
 
-        beforeEach(() => {
-            req = {
-                params: {},
-                body: {}
-            };
-            res = {
-                status: jest.fn().mockReturnThis(),
-                send: jest.fn(),
-            };
-            jest.clearAllMocks();
+    beforeEach(() => {
+        req = {
+            params: {},
+            body: {}
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn(),
+        };
+        jest.clearAllMocks();
+    });
+
+    test("Fetch a single category successfully and return 200", async () => {
+        // Arrange
+        req.params.slug = "electronics";
+        const fetchedCategory = { _id: 1, name: "Electronics", slug: "electronics" };
+
+        // Mock categoryModel.findOne to return the fetched category
+        categoryModel.findOne.mockResolvedValue(fetchedCategory);
+
+        // Act
+        await singleCategoryController(req, res);
+
+        // Assert
+        expect(categoryModel.findOne).toHaveBeenCalledWith({ slug: "electronics" });
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith({
+            success: true,
+            message: "Single category fetched successfully",
+            category: fetchedCategory,
         });
+    });
 
-        test("Fetch a single category successfully and return 200", async () => {
-            // Arrange
-            req.params.slug = "electronics";
-            const fetchedCategory = { _id: 1, name: "Electronics", slug: "electronics" };
+    test("Return a 400 when slug is not provided", async () => {
+        /*
+        Assumption: The app should inform the user that the slug is required.
+        And also an empty string is valid because an empty string is a valid string
+        which MongoDB can still store / process without any issues.
+        */
 
-            // Mock categoryModel.findOne to return the fetched category
-            categoryModel.findOne.mockResolvedValue(fetchedCategory);
+        // Arrange
+        req.params.slug = null;
 
-            // Act
-            await singleCategoryController(req, res);
 
-            // Assert
-            expect(categoryModel.findOne).toHaveBeenCalledWith({ slug: "electronics" });
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({
-                success: true,
-                message: "Single category fetched successfully",
-                category: fetchedCategory,
-            });
+        // Act
+        await singleCategoryController(req, res);
+
+        // Assert
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.send).toHaveBeenCalledWith({
+            message: "Category name is not provided",
         });
+    });
 
-        test("Return a 400 when slug is not provided", async () => {
-            /*
-            Assumption: The app should inform the user that the slug is required.
-            And also an empty string is valid because an empty string is a valid string
-            which MongoDB can still store / process without any issues.
-            */
+    test("Return 500 when an error occurs", async () => {
+        /* 
+        Assumption: If the database connection is not established any function to MongoDB
+        will raise an error and not return null.
+        */
 
-            // Arrange
-            req.params.slug = null;
+        // Arrange
+        req.params.slug = "electronics";
+        const mockError = new Error("Some error");
 
+        categoryModel.findOne.mockRejectedValue(mockError);
+        // Console is a dependency so just mock it
+        console.log = jest.fn();
 
-            // Act
-            await singleCategoryController(req, res);
+        // Act
+        await singleCategoryController(req, res);
 
-            // Assert
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.send).toHaveBeenCalledWith({
-                message: "Category name is not provided",
-            });
-        });
-
-        test("Return 500 when an error occurs", async () => {
-            /* 
-            Assumption: If the database connection is not established any function to MongoDB
-            will raise an error and not return null.
-            */
-
-            // Arrange
-            const mockError = new Error("Some error");
-
-            categoryModel.findOne.mockRejectedValue(mockError);
-            // Console is a dependency so just mock it
-            console.log = jest.fn();
-
-            // Act
-            await singleCategoryController(req, res);
-
-            // Assert
-            expect(console.log).toHaveBeenCalledWith(mockError);
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                error: mockError,
-                message: "Error while getting single category",
-            });
+        // Assert
+        expect(console.log).toHaveBeenCalledWith(mockError);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({
+            success: false,
+            error: mockError,
+            message: "Error while getting single category",
         });
     });
 });

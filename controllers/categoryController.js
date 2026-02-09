@@ -89,10 +89,14 @@ export const categoryControlller = async (req, res) => {
 // single category
 export const singleCategoryController = async (req, res) => {
   try {
-    const category = await categoryModel.findOne({ slug: req.params.slug });
+    const { slug } = req.params;
+    if (!slug) {
+      return res.status(400).send({ message: "Category name is not provided" });
+    }
+    const category = await categoryModel.findOne({ slug });
     res.status(200).send({
       success: true,
-      message: "Get SIngle Category SUccessfully",
+      message: "Single category fetched successfully",
       category,
     });
   } catch (error) {
@@ -100,7 +104,7 @@ export const singleCategoryController = async (req, res) => {
     res.status(500).send({
       success: false,
       error,
-      message: "Error While getting Single Category",
+      message: "Error while getting single category",
     });
   }
 };
