@@ -1,0 +1,38 @@
+name: Run tests
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    test-backend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+            - name: Install dependencies
+              run: npm ci
+            - name: Run backend tests
+              run: npm run test:backend
+
+    test-frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+            - name: Install dependencies
+              run: npm ci
+            - name: Install frontend dependencies
+              run: npm ci --prefix ./client
+            - name: Run frontend tests
+              run: npm run test:frontend
