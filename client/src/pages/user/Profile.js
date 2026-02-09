@@ -4,6 +4,7 @@ import Layout from "./../../components/Layout";
 import { useAuth } from "../../context/auth";
 import toast from "react-hot-toast";
 import axios from "axios";
+
 const Profile = () => {
   //context
   const [auth, setAuth] = useAuth();
@@ -29,12 +30,11 @@ const Profile = () => {
     try {
       const { data } = await axios.put("/api/v1/auth/profile", {
         name,
-        email,
         password,
         phone,
         address,
       });
-      if (data?.errro) {
+      if (data?.error) {
         toast.error(data?.error);
       } else {
         setAuth({ ...auth, user: data?.updatedUser });
@@ -75,10 +75,8 @@ const Profile = () => {
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     className="form-control"
                     id="exampleInputEmail1"
-                    placeholder="Enter Your Email "
                     disabled
                   />
                 </div>
