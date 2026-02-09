@@ -1,5 +1,5 @@
 import categoryModel from "../models/categoryModel.js";
-import { createCategoryController, updateCategoryController } from "../controllers/categoryController.js";
+import { createCategoryController, updateCategoryController, categoryControlller } from "../controllers/categoryController.js";
 import slugify from "slugify";
 
 // Need to mock categoryModel & slugify
@@ -201,6 +201,72 @@ describe("Tests for updateCateogryController", () => {
             success: false,
             error: mockError,
             message: "Error while updating category",
+        });
+    });
+});
+
+describe("Tests for categoryControlller (Get all categories)", () => {
+
+    // Set up variables for our test cases
+    let req, res;
+
+    beforeEach(() => {
+        req = {
+            params: {},
+            body: {}
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn(),
+        };
+        jest.clearAllMocks();
+    });
+
+    /* 
+    Assumption: If the database connection is not established any function to MongoDB
+    will raise an error and not return null.
+    */
+
+    test("Fetch all categories successfully and return 200", async () => {
+        // Arrange
+        const fetchedCategory = [
+            { _id: 1, name: "Electronics", slug: "electronics" },
+            { _id: 2, name: "Clothes", slug: "clothes" }
+        ];
+        // Mock categoryModel.findByIdAndUpdate to return the updated category
+        categoryModel.find.mockResolvedValue(fetchedCategory);
+
+        // Act
+        await categoryControlller(req, res);
+
+        // Assert
+        expect(categoryModel.find).toHaveBeenCalledWith({});
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith({
+            success: true,
+            message: "All categories fetched successfully",
+            category: fetchedCategory,
+        });
+    });
+
+    test("Return 500 when an error occurs", async () => {
+        // Arrange
+        const mockError = new Error("Some error");
+
+        categoryModel.find.mockRejectedValue(mockError);
+        // Console is a dependency so just mock it
+        console.log = jest.fn();
+
+        // Act
+        await categoryControlller(req, res);
+
+        // Assert
+        expect(console.log).toHaveBeenCalledWith(mockError);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({
+            success: false,
+            error: mockError,
+            message: "Error while getting all categories",
         });
     });
 });
