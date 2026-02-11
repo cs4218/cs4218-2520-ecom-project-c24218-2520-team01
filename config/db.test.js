@@ -7,6 +7,7 @@ jest.mock("mongoose");
 
 describe("Tests for connectDB function", () => {
 
+    // Clear mocks before each test and set default MONGO_URL
     beforeEach(() => {
         jest.clearAllMocks();
         process.env.MONGO_URL = "mongodb://test-url";
