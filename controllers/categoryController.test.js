@@ -1,6 +1,8 @@
 import categoryModel from "../models/categoryModel.js";
-import { createCategoryController, updateCategoryController, categoryControlller, singleCategoryController } from "../controllers/categoryController.js";
+import { createCategoryController, updateCategoryController, categoryControlller, singleCategoryController, deleteCategoryCOntroller } from "../controllers/categoryController.js";
 import slugify from "slugify";
+
+// By: Nicholas Cheng A0269648H
 
 // Need to mock categoryModel & slugify
 jest.mock("../models/categoryModel.js")
@@ -163,7 +165,7 @@ describe("Tests for updateCateogryController", () => {
         */
 
         // Arrange
-        req.params.id = -1;
+        req.params.id = 1000;
         req.body.name = "someCateogry";
         const updatedCategory = null;
 
@@ -175,7 +177,7 @@ describe("Tests for updateCateogryController", () => {
         await updateCategoryController(req, res);
 
         // Assert
-        expect(categoryModel.findByIdAndUpdate).toHaveBeenCalledWith(-1, { name: "someCateogry", slug: "somecateogry" }, { new: true });
+        expect(categoryModel.findByIdAndUpdate).toHaveBeenCalledWith(1000, { name: "someCateogry", slug: "somecateogry" }, { new: true });
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.send).toHaveBeenCalledWith({
             message: "Id does not exist",
@@ -192,7 +194,7 @@ describe("Tests for updateCateogryController", () => {
         // Assert
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.send).toHaveBeenCalledWith({
-            message: "Id is required",
+            message: "Id is not provided",
         });
     });
 
@@ -206,7 +208,7 @@ describe("Tests for updateCateogryController", () => {
         // Assert
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.send).toHaveBeenCalledWith({
-            message: "Name is required",
+            message: "Name is not provided",
         });
     });
 
@@ -347,8 +349,6 @@ describe("Tests for singleCategoryController", () => {
         */
 
         // Arrange
-        req.params.slug = null;
-
 
         // Act
         await singleCategoryController(req, res);
@@ -384,6 +384,104 @@ describe("Tests for singleCategoryController", () => {
             success: false,
             error: mockError,
             message: "Error while getting single category",
+        });
+    });
+});
+
+describe("Tests for deleteCategoryCOntroller", () => {
+
+    // Set up variables for our test cases
+    let req, res;
+
+    beforeEach(() => {
+        req = {
+            params: {},
+            body: {}
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn(),
+        };
+        jest.clearAllMocks();
+    });
+
+    test("Update category successfully and return 200", async () => {
+        // Arrange
+        req.params.id = 1;
+        const deletedCategory = { _id: 1, name: "Electronics", slug: "electronics" };
+
+        // Mock findByIdAndDelete to return a value
+        categoryModel.findByIdAndDelete.mockResolvedValue(deletedCategory);
+
+        // Act
+        await deleteCategoryCOntroller(req, res);
+
+        // Assert
+        expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith(1);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith({
+            success: true,
+            message: "Category deleted successfully"
+        });
+    });
+
+    test("Return 404 when id cannot be found", async () => {
+        /*
+        Assumption: The app should inform the user that the category id does not exist
+        and no update was made. So return status code 404 is not found usually used when the request
+        resource cannot be found.
+        */
+
+        // Arrange
+        req.params.id = 1000;
+        const deletedCategory = null;
+
+        categoryModel.findByIdAndDelete.mockResolvedValue(deletedCategory);
+
+        // Act
+        await deleteCategoryCOntroller(req, res);
+
+        // Assert
+        expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith(1000);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith({
+            message: "Id does not exist",
+        });
+    });
+
+    test("Return 400 when id is not provided", async () => {
+
+        // Act
+        await deleteCategoryCOntroller(req, res);
+
+        // Assert
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.send).toHaveBeenCalledWith({
+            message: "Id is not provided",
+        });
+    });
+
+
+    test("Return 500 when an error occurs", async () => {
+        // Arrange
+        req.params.id = 1;
+        req.body.name = "someCategory";
+        const mockError = new Error("Some error");
+
+        categoryModel.findByIdAndDelete.mockRejectedValue(mockError);
+        // Console is a dependency so just mock it
+        console.log = jest.fn();
+
+        // Act
+        await deleteCategoryCOntroller(req, res);
+
+        // Assert
+        expect(console.log).toHaveBeenCalledWith(mockError);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({
+            success: false,
+            error: mockError,
+            message: "Error while deleting category",
         });
     });
 });
