@@ -240,17 +240,26 @@ export const orderStatusController = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
+    if (!orderId) {
+      return res.status(400).send({ message: "Order id is not provided" });
+    }
+    if (!status) {
+      return res.status(400).send({ message: "Order status is not provided" });
+    }
     const orders = await orderModel.findByIdAndUpdate(
       orderId,
       { status },
-      { new: true }
+      { new: true, runValidators: true }
     );
-    res.json(orders);
+    if (!orders) {
+      return res.status(404).send({ message: "Order id does not exist" });
+    }
+    res.status(200).json(orders);
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error While Updateing Order",
+      message: "Error while updating order status",
       error,
     });
   }

@@ -1,6 +1,8 @@
 import orderModel from "../models/orderModel.js";
 import { getOrdersController, getAllOrdersController, orderStatusController } from "../controllers/authController.js";
 
+// By: Nicholas Cheng A0269648H
+
 jest.mock("../models/orderModel.js");
 
 describe("Tests for getOrdersController", () => {
@@ -192,7 +194,7 @@ describe("Tests for orderStatusController", () => {
         await orderStatusController(req, res);
 
         // Assert
-        expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith("1", { status: "deliverd" }, { new: true });
+        expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith("1", { status: "deliverd" }, { new: true, runValidators: true });
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(updatedOrder);
     });
@@ -215,7 +217,7 @@ describe("Tests for orderStatusController", () => {
         await orderStatusController(req, res);
 
         // Assert
-        expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith("1000", { status: "deliverd" }, { new: true });
+        expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith("1000", { status: "deliverd" }, { new: true, runValidators: true });
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.send).toHaveBeenCalledWith({
             message: "Order id does not exist",
@@ -290,7 +292,7 @@ describe("Tests for orderStatusController", () => {
         await orderStatusController(req, res);
 
         // Assert
-        expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith("1", { status: "deliverd" }, { new: true });
+        expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith("1", { status: "deliverd" }, { new: true, runValidators: true });
         expect(console.log).toHaveBeenCalledWith(mockError);
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.send).toHaveBeenCalledWith({
