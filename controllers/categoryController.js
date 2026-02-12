@@ -68,7 +68,7 @@ export const updateCategoryController = async (req, res) => {
 };
 
 // get all cat
-export const categoryControlller = async (req, res) => {
+export const categoryController = async (req, res) => {
   try {
     const category = await categoryModel.find({});
     res.status(200).send({
@@ -110,19 +110,25 @@ export const singleCategoryController = async (req, res) => {
 };
 
 //delete category
-export const deleteCategoryCOntroller = async (req, res) => {
+export const deleteCategoryController = async (req, res) => {
   try {
     const { id } = req.params;
-    await categoryModel.findByIdAndDelete(id);
+    if (!id) {
+      return res.status(400).send({ message: "Id is not provided" });
+    }
+    const deletedCategory = await categoryModel.findByIdAndDelete(id);
+    if (!deletedCategory) {
+      return res.status(404).send({ message: "Id does not exist" });
+    }
     res.status(200).send({
       success: true,
-      message: "Categry Deleted Successfully",
+      message: "Category deleted successfully",
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "error while deleting category",
+      message: "Error while deleting category",
       error,
     });
   }

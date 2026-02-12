@@ -1,5 +1,5 @@
 import categoryModel from "../models/categoryModel.js";
-import { createCategoryController, updateCategoryController, categoryControlller, singleCategoryController, deleteCategoryCOntroller } from "../controllers/categoryController.js";
+import { createCategoryController, updateCategoryController, categoryController, singleCategoryController, deleteCategoryController } from "../controllers/categoryController.js";
 import slugify from "slugify";
 
 // By: Nicholas Cheng A0269648H
@@ -237,7 +237,7 @@ describe("Tests for updateCateogryController", () => {
     });
 });
 
-describe("Tests for categoryControlller (Get all categories)", () => {
+describe("Tests for categoryController (Get all categories)", () => {
 
     // Set up variables for our test cases
     let req, res;
@@ -264,7 +264,7 @@ describe("Tests for categoryControlller (Get all categories)", () => {
         categoryModel.find.mockResolvedValue(fetchedCategory);
 
         // Act
-        await categoryControlller(req, res);
+        await categoryController(req, res);
 
         // Assert
         expect(categoryModel.find).toHaveBeenCalledWith({});
@@ -290,7 +290,7 @@ describe("Tests for categoryControlller (Get all categories)", () => {
         console.log = jest.fn();
 
         // Act
-        await categoryControlller(req, res);
+        await categoryController(req, res);
 
         // Assert
         expect(console.log).toHaveBeenCalledWith(mockError);
@@ -388,7 +388,7 @@ describe("Tests for singleCategoryController", () => {
     });
 });
 
-describe("Tests for deleteCategoryCOntroller", () => {
+describe("Tests for deleteCategoryController", () => {
 
     // Set up variables for our test cases
     let req, res;
@@ -414,7 +414,7 @@ describe("Tests for deleteCategoryCOntroller", () => {
         categoryModel.findByIdAndDelete.mockResolvedValue(deletedCategory);
 
         // Act
-        await deleteCategoryCOntroller(req, res);
+        await deleteCategoryController(req, res);
 
         // Assert
         expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith(1);
@@ -439,7 +439,7 @@ describe("Tests for deleteCategoryCOntroller", () => {
         categoryModel.findByIdAndDelete.mockResolvedValue(deletedCategory);
 
         // Act
-        await deleteCategoryCOntroller(req, res);
+        await deleteCategoryController(req, res);
 
         // Assert
         expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith(1000);
@@ -452,7 +452,7 @@ describe("Tests for deleteCategoryCOntroller", () => {
     test("Return 400 when id is not provided", async () => {
 
         // Act
-        await deleteCategoryCOntroller(req, res);
+        await deleteCategoryController(req, res);
 
         // Assert
         expect(res.status).toHaveBeenCalledWith(400);
@@ -473,7 +473,7 @@ describe("Tests for deleteCategoryCOntroller", () => {
         console.log = jest.fn();
 
         // Act
-        await deleteCategoryCOntroller(req, res);
+        await deleteCategoryController(req, res);
 
         // Assert
         expect(console.log).toHaveBeenCalledWith(mockError);
