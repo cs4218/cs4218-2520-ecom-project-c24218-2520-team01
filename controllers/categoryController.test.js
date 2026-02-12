@@ -92,7 +92,7 @@ describe("Tests for createCateogryController", () => {
         });
     });
 
-    it("Return 500 when an error occurs", async () => {
+    test("Return 500 when an error occurs", async () => {
         // Arrange
         req.body = { name: "someCategory" };
         const mockError = new Error("Some error");
