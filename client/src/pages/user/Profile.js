@@ -17,7 +17,8 @@ const Profile = () => {
 
   //get user data
   useEffect(() => {
-    const { email, name, phone, address } = auth?.user;
+    // destructure with default values and an object even if user is null
+    const { email = "", name = "", phone = "", address = "" } = auth?.user || {};
     setName(name);
     setPhone(phone);
     setEmail(email);

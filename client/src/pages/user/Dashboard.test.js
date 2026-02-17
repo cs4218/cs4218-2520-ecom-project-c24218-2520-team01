@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 import Dashboard from "./Dashboard";
 import { useAuth } from "../../context/auth";
 
+// Rachel Tai Ke Jia, A0258603A 
+
 // Add a stub for useAuth 
 jest.mock("../../context/auth", () => ({
     useAuth: jest.fn(),

@@ -1,7 +1,9 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import UserMenu from "./UserMenu";
+
+// Rachel Tai Ke Jia, A0258603A
 
 const renderUserMenu = () =>
     render(
@@ -13,52 +15,36 @@ const renderUserMenu = () =>
 
 describe("Unit test for UserMenu component", () => {
     test("UserMenu shows shows h4 text", () => {
-        // Arrange
-        const { container } = renderUserMenu();
-
-        // Act 
-        const text = container.textContent;
-
-        // Assert
-        expect(text).toContain("Dashboard");
-    });
-
-
-    test("Routing for Profile and Orders pages", () => {
-        // Arrange
-        const { container } = renderUserMenu();
-
         // Act
-        const links = container.querySelectorAll("a");
-        const hrefs = Array.from(links).map(link => link.getAttribute("href"));
+        renderUserMenu();
 
         // Assert
-        expect(hrefs).toContain("/dashboard/user/profile");
-        expect(hrefs).toContain("/dashboard/user/orders");
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
     });
 
 
     test("UserMenu has Profile navigation link", () => {
-        // Arrange
-        const { container } = renderUserMenu();
-
         // Act
-        const text = container.textContent;
+        renderUserMenu();
+        const link = screen.getByRole(
+            "link", 
+            { name: "Profile" }
+        );
 
         // Assert
-        expect(text).toContain("Profile");
+        expect(link).toHaveAttribute("href", "/dashboard/user/profile");
     });
 
 
     test("UserMenu has Orders navigation link", () => {
-        // Arrange
-        const { container } = renderUserMenu();
-
         // Act
-        const text = container.textContent;
+        renderUserMenu();
+        const link = screen.getByRole(
+            "link", 
+            { name: "Orders" }
+        );
 
         // Assert
-        expect(text).toContain("Orders");
+        expect(link).toHaveAttribute("href", "/dashboard/user/orders");
     });
-
 });

@@ -1,3 +1,5 @@
+// Rachel Tai Ke Jia, A0258603A
+
 // Server-side
 export const MOCK_USER = {
     _id: "user1",
@@ -11,6 +13,7 @@ export const MOCK_USER = {
 // From client to server 
 export const UPDATED_PROFILE_INPUT = {
     name: "Tomm Doe",
+    password: "new-password",
     phone: "98345991",
     address: "Balin Lane"
 };

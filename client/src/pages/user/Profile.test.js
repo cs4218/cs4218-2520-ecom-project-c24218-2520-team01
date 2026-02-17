@@ -6,6 +6,8 @@ import { useAuth } from "../../context/auth";
 import { MOCK_USER, UPDATED_PROFILE_INPUT } from "../../../../test/fixtures/mockUser";
 import Profile from "./Profile";
 
+// Rachel Tai Ke Jia, A0258603A
+
 // Add a mock for axios
 jest.mock("axios");
 
@@ -73,16 +75,19 @@ describe("Unit test for Profile component", () => {
         // Arrange
         const { getByPlaceholderText } = render(<Profile />);
         const nameInput = getByPlaceholderText("Enter Your Name");
+        const passwordInput = getByPlaceholderText("Enter Your Password");
         const phoneInput = getByPlaceholderText("Enter Your Phone");
         const addressInput = getByPlaceholderText("Enter Your Address");
 
         // Act
         fireEvent.change(nameInput, { target: { value: UPDATED_PROFILE_INPUT.name } });
+        fireEvent.change(passwordInput, { target: { value: UPDATED_PROFILE_INPUT.password } });
         fireEvent.change(phoneInput, { target: { value: UPDATED_PROFILE_INPUT.phone } });
         fireEvent.change(addressInput, { target: { value: UPDATED_PROFILE_INPUT.address } });
 
         // Assert
         expect(nameInput.value).toBe(UPDATED_PROFILE_INPUT.name);
+        expect(passwordInput.value).toBe(UPDATED_PROFILE_INPUT.password);
         expect(phoneInput.value).toBe(UPDATED_PROFILE_INPUT.phone);
         expect(addressInput.value).toBe(UPDATED_PROFILE_INPUT.address);
     });
@@ -165,6 +170,7 @@ describe("Unit test for Profile component", () => {
 
     test("Toast shows error message for API error", async () => {
         // Arrange
+        jest.spyOn(console, "log").mockImplementation(() => {});
         axios.put.mockRejectedValue(new Error("Network Error"));
         const { getByText } = render(<Profile />);
 
@@ -175,5 +181,21 @@ describe("Unit test for Profile component", () => {
         await waitFor(() => {
             expect(toast.error).toHaveBeenCalledWith("Something went wrong");
         });
+        console.log.mockRestore();
     });
+
+    test("Edge case when user is null in auth context", () => {
+        // Arrange 
+        // Mock useAuth to return null user
+        useAuth.mockReturnValue([{ user: null }, jest.fn()]);
+
+        // Act
+        const { getByPlaceholderText } = render(<Profile />);
+
+        // Assert
+        expect(getByPlaceholderText("Enter Your Name").value).toBe("");
+        expect(getByPlaceholderText("Enter Your Phone").value).toBe("");
+        expect(getByPlaceholderText("Enter Your Address").value).toBe("");
+    });
+
 });
