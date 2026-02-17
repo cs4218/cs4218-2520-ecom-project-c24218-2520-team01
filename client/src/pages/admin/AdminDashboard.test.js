@@ -66,7 +66,7 @@ describe("Tests for AdminDashboard Component", () => {
 
     });
 
-    test("Renders when user fields are missing", () => {
+    test("Renders when admin email and phone number are missing", () => {
 
         // Arrange
         const partialAuth = { user: { name: "Admin" } }; // Only name, no email or phone number
