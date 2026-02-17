@@ -9,7 +9,7 @@ import productRoutes from './routes/productRoutes.js'
 import cors from "cors";
 
 // configure env
-dotenv.config();
+dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local' });
 
 //database config
 connectDB();
@@ -28,7 +28,7 @@ app.use("/api/v1/product", productRoutes);
 
 // rest api
 
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
     res.send("<h1>Welcome to ecommerce app</h1>");
 });
 
