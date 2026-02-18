@@ -385,6 +385,16 @@ describe("Product CRUD", () => {
 
         describe("Errors", () => {
             describe("Validation errors - missing required fields", () => {
+                test("returns error when pid is missing", async () => {
+                    req.params.pid = null;
+
+                    await updateProductController(req, res);
+
+                    expect(res.status).toHaveBeenCalledWith(500);
+                    expect(res.send).toHaveBeenCalledWith({
+                        error: "PID is Required",
+                    });
+                });
                 test("returns error when name is missing", async () => {
                     req.fields.name = null;
 
