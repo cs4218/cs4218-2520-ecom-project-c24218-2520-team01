@@ -3,7 +3,7 @@ import slugify from "slugify";
 export const createCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
-    if (!name) {
+    if (!name?.trim()) {
       return res.status(400).send({ message: "Name is required" });
     }
     const existingCategory = await categoryModel.findOne({ name });

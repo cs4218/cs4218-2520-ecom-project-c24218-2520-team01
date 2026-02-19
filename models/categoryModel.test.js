@@ -17,6 +17,7 @@ describe("Tests for the category schema", () => {
         mongoServer = await MongoMemoryServer.create();
         const uri = mongoServer.getUri();
         await mongoose.connect(uri);
+        await Category.init();
     });
 
     afterAll(async () => {
@@ -118,10 +119,10 @@ describe("Tests for the category schema", () => {
             slug: "",
         };
 
-        const missingNameCategory = new Category(categoryData);
+        const missingSlugCategory = new Category(categoryData);
 
         // Act & Assert
-        await expect(missingNameCategory.save()).rejects.toThrow();
+        await expect(missingSlugCategory.save()).rejects.toThrow();
     });
 
     test("Fail to create category if the category name is just whitespaces", async () => {
@@ -152,9 +153,9 @@ describe("Tests for the category schema", () => {
             slug: "   ",
         };
 
-        const missingNameCategory = new Category(categoryData);
+        const missingSlugCategory = new Category(categoryData);
 
         // Act & Assert
-        await expect(missingNameCategory.save()).rejects.toThrow();
+        await expect(missingSlugCategory.save()).rejects.toThrow();
     });
 });

@@ -53,11 +53,11 @@ describe("Tests for createCateogryController", () => {
     });
 
     test("Return 409 when category exists", async () => {
-        /*
-        Assumption:Status code 409 is conflicts ususally request cannot
-        be completed because it conflicts with the current state of the
-        target resource on the serverly
-        */
+        /**
+         * Assumption:Status code 409 is conflicts ususally request cannot
+         * be completed because it conflicts with the current state of the
+         * target resource on the serverly
+         */
 
         // Arrange
         req.body.name = "existingCategory";
@@ -77,10 +77,28 @@ describe("Tests for createCateogryController", () => {
     });
 
     test("Return 400 when category name not provided", async () => {
-        /*
-        Assumpton: status code 400 is bad request usually used when the request
-        is invalid or cannot be processed
-        */
+        /**
+         * Assumption: status code 400 is bad request usually used when the request
+         * is invalid or cannot be processed
+         */
+
+        // Act
+        await createCategoryController(req, res);
+
+        // Assert
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.send).toHaveBeenCalledWith({
+            message: "Name is required",
+        });
+    });
+
+    test("Return 400 when category name is just whitespaces", async () => {
+        /**
+         * Assumption: Similar to the previous test cause above this, a whitespace shoulld be treated as the same as a blank name.
+         */
+
+        // Arrange
+        req.body.name = "    ";
 
         // Act
         await createCategoryController(req, res);
@@ -158,11 +176,11 @@ describe("Tests for updateCateogryController", () => {
     });
 
     test("Return 404 when id cannot be found", async () => {
-        /*
-        Assumption: The app should inform the user that the category id does not exist
-        and no update was made. So return status code 404 is not found usually used when the request
-        resource cannot be found.
-        */
+        /**
+         * Assumption: The app should inform the user that the category id does not exist
+         * and no update was made. So return status code 404 is not found usually used when the request
+         * resource cannot be found.
+         */
 
         // Arrange
         req.params.id = 1000;
@@ -277,10 +295,10 @@ describe("Tests for categoryController (Get all categories)", () => {
     });
 
     test("Return 500 when an error occurs", async () => {
-        /* 
-        Assumption: If the database connection is not established any function to MongoDB
-        will raise an error and not return null.
-        */
+        /** 
+         * Assumption: If the database connection is not established any function to MongoDB
+         * will raise an error and not return null.
+         */
 
         // Arrange
         const mockError = new Error("Some error");
@@ -342,11 +360,11 @@ describe("Tests for singleCategoryController", () => {
     });
 
     test("Return a 400 when slug is not provided", async () => {
-        /*
-        Assumption: The app should inform the user that the slug is required.
-        And also an empty string is valid because an empty string is a valid string
-        which MongoDB can still store / process without any issues.
-        */
+        /**
+         * Assumption: The app should inform the user that the slug is required.
+         * And also an empty string is valid because an empty string is a valid string
+         * which MongoDB can still store / process without any issues.
+         */
 
         // Arrange
 
@@ -361,10 +379,10 @@ describe("Tests for singleCategoryController", () => {
     });
 
     test("Return 500 when an error occurs", async () => {
-        /* 
-        Assumption: If the database connection is not established any function to MongoDB
-        will raise an error and not return null.
-        */
+        /** 
+         * Assumption: If the database connection is not established any function to MongoDB
+         * will raise an error and not return null.
+         */
 
         // Arrange
         req.params.slug = "electronics";
@@ -426,11 +444,11 @@ describe("Tests for deleteCategoryController", () => {
     });
 
     test("Return 404 when id cannot be found", async () => {
-        /*
-        Assumption: The app should inform the user that the category id does not exist
-        and no update was made. So return status code 404 is not found usually used when the request
-        resource cannot be found.
-        */
+        /**
+         * Assumption: The app should inform the user that the category id does not exist
+         * and no update was made. So return status code 404 is not found usually used when the request
+         * resource cannot be found.
+         */
 
         // Arrange
         req.params.id = 1000;
