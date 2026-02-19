@@ -12,7 +12,20 @@ export const defaultState = {
 
 export const newState = {
     keyword: "Laptop",
-    results: [{ id: 3, name: "MacBook Pro" }]
+    results: [
+        { 
+            _id: 3, 
+            name: "MacBook Pro",
+            description: "Midnight Blue, 14-inch, M3 chip",
+            price: 2100
+        },
+        {
+            _id: 4, 
+            name: "Dell XPS 13",
+            description: "Silver, 13.3-inch, Intel i7",
+            price: 1500
+        }
+    ]
 };
 
 

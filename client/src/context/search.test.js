@@ -104,8 +104,10 @@ describe("Unit test for Search Context", () => {
 
         // Assert
         expect(context.getState().keyword).toBe("");
-        expect(context.getState().results).toHaveLength(1);
-        expect(context.getState().results[0].name).toBe(newState.results[0].name);
+        for (let i = 0; i < newState.results.length; i++) {
+            expect(context.getState().results[i].name).toBe(newState.results[i].name);
+        }
+        expect(context.getState().results).toHaveLength(newState.results.length);
     });
 
 
@@ -180,8 +182,8 @@ describe("Unit test for Search Context", () => {
             // Assert
             expect(consumerAState.keyword).toBe("Laptop");
             expect(consumerBState.keyword).toBe("Laptop");
-            expect(consumerAState.results).toHaveLength(1);
-            expect(consumerBState.results).toHaveLength(1);
+            expect(consumerAState.results).toHaveLength(newState.results.length);
+            expect(consumerBState.results).toHaveLength(newState.results.length);
         });
     });
 });
