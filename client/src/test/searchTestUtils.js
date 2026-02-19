@@ -16,14 +16,26 @@ export const newState = {
         { 
             _id: 3, 
             name: "MacBook Pro",
+            slug: "macbook-pro",
             description: "Midnight Blue, 14-inch, M3 chip",
-            price: 2100
+            price: 2100,
+            category: { 
+                _id: "cat1", 
+                name: "Electronics" 
+            },
+            quantity: 5
         },
         {
             _id: 4, 
             name: "Dell XPS 13",
+            slug: "dell-xps-13",
             description: "Silver, 13.3-inch, Intel i7",
-            price: 1500
+            price: 1500, 
+            category: { 
+                _id: "cat1", 
+                name: "Electronics" 
+            },
+            quantity: 3
         }
     ]
 };
