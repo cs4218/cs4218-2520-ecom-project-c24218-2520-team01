@@ -13,64 +13,31 @@
 import React from "react";
 import { render, act } from "@testing-library/react";
 import { SearchProvider, useSearch } from "./search";
+import { defaultState, newState, createContext } from "../test/searchTestUtils";
 
 // Rachel Tai Ke Jia, A0258603A
 
-// Helper to capture values in the context
-let storedState;
-let setStoredState;
-
-const StoreContext = () => {
-    [storedState, setStoredState] = useSearch();
-    return null;
-};
-
-const renderContext = (child = null) => {
-    storedState = null;
-    setStoredState = null;
-
-    return render(
-        <SearchProvider>
-            {child}
-            <StoreContext />
-        </SearchProvider>
-    );
-};
-
-
-// Test data for updating the context
-const newState = {
-    keyword: "Laptop",
-    results: [{ id: 3, name: "MacBook Pro" }]
-};
-
-const defaultState = {
-    keyword: "",
-    results: []
-};
-
-
 describe("Unit test for Search Context", () => {
     // Arrange
+    let context;
     beforeEach(() => {
-        storedState = null;
-        setStoredState = null;
+        context = createContext();
     });
 
 
     test("Context has empty state initially", () => {
         // Act
-        renderContext();
+        context.renderContext();
 
         // Assert
-        expect(storedState).toEqual(defaultState);
-        expect(typeof setStoredState).toBe("function");
+        expect(context.getState()).toEqual(defaultState);
+        expect(typeof context.getSetter()).toBe("function");
     });
 
 
     test("Context renders children", () => {
         // Act
-        const { getByText } = renderContext(<div>Child in context</div>);
+        const { getByText } = context.renderContext(<div>Child in context</div>);
 
         // Assert
         expect(getByText("Child in context")).toBeInTheDocument();
@@ -79,20 +46,19 @@ describe("Unit test for Search Context", () => {
 
     test("useSearch hook returns [storedState, setStoredState]", () => {
         // Act
-        renderContext();
+        context.renderContext();
 
         // Assert
-        expect(storedState).toEqual(expect.any(Object));
-        expect(typeof setStoredState).toBe("function");
-        expect(Array.isArray([storedState, setStoredState])).toBe(true);
+        expect(context.getState()).toEqual(expect.any(Object));
+        expect(typeof context.getSetter()).toBe("function");
     });
 
 
     test("useSearch returns undefined when it is rendered without SearchProvider", () => {
         // Arrange
+        let capturedValue;
         const RenderedWithoutProvider = () => {
-            const value = useSearch();
-            storedState = value;
+            capturedValue = useSearch();        
             return null;
         };
 
@@ -100,22 +66,24 @@ describe("Unit test for Search Context", () => {
         render(<RenderedWithoutProvider />);
 
         // Assert
-        expect(storedState).toBeUndefined();
+        expect(capturedValue).toBeUndefined();
     });
 
     
     test("Search Context updates keyword only", () => {
+        // Arrange
+        context.renderContext();
+
         // Act
-        renderContext();
         act(() => { 
-            setStoredState((prev) => ({
+            context.getSetter()((prev) => ({
                 ...prev,
                 keyword: newState.keyword
             }));
         });
 
         // Assert
-        expect(storedState).toEqual({
+        expect(context.getState()).toEqual({
             keyword: newState.keyword,
             results: []
         });
@@ -123,51 +91,57 @@ describe("Unit test for Search Context", () => {
 
 
     test("Search Context updates results only", () => {
+        // Arrange
+        context.renderContext();
+
         // Act
-        renderContext();
         act(() => {
-            setStoredState((prev) => ({
+            context.getSetter()((prev) => ({
                 ...prev,
                 results: newState.results
             }));
         });
 
         // Assert
-        expect(storedState.keyword).toBe("");
-        expect(storedState.results).toHaveLength(1);
-        expect(storedState.results[0].name).toBe(newState.results[0].name);
+        expect(context.getState().keyword).toBe("");
+        expect(context.getState().results).toHaveLength(1);
+        expect(context.getState().results[0].name).toBe(newState.results[0].name);
     });
 
 
     test("Search Context updates entire state object", () => {
+        // Arrange
+        context.renderContext();
+
         // Act
-        renderContext();
         act(() => {
-            setStoredState(newState);
+            context.getSetter()(newState);
         });
 
         // Assert
-        expect(storedState).toEqual(newState);
+        expect(context.getState()).toEqual(newState);
     });
 
 
     test("Search Context can reset to default state", () => {
+        // Arrange
+        context.renderContext();
+
         // Act
-        renderContext();
         act(() => {
-            setStoredState(newState);
+            context.getSetter()(newState);
         });
 
         // Assert
-        expect(storedState.keyword).toBe("Laptop");
+        expect(context.getState().keyword).toBe("Laptop");
 
         // Act - reset to default
         act(() => {
-            setStoredState(defaultState);
+            context.getSetter()(defaultState);
         });
 
         // Assert - state should be back to default
-        expect(storedState).toEqual(defaultState);
+        expect(context.getState()).toEqual(defaultState);
     });
 
 

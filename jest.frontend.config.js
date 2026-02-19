@@ -21,13 +21,15 @@ export default {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/client/src/context/search.test.js"
+    "<rootDir>/client/src/context/search.test.js",
+    "<rootDir>/client/src/components/Form/SearchInput.test.js",
   ],
 
   // jest code coverage
   collectCoverage: true,
   collectCoverageFrom: [
     "client/src/context/search.js",
+    "client/src/components/Form/SearchInput.js",
   ],
   coverageThreshold: {
     global: {
