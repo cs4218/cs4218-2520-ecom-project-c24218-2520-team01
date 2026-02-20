@@ -1,6 +1,7 @@
 import orderModel from "../models/orderModel.js";
 import braintree from "braintree";
 import { braintreeTokenController } from "./productController.js";
+import { response } from "express";
 
 // Mock orderModel
 jest.mock("../models/orderModel.js")
@@ -59,7 +60,7 @@ describe("Unit test for braintreeTokenController", () => {
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith({
             success: true,
-            clientToken: 'token123'
+            data: mockCallbackResponse
         });
     });
 
@@ -76,7 +77,7 @@ describe("Unit test for braintreeTokenController", () => {
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.send).toHaveBeenCalledWith({
             success: false,
-            mockCallbackError,
+            error: mockCallbackError,
             message: "Error in generating token"
         });
     });
