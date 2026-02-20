@@ -708,7 +708,7 @@ describe("Category CRUD operations", () => {
                 req.params.slug = null;
 
                 // Act
-                await singleCategoryController(req, res);
+                await deleteCategoryController(req, res);
 
                 // Assert
                 expect(categoryModel.findByIdAndDelete).toHaveBeenCalledTimes(0);
@@ -730,7 +730,7 @@ describe("Category CRUD operations", () => {
                 });
 
                 // Act
-                await singleCategoryController(req, res);
+                await deleteCategoryController(req, res);
 
                 // Assert
                 expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith("1");
