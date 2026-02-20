@@ -188,18 +188,19 @@ export const updateProfileController = async (req, res) => {
 				message: "Password is required",
 			});
 		}
-		if (password && password.length < 6) {
+		if (password.length < 6) {
 			return res.status(400).json({
 				success: false,
 				message: "Password must be at least 6 characters long",
 			});
 		}
-		const hashedPassword = password ? await hashPassword(password) : undefined;
+		// Due to the validation above, password would never be null, hence remove if null check here
+		const hashedPassword = await hashPassword(password);
 		const updatedUser = await userModel.findByIdAndUpdate(
 			req.user._id,
 			{
 				name: name || user.name,
-				password: hashedPassword || user.password,
+				password: hashedPassword,
 				phone: phone || user.phone,
 				address: address || user.address,
 			},

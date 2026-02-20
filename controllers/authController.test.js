@@ -677,6 +677,7 @@ describe("updateProfileController", () => {
 			body: {
 				name: "Updated Name",
 				email: "updated@example.com",
+				password: "validpassword",
 				address: "Updated Address",
 				phone: "9876543210",
 			},
@@ -691,6 +692,7 @@ describe("updateProfileController", () => {
 		};
 
 		userModel.findById.mockResolvedValue(mockUser);
+		hashPassword.mockResolvedValue("newHashedPassword");
 		userModel.findByIdAndUpdate.mockResolvedValue({
 			_id: "anextremerandomlongid5",
 			name: "Updated Name",
@@ -748,6 +750,12 @@ describe("updateProfileController", () => {
 			},
 		};
 
+		userModel.findById.mockResolvedValue({
+			_id: "anextremerandomlongid5",
+			name: "Old Name",
+			password: "oldHashedPassword",
+		});
+
 		// Act
 		await updateProfileController(req, res);
 
@@ -767,6 +775,12 @@ describe("updateProfileController", () => {
 				password: "12345",
 			},
 		};
+
+		userModel.findById.mockResolvedValue({
+			_id: "anextremerandomlongid5",
+			name: "Old Name",
+			password: "oldHashedPassword",
+		});
 
 		// Act
 		await updateProfileController(req, res);
