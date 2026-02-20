@@ -4,7 +4,8 @@ import {
     createCategoryController,
     updateCategoryController,
     categoryController,
-    singleCategoryController
+    singleCategoryController,
+    deleteCategoryController
 } from "./categoryController.js";
 import slugify from "slugify";
 
@@ -588,7 +589,7 @@ describe("Category CRUD operations", () => {
                 });
             });
 
-            test("Return 422 when slug value is empty", async () => {
+            test("Return 422 when slug value is null", async () => {
                 // Arrange
                 req.params.slug = null;
 
@@ -625,6 +626,120 @@ describe("Category CRUD operations", () => {
                     success: false,
                     error: mockError,
                     message: "Error while fetching single category",
+                });
+            });
+        })
+    })
+    describe("Unit tests for deleteCategoryController", () => {
+        // Set up variables for our test cases
+        let req, res, consoleSpy;
+
+        // Before each test case we reset our variables / mocks
+        beforeEach(() => {
+            req = {
+                params: {},
+                body: {},
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn(),
+            };
+            // Spy instead of mock because we might want to log in between tests.
+            consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
+            jest.clearAllMocks();
+        });
+
+        afterEach(() => {
+            consoleSpy.mockRestore();
+        });
+
+        describe("Successfully delete a category from the database", () => {
+            test("Return 200 when the deletion is successful", async () => {
+                // Arrange
+                req.params.id = "1";
+                // Mimic a sample return object from mongoose
+                const mockCategoryObject = {
+                    _id: "1",
+                    name: "Clothing",
+                    slug: "clothing"
+                };
+
+                // Mock our dependencies & what they will return
+                categoryModel.findByIdAndDelete.mockResolvedValue(mockCategoryObject);
+
+                // Act
+                await deleteCategoryController(req, res);
+
+                // Assert
+                expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith("1");
+                expect(res.status).toHaveBeenCalledWith(200);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: true,
+                    message: "Category deleted successfully",
+                });
+            });
+        })
+
+        describe("Validation error when deleting a category", () => {
+            test("Return 404 when category with id value cannot be found", async () => {
+                /**
+                 * Assumption: Return a 404 to alert the user that the category cannot be found.
+                 * This will have the same effect as if the id value is a empty string.
+                 */
+                // Arrange
+                req.params.id = "100000000";
+
+                categoryModel.findByIdAndDelete.mockResolvedValue(null);
+
+                // Act
+                await deleteCategoryController(req, res);
+
+                // Assert
+                expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith("100000000");
+                expect(res.status).toHaveBeenCalledWith(404);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: "Failed to delete because no category is found",
+                });
+            });
+
+            test("Return 422 when category is null", async () => {
+                // Arrange
+                req.params.slug = null;
+
+                // Act
+                await singleCategoryController(req, res);
+
+                // Assert
+                expect(categoryModel.findByIdAndDelete).toHaveBeenCalledTimes(0);
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: "Category id cannot be empty",
+                });
+            });
+        })
+
+        describe("Errors regarding the database", () => {
+            test("Return 500 when a database error occurs", async () => {
+                // Arrange
+                req.params.id = "1";
+                const mockError = new Error("Database error");
+                categoryModel.findByIdAndDelete.mockImplementation(() => {
+                    throw mockError;
+                });
+
+                // Act
+                await singleCategoryController(req, res);
+
+                // Assert
+                expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith("1");
+                expect(consoleSpy).toHaveBeenCalledWith(mockError);
+                expect(res.status).toHaveBeenCalledWith(500);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    error: mockError,
+                    message: "Error while deleting category",
                 });
             });
         })
