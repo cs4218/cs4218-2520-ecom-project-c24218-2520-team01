@@ -326,6 +326,7 @@ export const productCategoryController = async (req, res) => {
   }
 };
 
+// By: Nicholas Cheng A0269648H
 //payment gateway api
 //token
 export const braintreeTokenController = async (req, res) => {
@@ -349,6 +350,7 @@ export const braintreeTokenController = async (req, res) => {
   }
 };
 
+// By: Nicholas Cheng A0269648H
 //payment
 export const brainTreePaymentController = async (req, res) => {
   try {

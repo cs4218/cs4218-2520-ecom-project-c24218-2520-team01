@@ -2,6 +2,8 @@ import orderModel from "../models/orderModel.js";
 import braintree from "braintree";
 import { braintreeTokenController, brainTreePaymentController } from "./productController.js";
 
+// By: Nicholas Cheng A0269648H
+
 // Mock orderModel
 jest.mock("../models/orderModel.js")
 
