@@ -338,7 +338,7 @@ describe("Unit test for brainTreePaymentController", () => {
         expect(orderModel).toHaveBeenCalledTimes(0)
     });
 
-    test("Return 400 when cart is empty", async () => {
+    test("Return 400 when cart is undefined", async () => {
         /**
          * Assumption: Is the cart object is never passed in then we should not even process thiss request.
          */
@@ -347,7 +347,7 @@ describe("Unit test for brainTreePaymentController", () => {
         req.user._id = "user1"
         req.body = {
             nonce: "valid nonce",
-            cart: []
+            cart: undefined
         }
 
         // Act
@@ -357,7 +357,7 @@ describe("Unit test for brainTreePaymentController", () => {
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.send).toHaveBeenCalledWith({
             success: false,
-            message: "Cart is empty"
+            message: "Cart is not provided"
         });
         expect(mockPayment).toHaveBeenCalledTimes(0)
         expect(orderModel).toHaveBeenCalledTimes(0)
