@@ -1,25 +1,31 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/auth";
 import { Outlet } from "react-router-dom";
-import axios from 'axios';
-import { set } from "mongoose";
+import axios from "axios";
 import Spinner from "../Spinner";
+// Bug: Removed unused import { set } from "mongoose"
 
-export default function AdminRoute(){
-    const [ok,setOk] = useState(false)
-    const [auth,setAuth] = useAuth()
+export default function AdminRoute() {
+	const [ok, setOk] = useState(false);
+	const [auth] = useAuth(); // Removed unused setter setAuth
 
-    useEffect(()=> {
-        const authCheck = async() => {
-            const res = await axios.get("/api/v1/auth/admin-auth");
-            if(res.data.ok){
-                setOk(true);
-            } else {
-                setOk(false);
-            }
-        };
-        if (auth?.token) authCheck();
-    }, [auth?.token]);
-    
-    return ok ? <Outlet /> : <Spinner/>;
+	useEffect(() => {
+		const authCheck = async () => {
+			// Bug: Added try-catch for API call to prevent unhandled promise rejection
+			try {
+				const res = await axios.get("/api/v1/auth/admin-auth");
+				if (res.data.ok) {
+					setOk(true);
+				} else {
+					setOk(false);
+				}
+			} catch (error) {
+				setOk(false);
+			}
+		};
+		if (auth?.token) authCheck();
+	}, [auth?.token]);
+
+	// Bug: Added path="" prop to Spinner previously had no path prop, defaulting to "login" which was inconsistent with Private.js
+	return ok ? <Outlet /> : <Spinner path="" />;
 }
