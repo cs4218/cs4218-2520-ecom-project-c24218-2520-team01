@@ -209,7 +209,6 @@ describe("Category CRUD operations", () => {
             // Spy instead of mock because we might want to log in between tests.
             consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
             jest.clearAllMocks();
-            slugify.mockClear();
         });
 
         afterEach(() => {
@@ -329,7 +328,7 @@ describe("Category CRUD operations", () => {
                 expect(res.status).toHaveBeenCalledWith(422);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
-                    message: "Id cannot be empty",
+                    message: "Category id cannot be empty",
                 });
             });
 
@@ -375,6 +374,7 @@ describe("Category CRUD operations", () => {
                 categoryModel.findByIdAndUpdate.mockImplementation(() => {
                     throw mockError;
                 });
+                slugify.mockReturnValue("electronic");
 
                 // Act
                 await updateCategoryController(req, res);

@@ -47,15 +47,39 @@ export const createCategoryController = async (req, res) => {
 export const updateCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
+
+    if (!name || !name?.trim()) {
+      return res.status(422).send({
+        success: false,
+        message: "New category name cannot be empty"
+      });
+    }
+
     const { id } = req.params;
+
+    if (!id) {
+      return res.status(422).send({
+        success: false,
+        message: "Category id cannot be empty"
+      });
+    }
+
     const category = await categoryModel.findByIdAndUpdate(
       id,
       { name, slug: slugify(name) },
       { new: true }
     );
+
+    if (!category) {
+      return res.status(404).send({
+        success: false,
+        message: "Category not found"
+      });
+    }
+
     res.status(200).send({
       success: true,
-      messsage: "Category Updated Successfully",
+      message: "Category updated successfully",
       category,
     });
   } catch (error) {
@@ -63,7 +87,7 @@ export const updateCategoryController = async (req, res) => {
     res.status(500).send({
       success: false,
       error,
-      message: "Error while updating category",
+      message: "Error in updating category",
     });
   }
 };
