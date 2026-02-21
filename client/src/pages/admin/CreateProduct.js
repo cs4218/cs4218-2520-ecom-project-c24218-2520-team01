@@ -24,10 +24,12 @@ const CreateProduct = () => {
       const { data } = await axios.get("/api/v1/category/get-category");
       if (data?.success) {
         setCategories(data?.category);
+      } else {
+        toast.error("Categories could not be loaded");
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -46,19 +48,20 @@ const CreateProduct = () => {
       productData.append("quantity", quantity);
       productData.append("photo", photo);
       productData.append("category", category);
-      const { data } = axios.post(
+      productData.append("shipping", shipping);
+      const { data } = await axios.post(
         "/api/v1/product/create-product",
         productData
       );
       if (data?.success) {
-        toast.error(data?.message);
-      } else {
         toast.success("Product Created Successfully");
         navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data?.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error("something went wrong");
+      toast.error("Something went wrong");
     }
   };
 
@@ -135,7 +138,7 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={price}
-                  placeholder="write a Price"
+                  placeholder="write a price"
                   className="form-control"
                   onChange={(e) => setPrice(e.target.value)}
                 />
@@ -152,7 +155,7 @@ const CreateProduct = () => {
               <div className="mb-3">
                 <Select
                   bordered={false}
-                  placeholder="Select Shipping "
+                  placeholder="Select Shipping"
                   size="large"
                   showSearch
                   className="form-select mb-3"

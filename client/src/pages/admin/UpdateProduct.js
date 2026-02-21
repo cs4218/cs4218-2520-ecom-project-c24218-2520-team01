@@ -30,7 +30,6 @@ const UpdateProduct = () => {
       setId(data.product._id);
       setDescription(data.product.description);
       setPrice(data.product.price);
-      setPrice(data.product.price);
       setQuantity(data.product.quantity);
       setShipping(data.product.shipping);
       setCategory(data.product.category._id);
@@ -48,10 +47,12 @@ const UpdateProduct = () => {
       const { data } = await axios.get("/api/v1/category/get-category");
       if (data?.success) {
         setCategories(data?.category);
+      } else {
+        toast.error("Categories could not be loaded");
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -70,31 +71,34 @@ const UpdateProduct = () => {
       productData.append("quantity", quantity);
       photo && productData.append("photo", photo);
       productData.append("category", category);
-      const { data } = axios.put(
+      productData.append("shipping", shipping);
+
+      const { data } = await axios.put(
         `/api/v1/product/update-product/${id}`,
         productData
       );
       if (data?.success) {
-        toast.error(data?.message);
-      } else {
         toast.success("Product Updated Successfully");
-        navigate("/dashboard/admin/products");
+        //navigate("/dashboard/admin/products");
+        setTimeout(() => navigate("/dashboard/admin/products"), 800);
+      } else {
+        toast.error(data?.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error("something went wrong");
+      toast.error("Something went wrong");
     }
   };
 
   //delete a product
   const handleDelete = async () => {
     try {
-      let answer = window.prompt("Are You Sure want to delete this product ? ");
+      let answer = window.prompt("Are you sure you want to delete this product?");
       if (!answer) return;
       const { data } = await axios.delete(
         `/api/v1/product/delete-product/${id}`
       );
-      toast.success("Product DEleted Succfully");
+      toast.success("Product Deleted Successfully");
       navigate("/dashboard/admin/products");
     } catch (error) {
       console.log(error);
@@ -184,7 +188,7 @@ const UpdateProduct = () => {
                 <input
                   type="number"
                   value={price}
-                  placeholder="write a Price"
+                  placeholder="write a price"
                   className="form-control"
                   onChange={(e) => setPrice(e.target.value)}
                 />
@@ -208,10 +212,10 @@ const UpdateProduct = () => {
                   onChange={(value) => {
                     setShipping(value);
                   }}
-                  value={shipping ? "yes" : "No"}
+                  value={shipping ? "1" : "0"}
                 >
-                  <Option value="0">No</Option>
                   <Option value="1">Yes</Option>
+                  <Option value="0">No</Option>
                 </Select>
               </div>
               <div className="mb-3">
