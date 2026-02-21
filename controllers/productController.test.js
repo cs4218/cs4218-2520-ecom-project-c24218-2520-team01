@@ -11,6 +11,9 @@ import {
 // Mock orderModel
 jest.mock("../models/orderModel.js");
 
+// Mock console.log to prevent it from printing to the terminal
+jest.spyOn(console, 'log').mockImplementation(() => { });
+
 // Mock braintree
 // This is used to modify the return values of the callback function
 let mockTokenGenerateError, mockTokenGenerateResponse, mockPaymentError, mockPaymentResponse;
