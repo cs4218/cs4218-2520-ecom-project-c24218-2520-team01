@@ -307,6 +307,7 @@ export const realtedProductController = async (req, res) => {
 };
 
 // get prdocyst by catgory
+// TODO: Pagination for CategoryProduct frontend
 export const productCategoryController = async (req, res) => {
   try {
     const category = await categoryModel.findOne({ slug: req.params.slug });

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import Layout from "./../components/Layout";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { useCart } from "../context/cart";
 import "../styles/ProductDetailsStyles.css";
 
 const ProductDetails = () => {
@@ -11,15 +12,14 @@ const ProductDetails = () => {
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [cart, setCart] = useState(() => {
-    return JSON.parse(localStorage.getItem("cart")) || [];
-  });
+  const [cart, setCart] = useCart();
 
   // initial product details
   useEffect(() => {
     if (params?.slug) getProduct();
   }, [params?.slug]);
-  //getProduct
+
+  // get product
   const getProduct = async () => {
     try {
       const { data } = await axios.get(
