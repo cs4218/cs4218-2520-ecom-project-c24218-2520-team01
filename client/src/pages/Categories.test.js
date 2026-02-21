@@ -6,6 +6,8 @@ import Categories from "./Categories.js";
 import useCategory from "../hooks/useCategory";
 import Layout from "../components/Layout";
 
+// For the entire file: Written by Nicholas Cheng, A0269648H
+
 // Mock the layout and useCategory hook
 jest.mock("../components/Layout", () => {
     return ({ children }) => (

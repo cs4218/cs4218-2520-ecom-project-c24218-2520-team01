@@ -3,6 +3,8 @@ import { renderHook, waitFor } from "@testing-library/react";
 import axios from "axios";
 import useCategory from "./useCategory";
 
+// For the entire file: Written by Nicholas Cheng, A0269648H
+
 // Mock axios
 jest.mock("axios");
 
