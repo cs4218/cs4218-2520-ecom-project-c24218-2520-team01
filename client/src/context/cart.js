@@ -1,4 +1,4 @@
-import { useState, useContext, createContext, useEffect } from "react";
+import React, { useState, useContext, createContext, useEffect } from "react";
 
 const CartContext = createContext();
 
@@ -18,12 +18,12 @@ const CartProvider = ({ children }) => {
 
   const addToCart = (product) => {
     setCart((currentItems) => {
-      const alreadyInCart = currentItems.find((item) => item.id === product.id);
+      const alreadyInCart = currentItems.find((item) => item._id === product._id);
 
       if (alreadyInCart) {
         return currentItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: (item.quantity || 1) + 1 }
+          item._id === product._id
+            ? { ...item, quantity: (item.quantity || 0) + 1 }
             : item
         );
       }
@@ -32,14 +32,23 @@ const CartProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCart((items) => items.filter((item) => item.id !== productId));
+  // Implementation added from CartPage to CartProvider
+  const removeCartItem = (pid) => {
+    try {
+      let myCart = [...cart];
+      let index = myCart.findIndex((item) => item._id === pid);
+      myCart.splice(index, 1);
+      setCart(myCart);
+      localStorage.setItem("cart", JSON.stringify(myCart));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const value = {
     cart,
     addToCart,
-    removeFromCart
+    removeCartItem
   }
 
   return (

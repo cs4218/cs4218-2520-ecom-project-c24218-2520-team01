@@ -17,7 +17,7 @@ import { defaultState, newState, createContext } from "../test/searchTestUtils";
 
 // Rachel Tai Ke Jia, A0258603A
 
-describe("Unit test for Search Context", () => {
+describe("unit test for search context", () => {
     // Arrange
     let context;
     beforeEach(() => {
@@ -25,7 +25,7 @@ describe("Unit test for Search Context", () => {
     });
 
 
-    test("Context has empty state initially", () => {
+    test("context has empty state initially", () => {
         // Act
         context.renderContext();
 
@@ -35,7 +35,7 @@ describe("Unit test for Search Context", () => {
     });
 
 
-    test("Context renders children", () => {
+    test("context renders children", () => {
         // Act
         const { getByText } = context.renderContext(<div>Child in context</div>);
 
@@ -44,7 +44,7 @@ describe("Unit test for Search Context", () => {
     });
 
 
-    test("useSearch hook returns [storedState, setStoredState]", () => {
+    test("usesearch hook returns storedstate, setstoredstate]", () => {
         // Act
         context.renderContext();
 
@@ -54,7 +54,7 @@ describe("Unit test for Search Context", () => {
     });
 
 
-    test("useSearch returns undefined when it is rendered without SearchProvider", () => {
+    test("usesearch returns undefined when it is rendered without searchprovider", () => {
         // Arrange
         let capturedValue;
         const RenderedWithoutProvider = () => {
@@ -70,7 +70,7 @@ describe("Unit test for Search Context", () => {
     });
 
     
-    test("Search Context updates keyword only", () => {
+    test("search context updates keyword only", () => {
         // Arrange
         context.renderContext();
 
@@ -90,7 +90,7 @@ describe("Unit test for Search Context", () => {
     });
 
 
-    test("Search Context updates results only", () => {
+    test("search context updates results only", () => {
         // Arrange
         context.renderContext();
 
@@ -111,7 +111,7 @@ describe("Unit test for Search Context", () => {
     });
 
 
-    test("Search Context updates entire state object", () => {
+    test("search context updates entire state object", () => {
         // Arrange
         context.renderContext();
 
@@ -125,7 +125,7 @@ describe("Unit test for Search Context", () => {
     });
 
 
-    test("Search Context can reset to default state", () => {
+    test("search context can reset to default state", () => {
         // Arrange
         context.renderContext();
 
@@ -135,7 +135,7 @@ describe("Unit test for Search Context", () => {
         });
 
         // Assert
-        expect(context.getState().keyword).toBe("Laptop");
+        expect(context.getState().keyword).toBe(newState.keyword);
 
         // Act - reset to default
         act(() => {
@@ -147,7 +147,7 @@ describe("Unit test for Search Context", () => {
     });
 
 
-    describe("All consumers in the same provider share the same state", () => {
+    describe("all consumers in the same provider share the same state", () => {
         // Arrange
         let consumerAState, setConsumerAState;
         let consumerBState, setConsumerBState;
@@ -166,22 +166,22 @@ describe("Unit test for Search Context", () => {
             );
         });
 
-        test("Consumers A and B should have the same initial state and update together", () => {
+        test("consumers should have the same initial state and update together", () => {
             // Assert 
             expect(consumerAState).toEqual(defaultState);
             expect(consumerAState).toEqual(consumerBState);
         });  
 
 
-        test("Updating state from consumer A should reflect in consumer B", () => {
+        test("updating state from one consumer should show in another consumer", () => {
             // Act
             act(() => {
                 setConsumerAState(newState);
             });
 
             // Assert
-            expect(consumerAState.keyword).toBe("Laptop");
-            expect(consumerBState.keyword).toBe("Laptop");
+            expect(consumerAState.keyword).toBe(newState.keyword);
+            expect(consumerBState.keyword).toBe(newState.keyword);
             expect(consumerAState.results).toHaveLength(newState.results.length);
             expect(consumerBState.results).toHaveLength(newState.results.length);
         });
