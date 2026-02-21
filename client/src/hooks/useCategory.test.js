@@ -73,6 +73,10 @@ describe("Hook for fetching categories", () => {
 
         describe("Errors regarding axios", () => {
             test("Axios throws an error during the execution of the function", async () => {
+                /**
+                 * Assumption: We should at least notify the user than axios has an issue instead of just doing
+                 * console.log(), so use toast instead.
+                 */
                 // Arrange
                 const mockError = new Error("Axios error");
                 axios.get.mockRejectedValueOnce(mockError);
