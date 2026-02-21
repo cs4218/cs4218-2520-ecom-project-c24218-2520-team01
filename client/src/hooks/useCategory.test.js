@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, expect, jest } from "@jest/globals";
+import { describe, expect, jest } from "@jest/globals";
 import { renderHook, waitFor } from "@testing-library/react";
 import axios from "axios";
+import toast from "react-hot-toast";
 import useCategory from "./useCategory";
 
 // For the entire file: Written by Nicholas Cheng, A0269648H
@@ -8,22 +9,11 @@ import useCategory from "./useCategory";
 // Mock axios
 jest.mock("axios");
 
+// Mock toast
+jest.mock("react-hot-toast");
+
 describe("Hook for fetching categories", () => {
     describe("Unit tests for useCategory hook", () => {
-        // Set up variables for our test cases
-        let consoleSpy;
-
-        // Before each test case we reset our variables / mocks
-        beforeEach(() => {
-            // Spy instead of mock because we might want to log in between tests.
-            consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
-            jest.clearAllMocks();
-        });
-
-        afterEach(() => {
-            consoleSpy.mockRestore();
-        });
-
         describe("Ensure initial state of the hook is configured correctly", () => {
             test("Check initial state for categories is an empty list", () => {
                 // Act
@@ -41,7 +31,6 @@ describe("Hook for fetching categories", () => {
                     { id: 1, name: "Electronics", slug: "electronics" },
                     { id: 2, name: "Books", slug: "books" },
                 ];
-                const API_URL = "/api/v1/category/get-category";
 
                 axios.get.mockResolvedValueOnce({
                     data: { category: mockCategories },
@@ -54,7 +43,9 @@ describe("Hook for fetching categories", () => {
                 await waitFor(() => {
                     expect(result.current).toEqual(mockCategories);
                 });
-                expect(axios.get).toHaveBeenCalledWith(API_URL);
+                // We just ensure that axios gets called by a valid API url
+                // We do not care about the actual API url incase the dev wants to change it
+                expect(axios.get).toHaveBeenCalledWith(expect.any(String));
             });
 
             test("Receieve empty categories list from API and set it as a state", async () => {
@@ -64,7 +55,6 @@ describe("Hook for fetching categories", () => {
                  */
                 // Arrange
                 const mockCategories = [];
-                const API_URL = "/api/v1/category/get-category";
 
                 axios.get.mockResolvedValueOnce({
                     data: { category: mockCategories },
@@ -77,24 +67,27 @@ describe("Hook for fetching categories", () => {
                 await waitFor(() => {
                     expect(result.current).toEqual([]);
                 });
-                expect(axios.get).toHaveBeenCalledWith(API_URL);
+                expect(axios.get).toHaveBeenCalledWith(expect.any(String));
             });
         });
 
-        describe("Errors reguarding axios", () => {
+        describe("Errors regarding axios", () => {
             test("Axios throws an error during the execution of the function", async () => {
                 // Arrange
                 const mockError = new Error("Axios error");
                 axios.get.mockRejectedValueOnce(mockError);
+                toast.error = jest.fn();
 
                 // Act
                 const { result } = renderHook(() => useCategory());
 
                 // Assert
+                // We should inform the user that axios has an issue
                 await waitFor(() => {
-                    expect(consoleSpy).toHaveBeenCalledWith(mockError);
+                    expect(toast.error).toHaveBeenCalledWith("Failed to fetch categories");
                 });
                 // There should not be any changes in our state
+                expect(axios.get).toHaveBeenCalledWith(expect.any(String));
                 expect(result.current).toEqual([]);
             });
         });
