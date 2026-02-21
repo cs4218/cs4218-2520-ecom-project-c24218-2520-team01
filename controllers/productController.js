@@ -326,19 +326,33 @@ export const productCategoryController = async (req, res) => {
   }
 };
 
+// From this line onwards: Bugs fixed by Nicholas Cheng, A0269648H
+
 //payment gateway api
 //token
 export const braintreeTokenController = async (req, res) => {
   try {
-    gateway.clientToken.generate({}, function (err, response) {
-      if (err) {
-        res.status(500).send(err);
+    gateway.clientToken.generate({}, function (error, response) {
+      if (error) {
+        res.status(500).send({
+          success: false,
+          message: "Error while generating token",
+          error
+        });
       } else {
-        res.send(response);
+        res.status(200).send({
+          success: true,
+          data: response
+        });
       }
     });
   } catch (error) {
     console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error with braintree",
+      error
+    });
   }
 };
 
@@ -346,6 +360,26 @@ export const braintreeTokenController = async (req, res) => {
 export const brainTreePaymentController = async (req, res) => {
   try {
     const { nonce, cart } = req.body;
+    if (!nonce) {
+      return res.status(400).send({
+        success: false,
+        message: "Payment method nonce is not provided",
+      });
+    }
+
+    if (!req.user || !req.user._id) {
+      return res.status(400).send({
+        success: false,
+        message: "User id is not provided",
+      });
+    }
+
+    if (!cart || cart.length == 0) {
+      return res.status(400).send({
+        success: false,
+        message: "No transaction is made because cart is empty",
+      });
+    }
     let total = 0;
     cart.map((i) => {
       total += i.price;
@@ -365,13 +399,22 @@ export const brainTreePaymentController = async (req, res) => {
             payment: result,
             buyer: req.user._id,
           }).save();
-          res.json({ ok: true });
+          res.status(200).json({ ok: true });
         } else {
-          res.status(500).send(error);
+          res.status(500).send({
+            success: false,
+            message: "Error while making transaction",
+            error
+          });
         }
       }
     );
   } catch (error) {
     console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error with braintree",
+      error
+    });
   }
 };
