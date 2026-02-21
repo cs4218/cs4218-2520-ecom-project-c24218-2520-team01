@@ -26,6 +26,8 @@ const CreateProduct = () => {
       const { data } = await axios.get("/api/v1/category/get-category");
       if (data?.success) {
         setCategories(data?.category);
+      } else {
+        toast.error("Categories could not be loaded");
       }
     } catch (error) {
       console.log(error);
@@ -36,8 +38,6 @@ const CreateProduct = () => {
   useEffect(() => {
     getAllCategory();
   }, []);
-
-  // Lim Jia Wei, A0277381W
 
   //create product function
   const handleCreate = async (e) => {

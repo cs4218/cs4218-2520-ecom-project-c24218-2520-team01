@@ -23,7 +23,7 @@ const AdminOrders = () => {
       const { data } = await axios.get("/api/v1/auth/all-orders");
       setOrders(data);
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to load orders");
     }
   };
 
