@@ -356,7 +356,6 @@ export const braintreeTokenController = async (req, res) => {
   }
 };
 
-// By: Nicholas Cheng A0269648H
 //payment
 export const brainTreePaymentController = async (req, res) => {
   try {
@@ -367,22 +366,18 @@ export const brainTreePaymentController = async (req, res) => {
         message: "Payment method nonce is not provided",
       });
     }
-    if (!cart) {
-      return res.status(400).send({
-        success: false,
-        message: "Cart is not provided",
-      });
-    }
+
     if (!req.user || !req.user._id) {
       return res.status(400).send({
         success: false,
         message: "User id is not provided",
       });
     }
-    if (cart.length == 0) {
+
+    if (!cart || cart.length == 0) {
       return res.status(400).send({
         success: false,
-        message: "Cart is empty",
+        message: "No transaction is made because cart is empty",
       });
     }
     let total = 0;
@@ -408,7 +403,7 @@ export const brainTreePaymentController = async (req, res) => {
         } else {
           res.status(500).send({
             success: false,
-            message: "Error in making transaction",
+            message: "Error while making transaction",
             error
           });
         }
@@ -416,5 +411,10 @@ export const brainTreePaymentController = async (req, res) => {
     );
   } catch (error) {
     console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error with braintree",
+      error
+    });
   }
 };
