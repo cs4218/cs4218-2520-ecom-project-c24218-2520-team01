@@ -79,7 +79,7 @@ describe("Tests for Create Category page", () => {
         });
     };
 
-    test("renders component and fetches categories correctly", async () => {
+    test("renders component and fetches categories", async () => {
 
         // Arrange
         setupCategoryMocks();
@@ -100,21 +100,7 @@ describe("Tests for Create Category page", () => {
         });
     });
 
-    test("handles get category API error", async () => {
-
-        // Arrange
-        axios.get.mockRejectedValue(new Error("some error"));
-
-        // Act
-        render(<CreateCategory />);
-
-        // Assert
-        await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith("Something went wrong in getting category");
-        });
-    });
-
-    test("creates a category and refetches list correctly", async () => {
+    test("successfully creates a category and refetches list", async () => {
 
         // Arrange
         setupCategoryMocks();
@@ -210,7 +196,21 @@ describe("Tests for Create Category page", () => {
         expect(screen.queryByText("Electronics")).not.toBeInTheDocument();
     });
 
-    test("updates category and refetches list correctly", async () => {
+    test("shows toast error when get category API returns no response", async () => {
+
+        // Arrange
+        axios.get.mockRejectedValue(new Error("some error"));
+
+        // Act
+        render(<CreateCategory />);
+
+        // Assert
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith("Something went wrong in getting category");
+        });
+    });
+
+    test("updates category and refetches list", async () => {
 
         // Arrange
         setupCategoryMocks();
@@ -273,7 +273,7 @@ describe("Tests for Create Category page", () => {
 
     });
 
-    test("shows error toast when update category API request throws", async () => {
+    test("shows error toast when update category API request fails", async () => {
 
         // Arrange
         setupCategoryMocks();
@@ -294,7 +294,7 @@ describe("Tests for Create Category page", () => {
         });
     });
 
-    test("deletes a category and refetches list correctly", async () => {
+    test("deletes a category and refetches list", async () => {
 
         // Arrange
         setupCategoryMocks();
@@ -338,7 +338,7 @@ describe("Tests for Create Category page", () => {
         });
     });
 
-    test("shows error toast when delete API request throws", async () => {
+    test("shows error toast when delete API request fails", async () => {
 
         // Arrange
         setupCategoryMocks();

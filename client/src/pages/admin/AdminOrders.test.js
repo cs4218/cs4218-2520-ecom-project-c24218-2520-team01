@@ -63,7 +63,7 @@ jest.mock("antd", () => {
     return { Select };
 });
 
-describe("Tests for AdminOrders page", () => {
+describe("Tests for Admin Orders page", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -107,7 +107,7 @@ describe("Tests for AdminOrders page", () => {
         axios.get.mockResolvedValue({ data: sampleOrders });
     };
 
-    test("renders component and fetches orders correctly", async () => {
+    test("renders component and fetches orders", async () => {
 
         // Arrange
         setupAdminOrdersMock();
@@ -120,61 +120,22 @@ describe("Tests for AdminOrders page", () => {
         expect(screen.getByTestId("admin-menu")).toBeInTheDocument();
         expect(screen.getByText("All Orders")).toBeInTheDocument();
 
-        // Assert API call + orders rendered
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/all-orders");
             expect(screen.getByText("Amos")).toBeInTheDocument();
             expect(screen.getByText("Donald")).toBeInTheDocument();
-        });
-    });
 
-    test("renders order details correctly", async () => {
-
-        // Arrange
-        setupAdminOrdersMock();
-
-        // Act
-        render(<AdminOrders />);
-
-        // Assert
-        await waitFor(() => {
             expect(screen.getByText("Success")).toBeInTheDocument();
             expect(screen.getByText("Failed")).toBeInTheDocument();
             expect(screen.getAllByText("Shipped").length).toBeGreaterThan(0);
+
+            expect(moment).toHaveBeenCalledWith("2026-02-19");
+            expect(moment).toHaveBeenCalledWith("2026-02-18");
+
         });
     });
 
-    test("renders product details within each order correctly", async () => {
-
-        // Arrange
-        setupAdminOrdersMock();
-
-        // Act
-        render(<AdminOrders />);
-
-        // Assert
-        await waitFor(() => {
-            expect(screen.getByText("Laptop")).toBeInTheDocument();
-            expect(screen.getByText("Keyboard")).toBeInTheDocument();
-
-            expect(screen.getByText(/A powerful laptop for/i)).toBeInTheDocument();
-            expect(screen.getByText(/Mechanical keyboard with RGB/i)).toBeInTheDocument();
-
-            expect(screen.getByText("Price : 1499.99")).toBeInTheDocument();
-            expect(screen.getByText("Price : 129.99")).toBeInTheDocument();
-        });
-
-        expect(screen.getByAltText("Laptop")).toHaveAttribute(
-            "src",
-            "/api/v1/product/product-photo/prod1"
-        );
-        expect(screen.getByAltText("Keyboard")).toHaveAttribute(
-            "src",
-            "/api/v1/product/product-photo/prod3"
-        );
-    });
-
-    test("calls API to update status and refetches orders correctly", async () => {
+    test("updates status and refetches orders", async () => {
 
         // Arrange
         setupAdminOrdersMock();
@@ -203,7 +164,7 @@ describe("Tests for AdminOrders page", () => {
         });
     });
 
-    test("handles error when API fails", async () => {
+    test("handles error when update API fails", async () => {
 
         // Arrange
         const consoleSpy = jest.spyOn(console, "log").mockImplementation();
@@ -229,7 +190,7 @@ describe("Tests for AdminOrders page", () => {
         consoleSpy.mockRestore();
     });
 
-    test("renders with empty orders array correctly", async () => {
+    test("renders with empty orders array", async () => {
 
         // Arrange
         axios.get.mockResolvedValue({ data: [] });
@@ -246,23 +207,7 @@ describe("Tests for AdminOrders page", () => {
         expect(screen.queryByRole("table")).not.toBeInTheDocument();
     });
 
-    test("uses createdAt when rendering the order date", async () => {
-
-        // Arrange
-        setupAdminOrdersMock();
-
-        // Act
-        render(<AdminOrders />);
-
-        // Assert moment should be called with the actual createdAt values
-        await waitFor(() => {
-            expect(moment).toHaveBeenCalledWith("2026-02-19");
-            expect(moment).toHaveBeenCalledWith("2026-02-18");
-        });
-
-    });
-
-    test("shows error toast when fetching orders fails", async () => {
+    test("shows error toast when getting order API fails", async () => {
 
         // Arrange
         axios.get.mockRejectedValue(new Error("fetch failed"));

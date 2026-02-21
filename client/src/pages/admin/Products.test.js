@@ -66,7 +66,7 @@ describe("Tests for Products page", () => {
         });
     };
 
-    test("renders component and fetches products correctly", async () => {
+    test("renders component and fetches products", async () => {
 
         // Arrange
         setupProductsMock();
@@ -79,7 +79,6 @@ describe("Tests for Products page", () => {
         expect(screen.getByTestId("admin-menu")).toBeInTheDocument();
         expect(screen.getByText("All Products List")).toBeInTheDocument();
 
-        // Check api + products rendered
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith("/api/v1/product/get-product");
             expect(screen.getByText("iphone")).toBeInTheDocument();
@@ -89,7 +88,7 @@ describe("Tests for Products page", () => {
         });
     });
 
-    test("renders product links with correct routes correctly", async () => {
+    test("renders product links with correct routes", async () => {
 
         // Arrange
         setupProductsMock();
@@ -110,7 +109,7 @@ describe("Tests for Products page", () => {
         expect(links[1]).toHaveAttribute("href", "/dashboard/admin/product/kindle");
     });
 
-    test("renders product images with src correctly", async () => {
+    test("renders product images with src", async () => {
 
         // Arrange
         setupProductsMock();
@@ -138,7 +137,7 @@ describe("Tests for Products page", () => {
         );
     });
 
-    test("shows toast error when fetching products fails", async () => {
+    test("shows toast error when get product API fails", async () => {
 
         // Arrange
         axios.get.mockRejectedValue(new Error("network fail"));
@@ -153,7 +152,7 @@ describe("Tests for Products page", () => {
         });
     });
 
-    test("renders correctly when API returns no products", async () => {
+    test("renders correctly when get product API returns nothing", async () => {
 
         // Arrange
         axios.get.mockResolvedValueOnce({ data: { products: [] } });
@@ -172,7 +171,7 @@ describe("Tests for Products page", () => {
         expect(screen.queryAllByTestId("router-link")).toHaveLength(0);
     });
 
-    test("does not crash when API returns null", async () => {
+    test("does not crash when get product API returns null", async () => {
 
         // Arrange
         axios.get.mockResolvedValueOnce({ data: { products: null } });

@@ -66,7 +66,7 @@ describe("Tests for Create Product page", () => {
     });
 
     // For axios mocking
-    const setupDataMocks = () => {
+    const setupCreateProductMocks = () => {
         axios.get.mockResolvedValue({
             data: {
                 success: true,
@@ -78,10 +78,15 @@ describe("Tests for Create Product page", () => {
         });
     };
 
-    test("renders component correctly and fetches categories", async () => {
+    const renderAndWait = async () => {
+        render(<CreateProduct />);
+        await waitFor(() => screen.getByText("Electronics"));
+    };
+
+    test("fetches and renders categories", async () => {
 
         // Arrange  
-        setupDataMocks();
+        setupCreateProductMocks();
 
         // Act
         render(<CreateProduct />);
@@ -95,39 +100,19 @@ describe("Tests for Create Product page", () => {
         });
     });
 
-    test("handles category fetching error", async () => {
-
-        // Arrange
-        axios.get.mockRejectedValue(new Error("some error"));
-
-        // Act
-        render(<CreateProduct />);
-
-        // Assert
-        await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith(
-                "Something went wrong in getting category"
-            );
-        });
-    });
-
     test("successfully creates a product with all fields", async () => {
 
         // Arrange
-        setupDataMocks();
+        setupCreateProductMocks();
         axios.post.mockResolvedValue({ data: { success: true } });
 
-        // Mock file upload
         const file = new File(["dummy content"], "test-photo.png", {
             type: "image/png",
         });
 
         // Act
-        render(<CreateProduct />);
+        await renderAndWait();
 
-        await waitFor(() => screen.getByText("Electronics"));
-
-        // Fill in product fields after rendering
         fireEvent.change(screen.getByLabelText("Select a category"), {
             target: { value: "1" },
         });
@@ -174,16 +159,14 @@ describe("Tests for Create Product page", () => {
     test("shows error toast when create product API fails", async () => {
 
         // Arrange
-        setupDataMocks();
+        setupCreateProductMocks();
 
         axios.post.mockResolvedValue({
             data: { success: false, message: "Something went wrong" },
         });
 
         // Act
-        render(<CreateProduct />);
-
-        await waitFor(() => screen.getByText("Electronics"));
+        renderAndWait();
 
         fireEvent.click(screen.getByText("CREATE PRODUCT"));
 
@@ -197,13 +180,11 @@ describe("Tests for Create Product page", () => {
     test("shows error toast when create product API gives no response", async () => {
 
         // Arrange
-        setupDataMocks();
+        setupCreateProductMocks();
         axios.post.mockRejectedValue(new Error("Unknown error"));
 
         // Act
-        render(<CreateProduct />);
-
-        await waitFor(() => screen.getByText("Electronics"));
+        renderAndWait();
 
         fireEvent.click(screen.getByText("CREATE PRODUCT"));
 
@@ -217,7 +198,7 @@ describe("Tests for Create Product page", () => {
     test("shows error toast when get category API fails", async () => {
 
         // Arrange
-        setupDataMocks();
+        setupCreateProductMocks();
 
         axios.get.mockResolvedValue({
             data: { success: false, message: "Something went wrong" },
@@ -233,20 +214,23 @@ describe("Tests for Create Product page", () => {
         });
     });
 
-    test("renders correctly when no photo is selected", () => {
+    test("shows toast error when get category API gives no response", async () => {
 
         // Arrange
-        setupDataMocks();
+        axios.get.mockRejectedValue(new Error("some error"));
 
         // Act
         render(<CreateProduct />);
 
         // Assert
-        expect(screen.getByText("Upload Photo")).toBeInTheDocument();
-        expect(screen.queryByAltText("product_photo")).not.toBeInTheDocument();
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith(
+                "Something went wrong in getting category"
+            );
+        });
     });
 
-    test("renders correctly when categories is null", async () => {
+    test("renders correctly when get category API gives null response", async () => {
 
         // Arrange
         axios.get.mockResolvedValueOnce({
@@ -258,6 +242,19 @@ describe("Tests for Create Product page", () => {
 
         // Assert
         await waitFor(() => expect(axios.get).toHaveBeenCalled());
+    });
+
+    test("renders correctly when no photo is selected", () => {
+
+        // Arrange
+        setupCreateProductMocks();
+
+        // Act
+        render(<CreateProduct />);
+
+        // Assert
+        expect(screen.getByText("Upload Photo")).toBeInTheDocument();
+        expect(screen.queryByAltText("product_photo")).not.toBeInTheDocument();
     });
 
 });
