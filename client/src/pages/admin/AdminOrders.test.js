@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import axios from "axios";
 import moment from "moment";
 import AdminOrders from "./AdminOrders";
+import toast from "react-hot-toast";
 
 // Lim Jia Wei, A0277381W
 
@@ -259,5 +260,34 @@ describe("Tests for AdminOrders page", () => {
             expect(moment).toHaveBeenCalledWith("2026-02-18");
         });
 
+    });
+
+    test("shows error toast when fetching orders fails", async () => {
+
+        // Arrange
+        axios.get.mockRejectedValue(new Error("fetch failed"));
+
+        // Act
+        render(<AdminOrders />);
+
+        // Assert
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/all-orders");
+            expect(toast.error).toHaveBeenCalledWith("Failed to load orders");
+        });
+    });
+
+    test("does not fetch orders when auth token is missing", async () => {
+
+        // Arrange
+        mockAuth.token = null;
+
+        // Act
+        render(<AdminOrders />);
+
+        // Assert
+        await waitFor(() => {
+            expect(axios.get).not.toHaveBeenCalled();
+        })
     });
 });
