@@ -199,23 +199,35 @@ export const updateProfileController = async (req, res) => {
   }
 };
 
+// From here onwards: Bugs fixed by Nicholas Cheng, A0269648H 
+
 //orders
 export const getOrdersController = async (req, res) => {
   try {
+    const id = req.user._id;
+
+    if (!id) {
+      return res.status(422).send({
+        success: false,
+        message: "User id cannot be empty"
+      });
+    }
     const orders = await orderModel
-      .find({ buyer: req.user._id })
+      .find({ buyer: id })
       .populate("products", "-photo")
       .populate("buyer", "name");
-    res.json(orders);
+
+    res.status(200).json(orders);
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error WHile Geting Orders",
+      message: "Error while getting orders",
       error,
     });
   }
 };
+
 //orders
 export const getAllOrdersController = async (req, res) => {
   try {
@@ -223,13 +235,14 @@ export const getAllOrdersController = async (req, res) => {
       .find({})
       .populate("products", "-photo")
       .populate("buyer", "name")
-      .sort({ createdAt: "-1" });
-    res.json(orders);
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(orders);
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error WHile Geting Orders",
+      message: "Error while getting orders",
       error,
     });
   }
@@ -240,17 +253,42 @@ export const orderStatusController = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
+    if (!orderId) {
+      return res.status(422).send({
+        success: false,
+        message: "Order id is not provided"
+      });
+    }
+    if (!status) {
+      return res.status(422).send({
+        success: false,
+        message: "New order status cannot be empty"
+      });
+    }
     const orders = await orderModel.findByIdAndUpdate(
       orderId,
       { status },
-      { new: true }
+      { new: true, runValidators: true }
     );
-    res.json(orders);
+    if (!orders) {
+      return res.status(404).send({
+        success: false,
+        message: "Order id does not exist"
+      });
+    }
+    res.status(200).json(orders);
   } catch (error) {
     console.log(error);
+    if (error.name == "ValidationError") {
+      return res.status(422).send({
+        success: false,
+        message: "Invalid status value",
+        error,
+      });
+    }
     res.status(500).send({
       success: false,
-      message: "Error While Updateing Order",
+      message: "Error while updating order status",
       error,
     });
   }
