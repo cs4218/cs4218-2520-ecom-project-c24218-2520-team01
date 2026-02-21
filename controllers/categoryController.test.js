@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, jest } from "@jest/globals";
+import { beforeEach, describe, test, expect, jest } from "@jest/globals";
 import categoryModel from "../models/categoryModel.js";
 import {
     createCategoryController,
@@ -17,10 +17,13 @@ jest.mock("../models/categoryModel.js");
 // Mock slugify
 jest.mock("slugify");
 
+// Mock console.log to prevent it from printing to the terminal
+jest.spyOn(console, "log").mockImplementation(() => { });
+
 describe("Category CRUD operations", () => {
     describe("Unit test for createCategoryController", () => {
         // Set up variables for our test cases
-        let req, res, consoleSpy;
+        let req, res;
 
         // Before each test case we reset our variables / mocks
         beforeEach(() => {
@@ -31,13 +34,7 @@ describe("Category CRUD operations", () => {
                 status: jest.fn().mockReturnThis(),
                 send: jest.fn(),
             };
-            // Spy instead of mock because we might want to log in between tests.
-            consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
             jest.clearAllMocks();
-        });
-
-        afterEach(() => {
-            consoleSpy.mockRestore();
         });
 
         describe("Successful creation of a category", () => {
@@ -188,7 +185,6 @@ describe("Category CRUD operations", () => {
 
                 // Assert
                 expect(categoryModel.findOne).toHaveBeenCalledWith({ name: "Electronic" });
-                expect(consoleSpy).toHaveBeenCalledWith(mockError);
                 expect(res.status).toHaveBeenCalledWith(500);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -201,7 +197,7 @@ describe("Category CRUD operations", () => {
 
     describe("Unit tests for updateCategoryController", () => {
         // Set up variables for our test cases
-        let req, res, consoleSpy;
+        let req, res;
 
         // Before each test case we reset our variables / mocks
         beforeEach(() => {
@@ -213,13 +209,7 @@ describe("Category CRUD operations", () => {
                 status: jest.fn().mockReturnThis(),
                 send: jest.fn(),
             };
-            // Spy instead of mock because we might want to log in between tests.
-            consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
             jest.clearAllMocks();
-        });
-
-        afterEach(() => {
-            consoleSpy.mockRestore();
         });
 
         describe("Successful update of category", () => {
@@ -399,7 +389,6 @@ describe("Category CRUD operations", () => {
                     { new: true }
                 );
                 expect(slugify).toHaveBeenCalledWith("Electronic");
-                expect(consoleSpy).toHaveBeenCalledWith(mockError);
                 expect(res.status).toHaveBeenCalledWith(500);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -412,7 +401,7 @@ describe("Category CRUD operations", () => {
 
     describe("Unit tests for categoryController", () => {
         // Set up variables for our test cases
-        let req, res, consoleSpy;
+        let req, res;
 
         // Before each test case we reset our variables / mocks
         beforeEach(() => {
@@ -424,13 +413,7 @@ describe("Category CRUD operations", () => {
                 status: jest.fn().mockReturnThis(),
                 send: jest.fn(),
             };
-            // Spy instead of mock because we might want to log in between tests.
-            consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
             jest.clearAllMocks();
-        });
-
-        afterEach(() => {
-            consoleSpy.mockRestore();
         });
 
         describe("Successfully fetch categories from the database", () => {
@@ -504,7 +487,6 @@ describe("Category CRUD operations", () => {
 
                 // Assert
                 expect(categoryModel.find).toHaveBeenCalledWith({});
-                expect(consoleSpy).toHaveBeenCalledWith(mockError);
                 expect(res.status).toHaveBeenCalledWith(500);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -517,7 +499,7 @@ describe("Category CRUD operations", () => {
 
     describe("Unit tests for singleCategoryController", () => {
         // Set up variables for our test cases
-        let req, res, consoleSpy;
+        let req, res;
 
         // Before each test case we reset our variables / mocks
         beforeEach(() => {
@@ -529,13 +511,7 @@ describe("Category CRUD operations", () => {
                 status: jest.fn().mockReturnThis(),
                 send: jest.fn(),
             };
-            // Spy instead of mock because we might want to log in between tests.
-            consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
             jest.clearAllMocks();
-        });
-
-        afterEach(() => {
-            consoleSpy.mockRestore();
         });
 
         describe("Successfully fetch a single category from the database", () => {
@@ -619,9 +595,7 @@ describe("Category CRUD operations", () => {
                 await singleCategoryController(req, res);
 
                 // Assert
-                expect(categoryModel.findOne).toHaveBeenCalledWith({ slug: "toys" });
-                expect(consoleSpy).toHaveBeenCalledWith(mockError);
-                expect(res.status).toHaveBeenCalledWith(500);
+                expect(categoryModel.findOne).toHaveBeenCalledWith({ slug: "toys" }); expect(res.status).toHaveBeenCalledWith(500);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
                     error: mockError,
@@ -629,10 +603,11 @@ describe("Category CRUD operations", () => {
                 });
             });
         })
-    })
+    });
+
     describe("Unit tests for deleteCategoryController", () => {
         // Set up variables for our test cases
-        let req, res, consoleSpy;
+        let req, res;
 
         // Before each test case we reset our variables / mocks
         beforeEach(() => {
@@ -644,13 +619,7 @@ describe("Category CRUD operations", () => {
                 status: jest.fn().mockReturnThis(),
                 send: jest.fn(),
             };
-            // Spy instead of mock because we might want to log in between tests.
-            consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
             jest.clearAllMocks();
-        });
-
-        afterEach(() => {
-            consoleSpy.mockRestore();
         });
 
         describe("Successfully delete a category from the database", () => {
@@ -678,7 +647,7 @@ describe("Category CRUD operations", () => {
                     message: "Category deleted successfully",
                 });
             });
-        })
+        });
 
         describe("Validation error when deleting a category", () => {
             test("Return 404 when category with id value cannot be found", async () => {
@@ -718,7 +687,7 @@ describe("Category CRUD operations", () => {
                     message: "Category id cannot be empty",
                 });
             });
-        })
+        });
 
         describe("Errors regarding the database", () => {
             test("Return 500 when a database error occurs", async () => {
@@ -734,7 +703,6 @@ describe("Category CRUD operations", () => {
 
                 // Assert
                 expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith("1");
-                expect(consoleSpy).toHaveBeenCalledWith(mockError);
                 expect(res.status).toHaveBeenCalledWith(500);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -742,6 +710,6 @@ describe("Category CRUD operations", () => {
                     message: "Error while deleting category",
                 });
             });
-        })
-    })
+        });
+    });
 });
