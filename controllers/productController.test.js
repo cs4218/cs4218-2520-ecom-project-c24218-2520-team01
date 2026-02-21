@@ -1,14 +1,18 @@
+import { afterEach, beforeEach, describe, test, expect, jest } from "@jest/globals";
 import orderModel from "../models/orderModel.js";
 import braintree from "braintree";
 import { braintreeTokenController, brainTreePaymentController } from "./productController.js";
 
-// By: Nicholas Cheng A0269648H
+// For the entire file: Written by Nicholas Cheng, A0269648H
 
 // Mock orderModel
-jest.mock("../models/orderModel.js")
+jest.mock("../models/orderModel.js");
 
 // Mock braintree
-let mockTokenGenerateError, mockTokenGenerateResponse, mockPaymentError, mockPaymentResponse
+// This is used to modify the return values of the callback function
+let mockTokenGenerateError, mockTokenGenerateResponse, mockPaymentError, mockPaymentResponse;
+// We need to mock the implementation here because in productController.js braintree is
+// initialised at the start of the file.
 jest.mock('braintree', () => {
 
     const generateMock = jest.fn().mockImplementation((params, callback) => {
@@ -32,336 +36,368 @@ jest.mock('braintree', () => {
                 }
             };
         }),
-        _exposedGenerateMock: generateMock, // Expose the const so we can access it later
+        // Expose the const so we can access the mock later in our tests
+        _exposedGenerateMock: generateMock,
         _exposedPaymentMock: paymentMock
     };
 });
 
-describe("Unit test for braintreeTokenController", () => {
-    let req, res;
-    const mockGenerate = braintree._exposedGenerateMock;
+describe("Payment functions", () => {
+    describe("Unit tests for braintreeTokenController", () => {
+        let req, res, consoleSpy;
+        const mockGenerate = braintree._exposedGenerateMock;
 
-    beforeEach(() => {
-        req = {
-            body: {},
-        };
-        res = {
-            status: jest.fn().mockReturnThis(),
-            send: jest.fn(),
-            json: jest.fn()
-        };
-    });
+        beforeEach(() => {
+            req = {
+                body: {},
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn(),
+            };
+            // Spy instead of mock because we might want to log in between tests.
+            consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
+            jest.clearAllMocks();
+        });
 
-    afterEach(() => {
-        jest.clearAllMocks();
-        mockGenerate.mockClear();
-    })
+        afterEach(() => {
+            consoleSpy.mockRestore();
+            mockGenerate.mockClear();
+        });
 
-    test("Return 200 and the generated token when braintree is successful", async () => {
-        // Arrange
-        mockTokenGenerateError = null;
-        mockTokenGenerateResponse = { clientToken: 'token123' };
+        describe("Successfully generates token", () => {
+            test("Return 200 & the generated token by braintree is returned", async () => {
+                // Arrange
+                mockTokenGenerateError = null;
+                mockTokenGenerateResponse = { clientToken: 'token123' };
 
-        // Act
-        await braintreeTokenController(req, res);
+                // Act
+                await braintreeTokenController(req, res);
 
-        // Assert
-        expect(mockGenerate).toHaveBeenCalledWith({}, expect.any(Function));
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith({
-            success: true,
-            data: mockTokenGenerateResponse
+                // Assert
+                expect(mockGenerate).toHaveBeenCalledWith({}, expect.any(Function));
+                expect(res.status).toHaveBeenCalledWith(200);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: true,
+                    data: mockTokenGenerateResponse
+                });
+            });
+        });
+
+        describe("Braintree fails to generate a token", () => {
+            test("Return 500 when braintree cannot generate & inputs an error into the callback", async () => {
+                // Arrange
+                mockTokenGenerateError = new Error("Some error");
+                mockTokenGenerateResponse = null;
+
+                // Act
+                await braintreeTokenController(req, res);
+
+                // Assert
+                expect(mockGenerate).toHaveBeenCalledWith({}, expect.any(Function));
+                expect(res.status).toHaveBeenCalledWith(500);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    error: new Error("Some error"),
+                    message: "Error while generating token"
+                });
+            });
+        });
+
+        describe("Error with braintree", () => {
+            test("Return 500 when there is an issue with accessing braintree", async () => {
+                // Arrange
+                const mockError = new Error("Braintree error");
+                mockGenerate.mockImplementationOnce(() => {
+                    throw mockError;
+                });
+
+                // Act
+                await braintreeTokenController(req, res);
+
+                // Assert
+                expect(mockGenerate).toHaveBeenCalledWith({}, expect.any(Function));
+                expect(consoleSpy).toHaveBeenCalledWith(mockError);
+                expect(res.status).toHaveBeenCalledWith(500);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    error: mockError,
+                    message: "Error with braintree"
+                });
+            });
         });
     });
+});
 
-    test("Return 500 when a braintree error occurs", async () => {
-        // Arrange
-        mockTokenGenerateError = new Error("Some error");
-        mockTokenGenerateResponse = null;
+// describe("Unit test for brainTreePaymentController", () => {
+//     let req, res;
+//     const mockPayment = braintree._exposedPaymentMock;
 
-        // Act
-        await braintreeTokenController(req, res);
+//     beforeEach(() => {
+//         req = {
+//             user: {},
+//             body: {}
+//         };
+//         res = {
+//             status: jest.fn().mockReturnThis(),
+//             send: jest.fn(),
+//             json: jest.fn()
+//         };
+//     });
 
-        // Assert
-        expect(mockGenerate).toHaveBeenCalledWith({}, expect.any(Function));
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.send).toHaveBeenCalledWith({
-            success: false,
-            error: new Error("Some error"),
-            message: "Error in generating token"
-        });
-    });
-})
+//     afterEach(() => {
+//         jest.clearAllMocks();
+//         mockPayment.mockClear();
+//     });
 
-describe("Unit test for brainTreePaymentController", () => {
-    let req, res;
-    const mockPayment = braintree._exposedPaymentMock;
+//     test("Return 200 when an transaction & order is created successfully", async () => {
+//         // Arrange
+//         req.user._id = "user1"
+//         req.body = {
+//             nonce: "valid nonce",
+//             cart: [
+//                 { _id: 1, name: "Mouse", price: 10 },
+//                 { _id: 2, name: "Laptop", price: 950 },
+//                 { _id: 3, name: "Charger", price: 45 },
+//             ]
+//         };
 
-    beforeEach(() => {
-        req = {
-            user: {},
-            body: {}
-        };
-        res = {
-            status: jest.fn().mockReturnThis(),
-            send: jest.fn(),
-            json: jest.fn()
-        };
-    });
+//         mockPaymentError = null;
+//         // This is a sample response from braintree documentation
+//         mockPaymentResponse = {
+//             result: {
+//                 success: true,
+//                 transaction: {
+//                     type: "credit",
+//                     status: "submitted_for_settlement"
+//                 }
+//             }
+//         };
 
-    afterEach(() => {
-        jest.clearAllMocks();
-        mockPayment.mockClear();
-    })
+//         // Mock a response for orderModel.save()
+//         const orderModelResponse = {
+//             products: req.body.cart,
+//             buyer: req.user._id,
+//             payment: mockPaymentResponse
+//         };
 
-    test("Return 200 when an transaction & order is created successfully", async () => {
-        // Arrange
-        req.user._id = "user1"
-        req.body = {
-            nonce: "valid nonce",
-            cart: [
-                { _id: 1, name: "Mouse", price: 10 },
-                { _id: 2, name: "Laptop", price: 950 },
-                { _id: 3, name: "Charger", price: 45 },
-            ]
-        }
+//         orderModel.mockImplementationOnce(() => {
+//             return {
+//                 save: jest.fn().mockResolvedValue(orderModelResponse)
+//             }
+//         });
 
-        mockPaymentError = null;
-        // This is a sample response from braintree documentation
-        mockPaymentResponse = {
-            result: {
-                success: true,
-                transaction: {
-                    type: "credit",
-                    status: "submitted_for_settlement"
-                }
-            }
-        };
+//         // Act
+//         await brainTreePaymentController(req, res);
 
-        // Mock a response for orderModel.save()
-        const orderModelResponse = {
-            products: req.body.cart,
-            buyer: req.user._id,
-            payment: mockPaymentResponse
-        }
+//         // Assert
+//         expect(mockPayment).toHaveBeenCalledWith({
+//             amount: 1005,
+//             paymentMethodNonce: "valid nonce",
+//             options: {
+//                 submitForSettlement: true
+//             }
+//         }, expect.any(Function));
+//         expect(res.status).toHaveBeenCalledWith(200);
+//         expect(res.json).toHaveBeenCalledWith({ ok: true });
+//     });
 
-        orderModel.mockImplementationOnce(() => {
-            return {
-                save: jest.fn().mockResolvedValue(orderModelResponse)
-            }
-        })
+//     test("Return 500 when a braintree error occurs when making a transaction", async () => {
+//         // Arrange
+//         req.user._id = "user1"
+//         req.body = {
+//             nonce: "valid nonce",
+//             cart: [
+//                 { _id: 1, name: "Mouse", price: 10 },
+//                 { _id: 2, name: "Laptop", price: 950 },
+//                 { _id: 3, name: "Charger", price: 45 },
+//             ]
+//         };
 
-        // Act
-        await brainTreePaymentController(req, res);
+//         mockPaymentError = new Error("Some error");
+//         mockPaymentResponse = null;
 
-        // Assert
-        expect(mockPayment).toHaveBeenCalledWith({
-            amount: 1005,
-            paymentMethodNonce: "valid nonce",
-            options: {
-                submitForSettlement: true
-            }
-        }, expect.any(Function));
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ ok: true });
-    });
+//         orderModel.mockImplementationOnce(() => {
+//             return {
+//                 save: jest.fn()
+//             }
+//         });
 
-    test("Return 500 when a braintree error occurs when making a transaction", async () => {
-        // Arrange
-        req.user._id = "user1"
-        req.body = {
-            nonce: "valid nonce",
-            cart: [
-                { _id: 1, name: "Mouse", price: 10 },
-                { _id: 2, name: "Laptop", price: 950 },
-                { _id: 3, name: "Charger", price: 45 },
-            ]
-        }
+//         // Act
+//         await brainTreePaymentController(req, res);
 
-        mockPaymentError = new Error("Some error");
-        mockPaymentResponse = null;
+//         // Assert
+//         expect(mockPayment).toHaveBeenCalledWith({
+//             amount: 1005,
+//             paymentMethodNonce: "valid nonce",
+//             options: {
+//                 submitForSettlement: true
+//             }
+//         }, expect.any(Function));
+//         expect(res.status).toHaveBeenCalledWith(500);
+//         expect(res.send).toHaveBeenCalledWith({
+//             success: false,
+//             error: mockPaymentError,
+//             message: "Error in making transaction"
+//         });
+//         expect(orderModel).toHaveBeenCalledTimes(0);
+//     });
 
-        orderModel.mockImplementationOnce(() => {
-            return {
-                save: jest.fn()
-            }
-        })
+//     test("Return 400 when the cart is empty", async () => {
+//         /**
+//          * Assumption: If the cart is empty then there is nothing to place an order/payment for.
+//          * It is different from a cart with a sum of total as we assume it is possible for items
+//          * to have 0 cost which we can still place an order for.
+//          */
 
-        // Act
-        await brainTreePaymentController(req, res);
+//         // Arrange
+//         req.user._id = "user1"
+//         req.body = {
+//             nonce: "valid nonce",
+//             cart: []
+//         };
 
-        // Assert
-        expect(mockPayment).toHaveBeenCalledWith({
-            amount: 1005,
-            paymentMethodNonce: "valid nonce",
-            options: {
-                submitForSettlement: true
-            }
-        }, expect.any(Function));
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.send).toHaveBeenCalledWith({
-            success: false,
-            error: mockPaymentError,
-            message: "Error in making transaction"
-        });
-        expect(orderModel).toHaveBeenCalledTimes(0)
-    });
+//         // Act
+//         await brainTreePaymentController(req, res);
 
-    test("Return 400 when the cart is empty", async () => {
-        /**
-         * Assumption: If the cart is empty then there is nothing to place an order/payment for.
-         * It is different from a cart with a sum of total as we assume it is possible for items
-         * to have 0 cost which we can still place an order for.
-         */
+//         // Assert
+//         expect(res.status).toHaveBeenCalledWith(400);
+//         expect(res.send).toHaveBeenCalledWith({
+//             success: false,
+//             message: "Cart is empty"
+//         });
+//         expect(mockPayment).toHaveBeenCalledTimes(0);
+//         expect(orderModel).toHaveBeenCalledTimes(0);
+//     });
 
-        // Arrange
-        req.user._id = "user1"
-        req.body = {
-            nonce: "valid nonce",
-            cart: []
-        }
+//     test("Return 200 even when cart total is 0", async () => {
+//         /**
+//          * Assumption: Similarly if we have some items but the cost is 0, we should still process this
+//          * as any regular order / payment.
+//          */
+//         // Arrange
+//         req.user._id = "user1"
+//         req.body = {
+//             nonce: "valid nonce",
+//             cart: [
+//                 { _id: 1, name: "Mouse", price: 0 },
+//                 { _id: 2, name: "Laptop", price: 0 },
+//                 { _id: 3, name: "Charger", price: 0 },
+//             ]
+//         };
 
-        // Act
-        await brainTreePaymentController(req, res);
+//         mockPaymentError = null;
+//         // This is a sample response from braintree documentation
+//         mockPaymentResponse = {
+//             result: {
+//                 success: true,
+//                 transaction: {
+//                     type: "credit",
+//                     status: "submitted_for_settlement"
+//                 }
+//             }
+//         };
 
-        // Assert
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.send).toHaveBeenCalledWith({
-            success: false,
-            message: "Cart is empty"
-        });
-        expect(mockPayment).toHaveBeenCalledTimes(0)
-        expect(orderModel).toHaveBeenCalledTimes(0)
-    });
+//         // Mock a response for orderModel.save()
+//         const orderModelResponse = {
+//             products: req.body.cart,
+//             buyer: req.user._id,
+//             payment: mockPaymentResponse
+//         };
 
-    test("Return 200 even when cart total is 0", async () => {
-        /**
-         * Assumption: Similarly if we have some items but the cost is 0, we should still process this
-         * as any regular order / payment.
-         */
-        // Arrange
-        req.user._id = "user1"
-        req.body = {
-            nonce: "valid nonce",
-            cart: [
-                { _id: 1, name: "Mouse", price: 0 },
-                { _id: 2, name: "Laptop", price: 0 },
-                { _id: 3, name: "Charger", price: 0 },
-            ]
-        }
+//         orderModel.mockImplementationOnce(() => {
+//             return {
+//                 save: jest.fn().mockResolvedValue(orderModelResponse)
+//             }
+//         });
 
-        mockPaymentError = null;
-        // This is a sample response from braintree documentation
-        mockPaymentResponse = {
-            result: {
-                success: true,
-                transaction: {
-                    type: "credit",
-                    status: "submitted_for_settlement"
-                }
-            }
-        };
+//         // Act
+//         await brainTreePaymentController(req, res);
 
-        // Mock a response for orderModel.save()
-        const orderModelResponse = {
-            products: req.body.cart,
-            buyer: req.user._id,
-            payment: mockPaymentResponse
-        }
+//         // Assert
+//         expect(mockPayment).toHaveBeenCalledWith({
+//             amount: 0,
+//             paymentMethodNonce: "valid nonce",
+//             options: {
+//                 submitForSettlement: true
+//             }
+//         }, expect.any(Function));
+//         expect(res.status).toHaveBeenCalledWith(200);
+//         expect(res.json).toHaveBeenCalledWith({ ok: true });
+//     });
 
-        orderModel.mockImplementationOnce(() => {
-            return {
-                save: jest.fn().mockResolvedValue(orderModelResponse)
-            }
-        })
+//     test("Return 400 when user id is not provided", async () => {
+//         /**
+//          * Assumption: We cannot map this order to the user so we should return a status 400.
+//          */
 
-        // Act
-        await brainTreePaymentController(req, res);
+//         // Arrange
+//         req.user._id = undefined
+//         req.body = {
+//             nonce: "valid nonce",
+//             cart: [{ _id: 1, name: "Mouse", price: 30 }]
+//         };
 
-        // Assert
-        expect(mockPayment).toHaveBeenCalledWith({
-            amount: 0,
-            paymentMethodNonce: "valid nonce",
-            options: {
-                submitForSettlement: true
-            }
-        }, expect.any(Function));
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ ok: true });
-    });
+//         // Act
+//         await brainTreePaymentController(req, res);
 
-    test("Return 400 when user id is not provided", async () => {
-        /**
-         * Assumption: We cannot map this order to the user so we should return a status 400.
-         */
+//         // Assert
+//         expect(res.status).toHaveBeenCalledWith(400);
+//         expect(res.send).toHaveBeenCalledWith({
+//             success: false,
+//             message: "User id is not provided"
+//         });
+//         expect(mockPayment).toHaveBeenCalledTimes(0)
+//         expect(orderModel).toHaveBeenCalledTimes(0)
+//     });
 
-        // Arrange
-        req.user._id = undefined
-        req.body = {
-            nonce: "valid nonce",
-            cart: [{ _id: 1, name: "Mouse", price: 30 }]
-        }
+//     test("Return 400 when payment method nonce is not provided", async () => {
+//         /**
+//          * Assumption: We cannot make a transaction without a payment method nonce.
+//          */
 
-        // Act
-        await brainTreePaymentController(req, res);
+//         // Arrange
+//         req.user._id = "user1";
+//         req.body = {
+//             nonce: undefined,
+//             cart: [{ _id: 1, name: "Mouse", price: 30 }]
+//         };
 
-        // Assert
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.send).toHaveBeenCalledWith({
-            success: false,
-            message: "User id is not provided"
-        });
-        expect(mockPayment).toHaveBeenCalledTimes(0)
-        expect(orderModel).toHaveBeenCalledTimes(0)
-    });
+//         // Act
+//         await brainTreePaymentController(req, res);
 
-    test("Return 400 when payment method nonce is not provided", async () => {
-        /**
-         * Assumption: We cannot make a transaction without a payment method nonce.
-         */
+//         // Assert
+//         expect(res.status).toHaveBeenCalledWith(400);
+//         expect(res.send).toHaveBeenCalledWith({
+//             success: false,
+//             message: "Payment method nonce is not provided"
+//         });
+//         expect(mockPayment).toHaveBeenCalledTimes(0);
+//         expect(orderModel).toHaveBeenCalledTimes(0);
+//     });
 
-        // Arrange
-        req.user._id = "user1"
-        req.body = {
-            nonce: undefined,
-            cart: [{ _id: 1, name: "Mouse", price: 30 }]
-        }
+//     test("Return 400 when cart is undefined", async () => {
+//         /**
+//          * Assumption: Is the cart object is never passed in then we should not even process thiss request.
+//          */
 
-        // Act
-        await brainTreePaymentController(req, res);
+//         // Arrange
+//         req.user._id = "user1";
+//         req.body = {
+//             nonce: "valid nonce",
+//             cart: undefined
+//         };
 
-        // Assert
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.send).toHaveBeenCalledWith({
-            success: false,
-            message: "Payment method nonce is not provided"
-        });
-        expect(mockPayment).toHaveBeenCalledTimes(0)
-        expect(orderModel).toHaveBeenCalledTimes(0)
-    });
+//         // Act
+//         await brainTreePaymentController(req, res);
 
-    test("Return 400 when cart is undefined", async () => {
-        /**
-         * Assumption: Is the cart object is never passed in then we should not even process thiss request.
-         */
-
-        // Arrange
-        req.user._id = "user1"
-        req.body = {
-            nonce: "valid nonce",
-            cart: undefined
-        }
-
-        // Act
-        await brainTreePaymentController(req, res);
-
-        // Assert
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.send).toHaveBeenCalledWith({
-            success: false,
-            message: "Cart is not provided"
-        });
-        expect(mockPayment).toHaveBeenCalledTimes(0)
-        expect(orderModel).toHaveBeenCalledTimes(0)
-    });
-})
+//         // Assert
+//         expect(res.status).toHaveBeenCalledWith(400);
+//         expect(res.send).toHaveBeenCalledWith({
+//             success: false,
+//             message: "Cart is not provided"
+//         });
+//         expect(mockPayment).toHaveBeenCalledTimes(0);
+//         expect(orderModel).toHaveBeenCalledTimes(0);
+//     });
+// });

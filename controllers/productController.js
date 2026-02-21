@@ -326,7 +326,8 @@ export const productCategoryController = async (req, res) => {
   }
 };
 
-// By: Nicholas Cheng A0269648H
+// From this line onwards: Bugs fixed by Nicholas Cheng, A0269648H
+
 //payment gateway api
 //token
 export const braintreeTokenController = async (req, res) => {
@@ -335,7 +336,7 @@ export const braintreeTokenController = async (req, res) => {
       if (error) {
         res.status(500).send({
           success: false,
-          message: "Error in generating token",
+          message: "Error while generating token",
           error
         });
       } else {
@@ -347,6 +348,11 @@ export const braintreeTokenController = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error with braintree",
+      error
+    });
   }
 };
 
