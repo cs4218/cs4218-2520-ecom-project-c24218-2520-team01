@@ -176,105 +176,94 @@ export const testController = (req, res) => {
 	}
 };
 
-//update profile
+//update prfole
 export const updateProfileController = async (req, res) => {
-	try {
-		const { name, email, password, address, phone } = req.body;
-		const user = await userModel.findById(req.user._id);
-		// Bug: Split password validation for clearer error messages
-		if (password.toString().trim() === "") {
-			return res.status(400).json({
-				success: false,
-				message: "Password is required",
-			});
-		}
-		if (password.length < 6) {
-			return res.status(400).json({
-				success: false,
-				message: "Password must be at least 6 characters long",
-			});
-		}
-		// Due to the validation above, password would never be null, hence remove if null check here
-		const hashedPassword = await hashPassword(password);
-		const updatedUser = await userModel.findByIdAndUpdate(
-			req.user._id,
-			{
-				name: name || user.name,
-				password: hashedPassword,
-				phone: phone || user.phone,
-				address: address || user.address,
-			},
-			{ new: true },
-		);
-		res.status(200).send({
-			success: true,
-			message: "Profile updated successfully",
-			updatedUser,
-		});
-	} catch (error) {
-		console.log(error);
-		res.status(400).send({
-			success: false,
-			message: "Error while updating profile",
-			error,
-		});
-	}
+  try {
+    const { name, email, password, address, phone } = req.body;
+    const user = await userModel.findById(req.user._id);
+    //password
+    if (password && password.length < 6) {
+      return res.json({ error: "Passsword is required and 6 character long" });
+    }
+    const hashedPassword = password ? await hashPassword(password) : undefined;
+    const updatedUser = await userModel.findByIdAndUpdate(
+      req.user._id,
+      {
+        name: name || user.name,
+        password: hashedPassword || user.password,
+        phone: phone || user.phone,
+        address: address || user.address,
+      },
+      { new: true }
+    );
+    res.status(200).send({
+      success: true,
+      message: "Profile Updated SUccessfully",
+      updatedUser,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "Error WHile Update profile",
+      error,
+    });
+  }
 };
 
 //orders
 export const getOrdersController = async (req, res) => {
-	try {
-		const orders = await orderModel
-			.find({ buyer: req.user._id })
-			.populate("products", "-photo")
-			.populate("buyer", "name");
-		res.json(orders);
-	} catch (error) {
-		console.log(error);
-		res.status(500).send({
-			success: false,
-			message: "Error while getting orders",
-			error,
-		});
-	}
+  try {
+    const orders = await orderModel
+      .find({ buyer: req.user._id })
+      .populate("products", "-photo")
+      .populate("buyer", "name");
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error WHile Geting Orders",
+      error,
+    });
+  }
 };
 //orders
 export const getAllOrdersController = async (req, res) => {
-	try {
-		// Bug: Sort parameter should be number -1, not string "-1" (Integration Bug)
-		const orders = await orderModel
-			.find({})
-			.populate("products", "-photo")
-			.populate("buyer", "name")
-			.sort({ createdAt: "-1" });
-		res.json(orders);
-	} catch (error) {
-		console.log(error);
-		res.status(500).send({
-			success: false,
-			message: "Error while getting orders",
-			error,
-		});
-	}
+  try {
+    const orders = await orderModel
+      .find({})
+      .populate("products", "-photo")
+      .populate("buyer", "name")
+      .sort({ createdAt: "-1" });
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error WHile Geting Orders",
+      error,
+    });
+  }
 };
 
 //order status
 export const orderStatusController = async (req, res) => {
-	try {
-		const { orderId } = req.params;
-		const { status } = req.body;
-		const orders = await orderModel.findByIdAndUpdate(
-			orderId,
-			{ status },
-			{ new: true },
-		);
-		res.json(orders);
-	} catch (error) {
-		console.log(error);
-		res.status(500).send({
-			success: false,
-			message: "Error while updating order",
-			error,
-		});
-	}
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const orders = await orderModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error While Updateing Order",
+      error,
+    });
+  }
 };
