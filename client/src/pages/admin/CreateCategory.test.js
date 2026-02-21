@@ -190,6 +190,26 @@ describe("Tests for Create Category page", () => {
         });
     });
 
+    test("shows error toast when get category API returns failure", async () => {
+
+        // Arrange
+        setupCategoryMocks();
+        axios.get.mockResolvedValue({
+            data: { success: false, message: "Getting categories failed" },
+        });
+
+        // Act
+        render(<CreateCategory />);
+
+        // Assert
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith("/api/v1/category/get-category");
+            expect(toast.error).toHaveBeenCalledWith("Categories could not be loaded");
+        });
+
+        expect(screen.queryByText("Electronics")).not.toBeInTheDocument();
+    });
+
     test("updates category and refetches list correctly", async () => {
 
         // Arrange
@@ -208,7 +228,6 @@ describe("Tests for Create Category page", () => {
 
         const updateInput = screen.getAllByPlaceholderText("Enter new category")[1];
         fireEvent.change(updateInput, { target: { value: "new electronics" } });
-
 
         const updateSubmitBtn = screen.getAllByRole("button", { name: "Submit" })[1];
         fireEvent.click(updateSubmitBtn);
@@ -254,11 +273,11 @@ describe("Tests for Create Category page", () => {
 
     });
 
-    test("shows error toast when update request throws", async () => {
+    test("shows error toast when update category API request throws", async () => {
 
         // Arrange
         setupCategoryMocks();
-        axios.put.mockRejectedValue(new Error("put failed"));
+        axios.put.mockRejectedValue(new Error("network fail"));
 
         // Act
         render(<CreateCategory />);
@@ -353,5 +372,27 @@ describe("Tests for Create Category page", () => {
 
         // Table rows should not render
         expect(screen.queryByText("Electronics")).not.toBeInTheDocument();
+    });
+
+    test("closes the edit modal when cancel is triggered", async () => {
+
+        // Arrange
+        setupCategoryMocks();
+
+        // Act
+        render(<CreateCategory />);
+
+        await waitFor(() => expect(screen.getByText("Electronics")).toBeInTheDocument());
+
+        fireEvent.click(screen.getAllByRole("button", { name: "Edit" })[0]);
+        expect(screen.getByTestId("modal")).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("button", { name: "Close" }));
+
+        // Assert
+        await waitFor(() => {
+            expect(screen.queryByTestId("modal")).not.toBeInTheDocument();
+        });
+
     });
 });
