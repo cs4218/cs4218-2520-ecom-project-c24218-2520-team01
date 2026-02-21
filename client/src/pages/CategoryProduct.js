@@ -11,7 +11,8 @@ const CategoryProduct = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState([]);
-  const [cart, setCart] = useCart();
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (params?.slug) getProductsByCart();
@@ -67,11 +68,7 @@ const CategoryProduct = () => {
                       <button
                         className="btn btn-dark ms-1"
                         onClick={() => {
-                          setCart([...cart, p]);
-                          localStorage.setItem(
-                            "cart",
-                            JSON.stringify([...cart, p])
-                          );
+                          addToCart(p);
                           toast.success("Item Added to cart");
                         }}
                       >

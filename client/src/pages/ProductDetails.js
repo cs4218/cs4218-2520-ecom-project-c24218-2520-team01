@@ -12,7 +12,7 @@ const ProductDetails = () => {
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [cart, setCart] = useCart();
+  const { addToCart } = useCart();
 
   // initial product details
   useEffect(() => {
@@ -42,13 +42,6 @@ const ProductDetails = () => {
     } catch (error) {
       console.log("Failed to fetch related products", error);
     }
-  };
-
-  const handleAddToCart = (item) => {
-    const newCart = [...cart, item];
-    setCart(newCart);
-    localStorage.setItem("cart", JSON.stringify(newCart));
-    toast.success("Item Added to cart");
   };
 
   if (!product) {
@@ -88,7 +81,10 @@ const ProductDetails = () => {
           <h6>Category: {product?.category?.name}</h6>
           <button 
             className="btn btn-secondary ms-1" 
-            onClick={() => handleAddToCart(product)}>
+            onClick={ () => {
+              addToCart(product)
+              toast.success("Item Added to cart");
+            }}>
               ADD TO CART
           </button>
         </div>
@@ -129,7 +125,10 @@ const ProductDetails = () => {
                     </button>
                     <button
                       className="btn btn-dark ms-1"
-                      onClick={() => handleAddToCart(p)}
+                      onClick={() => {
+                        addToCart(p)
+                        toast.success("Item Added to cart");
+                      }}
                     >
                       ADD TO CART
                     </button>

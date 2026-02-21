@@ -22,16 +22,6 @@ jest.mock("react-router-dom", () => ({
     useNavigate: () => mockNavigate
 }));
 
-// Mock local storage
-const mockLocalStorage = {
-    getItem: jest.fn(() => null),
-    setItem: jest.fn()
-};
-Object.defineProperty(window, 'localStorage', {
-    value: mockLocalStorage,
-    writable: true
-});
-
 // Mock toast
 jest.mock("react-toastify", () => ({
     toast: {
@@ -39,17 +29,29 @@ jest.mock("react-toastify", () => ({
     }
 }));
 
-// Mock useCart from cart context
-// Return empty cart and a mock setCart function
-jest.mock("../context/cart", () => ({
-    useCart: jest.fn(() => [[], jest.fn()])
-}));
+// Mock useCart hook
+jest.mock('../context/cart', () => {
+  const originalModule = jest.requireActual('../context/cart');
+
+  return {
+    ...originalModule, 
+    useCart: jest.fn()
+  };
+});
+
+// Mock addToCart
+const mockAddToCart = jest.fn()
+
 
 // Rachel Tai Ke Jia, A0258603A
 describe("unit test for product details component", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        require('../context/cart').useCart.mockReturnValue({
+            cart: [],
+            addToCart: mockAddToCart
+        });
     });
 
 
@@ -204,101 +206,81 @@ describe("unit test for product details component", () => {
     });
 
 
-    describe("add to cart buttons updates cart context and shows toast", () => {
-        let mockSetCart;
-        beforeEach(() => {
-            // Mock useCart to return empty cart and a mock setCart function
-            mockSetCart = jest.fn();
-            require("../context/cart").useCart.mockReturnValue([[], mockSetCart]);
-        });
-
-        test("add product to cart", async () => {
-            // Arrange
-            const product = newState.results[0];
-            axios.get
-                .mockResolvedValueOnce({
-                    data: {
-                        success: true,
-                        message: "Single Product Fetched",
-                        product: product
-                    },
-                })
-                .mockResolvedValueOnce({
-                    data: {
-                        success: true,
-                        products: []
-                    }
-                });
-            const localStorageSetItemSpy = jest.spyOn(mockLocalStorage, "setItem");
-            render(
-                <MemoryRouter>
-                    <ProductDetails />
-                </MemoryRouter>
-            );
-            const addToCartButtons = await screen.findAllByText("ADD TO CART");
-            expect(addToCartButtons).toHaveLength(1);
-            expect(addToCartButtons[0]).toBeVisible();
-
-            // Act
-            fireEvent.click(addToCartButtons[0]);
-
-            // Assert
-            await waitFor(() => {
-                expect(mockSetCart).toHaveBeenCalledTimes(1);
-                expect(mockSetCart).toHaveBeenCalledWith([product]);
-                expect(toast.success).toHaveBeenCalledWith("Item Added to cart");
+    test("add product to cart button updates cart context and shows toast", async () => {
+        // Arrange
+        const product = newState.results[0];
+        axios.get
+            .mockResolvedValueOnce({
+                data: {
+                    success: true,
+                    message: "Single Product Fetched",
+                    product: product
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    success: true,
+                    products: []
+                }
             });
-            expect(localStorageSetItemSpy).toHaveBeenCalledWith(
-                "cart",
-                JSON.stringify([product])
-            );
-            localStorageSetItemSpy.mockRestore();
-        });
+        render(
+            <MemoryRouter>
+                <ProductDetails />
+            </MemoryRouter>
+        );
+        const addToCartButtons = await screen.findAllByText("ADD TO CART");
+        expect(addToCartButtons).toHaveLength(1);
+        expect(addToCartButtons[0]).toBeVisible();
 
-        test("add related product to cart", async () => {
-            // Arrange
-            const product = newState.results[0];
-            const relatedProduct = newState.results[1];
-            axios.get
-                .mockResolvedValueOnce({
-                    data: {
-                        success: true,
-                        message: "Single Product Fetched",
-                        product: product
-                    },
-                })
-                .mockResolvedValueOnce({
-                    data: {
-                        success: true,
-                        products: [relatedProduct]
-                    }
-                });
-            const localStorageSetItemSpy = jest.spyOn(mockLocalStorage, "setItem");
-            render(
-                <MemoryRouter>
-                    <ProductDetails />
-                </MemoryRouter>
-            );
-            await screen.findByText(relatedProduct.name); // wait for related card
-            const addToCartButtons = await screen.findAllByText("ADD TO CART");
-            expect(addToCartButtons).toHaveLength(2);
+        // Act
+        fireEvent.click(addToCartButtons[0]);
 
-            // Act
-            fireEvent.click(addToCartButtons[1]);
-
-            // Assert
-            await waitFor(() => {
-                expect(mockSetCart).toHaveBeenCalledTimes(1);
-                expect(mockSetCart).toHaveBeenCalledWith([relatedProduct]);
-                expect(toast.success).toHaveBeenCalledWith("Item Added to cart");
-            });
-            expect(localStorageSetItemSpy).toHaveBeenCalledWith(
-                "cart",
-                JSON.stringify([relatedProduct])
-            );
-            localStorageSetItemSpy.mockRestore();
+        // Assert
+        await waitFor(() => {
+            expect(mockAddToCart).toHaveBeenCalledTimes(1);
+            expect(mockAddToCart).toHaveBeenCalledWith(product);
+            expect(toast.success).toHaveBeenCalledWith("Item Added to cart");
         });
     });
+
+    test("add related product to cart button update cart context and shows toast", async () => {
+        // Arrange
+        const product = newState.results[0];
+        const relatedProduct = newState.results[1];
+        axios.get
+            .mockResolvedValueOnce({
+                data: {
+                    success: true,
+                    message: "Single Product Fetched",
+                    product: product
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    success: true,
+                    products: [relatedProduct]
+                }
+            });
+        render(
+            <MemoryRouter>
+                <ProductDetails />
+            </MemoryRouter>
+        );
+        await screen.findByText(relatedProduct.name); // wait for related card
+        const addToCartButtons = await screen.findAllByText("ADD TO CART");
+        expect(addToCartButtons).toHaveLength(2);
+
+        // Act
+        fireEvent.click(addToCartButtons[1]);
+
+        // Assert
+        await waitFor(() => {
+            expect(mockAddToCart).toHaveBeenCalledTimes(1);
+            expect(mockAddToCart).toHaveBeenCalledWith(relatedProduct);
+            expect(toast.success).toHaveBeenCalledWith("Item Added to cart");
+        });
+    });
+
 
     test("shows no similar products found message", async () => {
         // Arrange
