@@ -9,41 +9,38 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import "../styles/CartStyles.css";
 
+export const calculateTotalPrice = (cart = []) => {
+  try {
+    let total = 0;
+    cart.forEach((item) => {
+      total += item.price * (item.quantity || 1);
+    });
+    
+    if (isNaN(total) || !isFinite(total)) {
+      console.log("Invalid total calculated");
+      return "$0.00";
+    }
+    
+    return total.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
+  } catch (error) {
+    console.log(error);
+    return "$0.00";
+  }
+};
+
 const CartPage = () => {
   const [auth, setAuth] = useAuth();
-  const [cart, setCart] = useCart();
+  const { cart, setCart, removeCartItem } = useCart();
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   //total price
-  const totalPrice = () => {
-    try {
-      let total = 0;
-      cart?.map((item) => {
-        total = total + item.price;
-      });
-      return total.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  //detele item
-  const removeCartItem = (pid) => {
-    try {
-      let myCart = [...cart];
-      let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
-      localStorage.setItem("cart", JSON.stringify(myCart));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const totalPrice = () => calculateTotalPrice(cart);
 
   //get payment gateway token
   const getToken = async () => {
@@ -71,9 +68,10 @@ const CartPage = () => {
       localStorage.removeItem("cart");
       setCart([]);
       navigate("/dashboard/user/orders");
-      toast.success("Payment Completed Successfully ");
+      toast.success("Payment Completed Successfully");
     } catch (error) {
       console.log(error);
+      toast.error("Payment failed. Please try again.");
       setLoading(false);
     }
   };
@@ -112,7 +110,7 @@ const CartPage = () => {
                   </div>
                   <div className="col-md-4">
                     <p>{p.name}</p>
-                    <p>{p.description.substring(0, 30)}</p>
+                    <p>{p.description ? p.description.substring(0, 30) : ""}</p>
                     <p>Price : {p.price}</p>
                   </div>
                   <div className="col-md-4 cart-remove-btn">
@@ -162,7 +160,7 @@ const CartPage = () => {
                         })
                       }
                     >
-                      Plase Login to checkout
+                      Please Login to checkout
                     </button>
                   )}
                 </div>

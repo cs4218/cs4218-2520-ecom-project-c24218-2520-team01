@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import Layout from "../components/Layout";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/CategoryProductStyles.css";
 import axios from "axios";
+import { useCart } from "../context/cart";
+
 const CategoryProduct = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState([]);
 
+  const { addToCart } = useCart();
+
   useEffect(() => {
-    if (params?.slug) getPrductsByCat();
+    if (params?.slug) getProductsByCart();
   }, [params?.slug]);
-  const getPrductsByCat = async () => {
+
+  const getProductsByCart = async () => {
     try {
       const { data } = await axios.get(
         `/api/v1/product/product-category/${params.slug}`
@@ -59,25 +65,22 @@ const CategoryProduct = () => {
                       >
                         More Details
                       </button>
-                      {/* <button
-                    className="btn btn-dark ms-1"
-                    onClick={() => {
-                      setCart([...cart, p]);
-                      localStorage.setItem(
-                        "cart",
-                        JSON.stringify([...cart, p])
-                      );
-                      toast.success("Item Added to cart");
-                    }}
-                  >
-                    ADD TO CART
-                  </button> */}
+                      <button
+                        className="btn btn-dark ms-1"
+                        onClick={() => {
+                          addToCart(p);
+                          toast.success("Item Added to cart");
+                        }}
+                      >
+                        ADD TO CART
+                      </button>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-            {/* <div className="m-2 p-3">
+            {/* TODO: pagination for category products 
+            <div className="m-2 p-3">
             {products && products.length < total && (
               <button
                 className="btn btn-warning"
@@ -89,7 +92,7 @@ const CategoryProduct = () => {
                 {loading ? "Loading ..." : "Loadmore"}
               </button>
             )}
-          </div> */}
+            </div> */}
           </div>
         </div>
       </div>
