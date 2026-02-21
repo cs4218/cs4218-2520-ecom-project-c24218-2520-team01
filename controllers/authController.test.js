@@ -11,6 +11,9 @@ import orderModel from "../models/orderModel.js";
 // Mock orderModel
 jest.mock("../models/orderModel.js");
 
+// Mock console.log to prevent it from printing to the terminal
+jest.spyOn(console, "log").mockImplementation(() => { });
+
 describe("Orders CRUD operations", () => {
     describe("Unit tests for getOrdersController", () => {
         // Set up variables for our test cases
