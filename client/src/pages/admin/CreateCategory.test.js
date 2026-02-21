@@ -374,7 +374,7 @@ describe("Tests for Create Category page", () => {
         expect(screen.queryByText("Electronics")).not.toBeInTheDocument();
     });
 
-    test("closes the edit modal when cancel is triggered", async () => {
+    test("closes edit modal when cancel is triggered", async () => {
 
         // Arrange
         setupCategoryMocks();
