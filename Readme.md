@@ -165,6 +165,37 @@ I was responsible for testing the following components:
 
 I unit tested all files specified above with the exception of `userModel.js` due to it being left for integration testing. (more information can be seen in the MS1 report.)
 
+### Nicholas Cheng De Fei (A0269648H)
+
+I am responsible for testing the following components :
+
+*Server Files:*
+- Category CRUD (*controllers/categoryController\.js*):
+  - `createCategoryController`
+  - `updateCategoryController`
+  - `deleteCategoryController`
+  - `categoryControlller`
+  - `singleCategoryController`
+
+- Payment (*controllers/productController\.js*):
+  - `braintreeTokenController`
+  - `brainTreePaymentController`
+
+- Orders CRUD (*controllers/authController\.js*):
+  - `getOrdersController`
+  - `getAllOrdersController`
+  - `orderStatusController`
+
+- Models:
+  - `models/categoryModel\.js`
+  - `models/orderModel\.js`
+
+*Client Files:*
+  - `hooks/useCategory\.js`
+  - `pages/Categories\.js`
+
+#### Milestone 1 Unit Test
+For **milestone 1** I have done unit test for all components except for those under `Models`. The models will tested during integration testing (*more information can be seen in the MS1 report*).
 
 ### Wong Sheen Kerr (A0269647J)
 
@@ -189,6 +220,7 @@ I was in charge of the unit testing for the authentication module across both th
 - `pages/Auth/Register.js`
 - `pages/Auth/Login.js`
 - `pages/Auth/ForgotPassword.js` – New file I added
+
 ### Rachel Tai Ke Jia (A0258603A)
 
 #### Unit Testing
