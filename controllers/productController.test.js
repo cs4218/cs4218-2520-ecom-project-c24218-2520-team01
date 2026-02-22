@@ -21,6 +21,15 @@ let mockTokenGenerateError, mockTokenGenerateResponse, mockPaymentError, mockPay
 // initialised at the start of the file.
 jest.mock('braintree', () => {
 
+    /**
+     * Attribute: https://stackoverflow.com/questions/47155523/jest-mocking-a-function-that-uses-callbacks
+     * 
+     * How was this used:
+     * - braintree's functions takes in a callback function which I will need to mock to ensure that
+     * the callback is called with the correct parameters and the correct return values
+     * and the communication within the callback. So I used this code as a reference to help me
+     * with mocking braintree's functions.
+     */
     const generateFunctionMock = jest.fn().mockImplementation((params, callback) => {
         callback(mockTokenGenerateError, mockTokenGenerateResponse);
     });
@@ -42,6 +51,40 @@ jest.mock('braintree', () => {
                 }
             };
         }),
+
+        /**
+         * AI Usage Declaration
+         * 
+         * Too Used: Gemini 3.0 Pro
+         * 
+         * Prompt: I declared the mocked braintree and its functionality at the top of the file how can I make it so that I can access the mocked function from the test cases?
+         * 
+         * Response:
+         * let mockCallbackError, mockCallbackResponse;
+         * jest.mock('braintree', () => {
+         *    const internalMockGenerate = jest.fn().mockImplementation((params, callback) => {
+         *        callback(mockCallbackError, mockCallbackResponse);
+         *    });
+         *    return {
+         *        Environment: {
+         *            Sandbox: 'sandbox',
+         *        },
+         *        BraintreeGateway: jest.fn().mockImplementation(() => {
+         *            return {
+         *                clientToken: {
+         *                    generate: internalMockGenerate // Attach it to the gateway
+         *                }
+         *            };
+         *        }),
+         *        _exposedGenerateMock: internalMockGenerate 
+         *    };
+         * });
+         * 
+         * How the AI output was used:
+         * - I used the AI's suggestion to set the mocked function as a property of the mocked braintree object
+         * so that I can access it from the test cases as a variable so that I can check if the function was called
+         * with the correct parameters and the correct return values.
+         */
         // Expose the const so we can access the mock later in our tests
         _exposedGenerateMock: generateFunctionMock,
         _exposedPaymentMock: paymentFunctionMock
