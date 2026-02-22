@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, test, expect, jest } from "@jest/globals";
 
+// Mocking of braintree was written by Nicholas Cheng, A0269648H
 
 // Mock braintree
 // This is used to modify the return values of the callback function
@@ -7,7 +8,6 @@ let mockTokenGenerateError, mockTokenGenerateResponse, mockPaymentError, mockPay
 // We need to mock the implementation here because in productController.js braintree is
 // initialised at the start of the file.
 jest.mock('braintree', () => {
-
     /**
      * Attribute: https://stackoverflow.com/questions/47155523/jest-mocking-a-function-that-uses-callbacks
      * 
