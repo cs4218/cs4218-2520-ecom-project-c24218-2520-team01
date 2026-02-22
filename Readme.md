@@ -138,9 +138,7 @@ To begin unit testing with Jest in your project, follow these steps:
 
 ### Lim Jia Wei (A0277381W)
 
-#### Unit Testing
-
-I was responsible for unit testing admin-related frontend componenets as well as a few backend files:
+I was responsible for testing the following componenets:
 
 **Server Files:**
 
@@ -162,6 +160,11 @@ I was responsible for unit testing admin-related frontend componenets as well as
 - `pages/admin/AdminOrders.js`
 - `pages/admin/Products.js`
 - `pages/admin/Users.js`
+
+#### Unit Testing
+
+I unit tested all files specified above with the exception of `userModel.js` due to it being left for integration testing. (more information can be seen in the MS1 report.)
+
 
 ### Wong Sheen Kerr (A0269647J)
 
