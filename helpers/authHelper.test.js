@@ -39,6 +39,12 @@ describe("Authentication Helpers", () => {
 				expect(bcrypt.hash).toHaveBeenCalledWith(password, 10);
 			});
 
+			/**
+			 * AI Usage Declaration:
+			 * AI assistance was used in this file for:
+			 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+			 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+			 **/
 			it("should handle very long password", async () => {
 				// Arrange
 				const password = "a".repeat(676767);
@@ -66,9 +72,14 @@ describe("Authentication Helpers", () => {
 				expect(result).toBe(hashedPassword);
 				expect(bcrypt.hash).toHaveBeenCalledWith(password, 10);
 			});
-
 		});
 
+		/**
+		 * AI Usage Declaration:
+		 * AI assistance was used in this file for:
+		 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+		 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+		 **/
 		describe("Error", () => {
 			describe("Input Errors", () => {
 				it("should handle null password", async () => {
@@ -187,6 +198,12 @@ describe("Authentication Helpers", () => {
 			});
 		});
 
+		/**
+		 * AI Usage Declaration:
+		 * AI assistance was used in this file for:
+		 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+		 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+		 **/
 		describe("Error", () => {
 			describe("Input Errors", () => {
 				it("should handle null password", async () => {

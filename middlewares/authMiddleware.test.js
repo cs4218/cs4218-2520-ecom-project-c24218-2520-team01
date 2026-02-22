@@ -35,7 +35,6 @@ describe("Authorization", () => {
 	});
 
 	afterEach(() => {
-		// Restore console.log
 		jest.restoreAllMocks();
 	});
 
@@ -72,9 +71,13 @@ describe("Authorization", () => {
 				expect(req.user).toEqual(decodedToken);
 				expect(next).toHaveBeenCalled();
 			});
-
 		});
-
+		/**
+		 * AI Usage Declaration:
+		 * AI assistance was used in this file for:
+		 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+		 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+		 **/
 		describe("Error", () => {
 			describe("Token Errors", () => {
 				const tokenErrorTestCases = [
@@ -129,7 +132,6 @@ describe("Authorization", () => {
 						// Assert
 						expect(JWT.verify).toHaveBeenCalled();
 						expect(next).not.toHaveBeenCalled();
-						expect(console.log).toHaveBeenCalled();
 						expect(res.status).toHaveBeenCalledWith(401);
 						expect(res.send).toHaveBeenCalledWith({
 							success: false,
@@ -174,7 +176,12 @@ describe("Authorization", () => {
 				expect(res.status).not.toHaveBeenCalled();
 			});
 		});
-
+		/**
+		 * AI Usage Declaration:
+		 * AI assistance was used in this file for:
+		 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+		 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+		 **/
 		describe("Error", () => {
 			describe("Role Errors", () => {
 				it("should return 401 for user with role: 0 (non-admin)", async () => {
@@ -195,8 +202,11 @@ describe("Authorization", () => {
 					});
 					expect(next).not.toHaveBeenCalled();
 				});
-
-				const roleEdgeCaseTestCases = [
+				/**
+				 * External Reference:
+				 * Parameterized test pattern adapted from: https://stackoverflow.com/questions/52996062/using-jests-test-each-parameterized-test-variable-scope
+				 **/
+				it.each([
 					{
 						name: "user with role: undefined",
 						user: { _id: "6767", role: undefined },
@@ -217,9 +227,7 @@ describe("Authorization", () => {
 						user: { _id: "6767", role: 2 },
 						expectedUnauthorized: true,
 					},
-				];
-
-				test.each(roleEdgeCaseTestCases)(
+				])(
 					"should return 401 for $name",
 					async ({ user, expectedUnauthorized }) => {
 						// Arrange

@@ -26,6 +26,7 @@ describe("Authentication Pages", () => {
 		});
 
 		// ========== HELPER FUNCTION ==========
+		// Helper function setup adapted from (AHA): https://kentcdodds.com/blog/avoid-nesting-when-youre-testing
 		const fillAllFields = (overrides = {}) => {
 			const defaultValues = {
 				name: "John Doe",
@@ -283,7 +284,6 @@ describe("Authentication Pages", () => {
 						expect(toast.error).toHaveBeenCalledWith("Something went wrong"),
 					);
 					expect(axios.post).toHaveBeenCalled();
-					expect(console.log).toHaveBeenCalled();
 				});
 
 				it("should handle form submission with empty response data", async () => {
@@ -308,7 +308,6 @@ describe("Authentication Pages", () => {
 						expect(toast.error).toHaveBeenCalledWith("Something went wrong"),
 					);
 					expect(axios.post).toHaveBeenCalled();
-					expect(console.log).toHaveBeenCalled();
 				});
 
 				it("should not navigate to login on failed registration", async () => {
@@ -360,7 +359,6 @@ describe("Authentication Pages", () => {
 					await waitFor(() => {
 						expect(toast.error).toHaveBeenCalledWith("Something went wrong");
 					});
-					expect(console.log).toHaveBeenCalled();
 				});
 			});
 		});

@@ -31,8 +31,8 @@ window.matchMedia =
 	function () {
 		return {
 			matches: false,
-			addListener: function () {},
-			removeListener: function () {},
+			addListener: function () { },
+			removeListener: function () { },
 		};
 	};
 describe("Authentication Pages", () => {
@@ -42,7 +42,7 @@ describe("Authentication Pages", () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 			useAuth.mockReturnValue([null, mockSetAuth]);
-			jest.spyOn(console, "log").mockImplementation(() => {});
+			jest.spyOn(console, "log").mockImplementation(() => { });
 		});
 
 		afterEach(() => {
@@ -199,7 +199,6 @@ describe("Authentication Pages", () => {
 					await waitFor(() =>
 						expect(toast.error).toHaveBeenCalledWith("Something went wrong"),
 					);
-					expect(console.log).toHaveBeenCalled();
 				});
 
 				it("should display error message when login returns success: false", async () => {

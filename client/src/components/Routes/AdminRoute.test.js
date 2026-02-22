@@ -112,6 +112,12 @@ describe("Route Protection", () => {
 				});
 			});
 
+			/**
+			 * AI Usage Declaration:
+			 * AI assistance was used in this file for:
+			 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+			 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+			 **/
 			it("should handle token with special characters correctly", async () => {
 				// Arrange
 				const specialToken =
@@ -160,6 +166,12 @@ describe("Route Protection", () => {
 			});
 		});
 
+		/**
+		 * AI Usage Declaration:
+		 * AI assistance was used in this file for:
+		 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+		 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+		 **/
 		describe("Error", () => {
 			describe("Authorization Errors", () => {
 				it("should render Spinner and not call API when null token", () => {

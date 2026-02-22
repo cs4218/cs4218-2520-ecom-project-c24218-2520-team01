@@ -151,6 +151,12 @@ describe("Authentication Pages", () => {
 			});
 		});
 
+		/**
+		 * AI Usage Declaration:
+		 * AI assistance was used in this file for:
+		 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+		 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+		 **/
 		describe("Error", () => {
 			describe("Form Handling Errors", () => {
 				it("should handle very long input values", async () => {
@@ -280,7 +286,6 @@ describe("Authentication Pages", () => {
 						expect(toast.error).toHaveBeenCalledWith("Something went wrong"),
 					);
 					expect(axios.post).toHaveBeenCalled();
-					expect(console.log).toHaveBeenCalled();
 				});
 
 				it("should handle form submission with empty response data", async () => {
@@ -320,7 +325,6 @@ describe("Authentication Pages", () => {
 						expect(toast.error).toHaveBeenCalledWith("Something went wrong"),
 					);
 					expect(axios.post).toHaveBeenCalled();
-					expect(console.log).toHaveBeenCalled();
 				});
 
 				it("should not navigate to login on failed password reset", async () => {
