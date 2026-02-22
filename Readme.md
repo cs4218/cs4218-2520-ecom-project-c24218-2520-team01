@@ -138,7 +138,7 @@ To begin unit testing with Jest in your project, follow these steps:
 
 ### Lim Jia Wei (A0277381W)
 
-I was responsible for testing the following componenets:
+I was responsible for testing the following components:
 
 **Server Files:**
 
