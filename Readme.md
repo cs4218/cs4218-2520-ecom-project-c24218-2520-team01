@@ -144,3 +144,35 @@ To begin unit testing with Jest in your project, follow these steps:
      ```bash
      npm run test
      ```
+
+## 6. Who Handled What
+
+### Rachel Tai Ke Jia (A0258603A)
+
+#### Unit Testing
+I was responsible for unit testing frontend components, context providers, and one backend controller: 
+
+- General Components and Pages
+   - `components/Footer.js`
+   - `components/Header.js`
+   - `components/Layout.js`
+   - `components/Spinner.js`
+   - `pages/About.js`
+   - `pages/Pagenotfound.js`
+   - `pages/Contact.js`
+   - `pages/Policy.js`
+- Search, Product, Cart, and Home
+   - `components/Form/SearchInput.js`
+   - `context/search.js`
+   - `pages/Search.js`
+   - `pages/ProductDetails.js`
+   - `pages/CategoryProduct.js`
+   - `context/cart.js`
+   - `pages/CartPage.js`
+   - `pages/Homepage.js`
+- User, Dashboard, Orders, Profile, and Auth Controller: 
+   - `components/UserMenu.js`
+   - `pages/user/Dashboard.js`
+   - `pages/user/Orders.js`
+   - `pages/user/Profile.js`
+   - `controllers/authController.js` (specifically `updateProfileController`)

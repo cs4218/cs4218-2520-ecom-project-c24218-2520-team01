@@ -20,16 +20,36 @@ export default {
   transformIgnorePatterns: ["/node_modules/(?!(styleMock\\.js)$)"],
 
   // only run these tests
-  testMatch: ["<rootDir>/client/src/pages/Auth/*.test.js"],
+  testMatch: [
+    "<rootDir>/client/src/pages/Auth/*.test.js",
+    "<rootDir>/client/src/context/*.test.js",
+    "<rootDir>/client/src/pages/admin/*.test.js",
+    "<rootDir>/client/src/pages/user/*.test.js",
+    "<rootDir>/client/src/components/**/*.test.js",
+    "<rootDir>/client/src/components/Routes/*.test.js",
+    "<rootDir>/client/src/components/UserMenu.test.js",
+  ],
 
   // jest code coverage
   collectCoverage: true,
-  collectCoverageFrom: ["client/src/pages/Auth/**"],
+  collectCoverageFrom: [
+    "client/src/pages/Auth/**",
+    "client/src/context/**",
+    "client/src/components/Routes/**",
+    "client/src/components/UserMenu.js",
+    "client/src/components/AdminMenu.js",
+    "client/src/components/Form/CategoryForm.js",
+    "client/src/pages/user/*.js",
+    "client/src/pages/admin/*.js",
+  ],
   coverageThreshold: {
     global: {
       lines: 100,
       functions: 100,
     },
   },
-  setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
+  setupFilesAfterEnv: [
+    "<rootDir>/client/src/setupTests.js",
+    "<rootDir>/jest.setup.js"
+  ],
 };
