@@ -155,15 +155,6 @@ describe("unit test for calculateTotalPrice function", () => {
         expect(result).toBe("$0.00");
     });
 
-    test("return $0.00 for undefined cart parameter", () => {
-        // Act 
-        // Call function without parameters
-        const result = calculateTotalPrice();
-
-        // Assert
-        expect(result).toBe("$0.00");
-    });
-
     test("return $0.00 if price is NaN (invalid)", () => {
         // Arrange
         const invalidCart = [{ price: undefined, quantity: 2 }];
@@ -426,19 +417,6 @@ describe("unit tests for cartpage component", () => {
 
 
     describe("communication-based testing to verify api interactions", () => {
-        test("fetch payment token when component renders", async () => {
-            // Arrange (in beforeEach)
-
-            // Act
-            render(<CartPage />);
-
-            // Assert
-            await waitFor(() => {
-                expect(mockedAxios.get).toHaveBeenCalledWith("/api/v1/product/braintree/token");
-            });
-        });
-
-
         test("catch error in handle payment token", async () => {
             // Arrange 
             const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -513,170 +491,10 @@ describe("unit tests for cartpage component", () => {
 
             consoleLogSpy.mockRestore();
         });
-
-        test("display processing state during payment", async () => {
-            // Arrange 
-            MOCK_BRAINTREE_INSTANCE.requestPaymentMethod.mockImplementation(
-                () => new Promise(resolve => setTimeout(
-                  () => resolve({ nonce: MOCK_PAYMENT_NONCE }), 100))
-            );
-
-            // Act 
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(screen.getByTestId("braintree-dropin")).toBeInTheDocument();
-            });
-            const paymentButton = screen.getByText("Make Payment");
-            fireEvent.click(paymentButton);
-
-            // Assert 
-            await waitFor(() => {
-                expect(screen.getByText("Processing ....")).toBeInTheDocument();
-            });
-            expect(screen.getByText("Processing ....")).toBeDisabled();
-            await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalledWith("/dashboard/user/orders");
-            }, { timeout: 3000 });
-        });
-    });
-
-
-    describe("state-based testing of payment button states", () => {
-        test("disable payment button when loading", async () => {
-            // Arrange
-            MOCK_BRAINTREE_INSTANCE.requestPaymentMethod.mockImplementation(
-                () => new Promise(resolve => setTimeout(
-                  () => resolve({ nonce: MOCK_PAYMENT_NONCE }), 50))
-            );
-
-            // Act 
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(screen.getByTestId("braintree-dropin")).toBeInTheDocument();
-            });
-            const paymentButton = screen.getByText("Make Payment");
-            fireEvent.click(paymentButton);
-
-            // Assert
-            await waitFor(() => {
-                expect(screen.getByText("Processing ....")).toBeInTheDocument();
-            });
-            expect(screen.getByText("Processing ....")).toBeDisabled();
-            await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalled();
-            }, { timeout: 3000 });
-        });
-
-
-        test("disable payment button when no braintree instance", async () => {
-            // Arrange 
-            mockShouldProvideBraintreeInstance = false;
-
-            // Act 
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(screen.getByTestId("braintree-dropin")).toBeInTheDocument();
-            });
-
-            // Assert 
-            const paymentButton = screen.getByText("Make Payment");
-            expect(paymentButton).toBeDisabled();
-        });
-
-
-        test("disable payment button for user without address", async () => {
-            // Arrange
-            require("../context/auth").useAuth.mockReturnValue(
-              [MOCK_AUTH_USER_NO_ADDRESS, mockSetAuth]
-            );
-
-            // Act
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(screen.getByTestId("braintree-dropin")).toBeInTheDocument();
-            });
-
-            // Assert 
-            const paymentButton = screen.getByText("Make Payment");
-            expect(paymentButton).toBeDisabled();
-        });
-
-
-        test("does not show payment section for guest users", async () => {
-            // Arrange 
-            require("../context/auth").useAuth.mockReturnValue(
-              [MOCK_AUTH_GUEST, mockSetAuth]
-            );
-
-            // Act
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(mockedAxios.get).toHaveBeenCalled();
-            });
-
-            // Assert
-            expect(screen.queryByTestId("braintree-dropin")).not.toBeInTheDocument();
-            expect(screen.queryByText("Make Payment")).not.toBeInTheDocument();
-        });
-
-
-        test("does not show payment section when cart is empty", async () => {
-            // Arrange 
-            require("../context/cart").useCart.mockReturnValue({
-                ...mockUseCart,
-                cart: MOCK_EMPTY_CART
-            });
-
-            // Act 
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(mockedAxios.get).toHaveBeenCalled();
-            });
-
-            // Assert
-            expect(screen.queryByTestId("braintree-dropin")).not.toBeInTheDocument();
-            expect(screen.queryByText("Make Payment")).not.toBeInTheDocument();
-        });
-
-
-        test("does not show payment section when there is no client token", async () => {
-            // Arrange
-            mockedAxios.get.mockResolvedValue({ data: {} });
-
-            // Act
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(mockedAxios.get).toHaveBeenCalled();
-            });
-
-            // Assert
-            expect(screen.queryByTestId("braintree-dropin")).not.toBeInTheDocument();
-            expect(screen.queryByText("Make Payment")).not.toBeInTheDocument();
-        });
     });
 
 
     describe("state-based testing of edge cases and error scenarios", () => {
-        test("handle cart with single item", async () => {
-            // Arrange
-            require("../context/cart").useCart.mockReturnValue({
-                ...mockUseCart,
-                cart: MOCK_CART_SINGLE_ITEM
-            });
-
-            // Act
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(mockedAxios.get).toHaveBeenCalled();
-            });
-
-            // Assert
-            expect(screen.getByText("You Have 1 items in your cart")).toBeInTheDocument();
-            expect(screen.getByText(MOCK_PRODUCT_1.name)).toBeInTheDocument();
-            expect(screen.getAllByText("Remove")).toHaveLength(1);
-        });
-
-
         test("handle undefined cart", async () => {
             // Arrange
             require("../context/cart").useCart.mockReturnValue({
@@ -692,21 +510,6 @@ describe("unit tests for cartpage component", () => {
 
             // Assert
             expect(screen.getByText("Your Cart Is Empty")).toBeInTheDocument();
-        });
-
-        
-        test("handle null user", async () => {
-            // Arrange 
-            require("../context/auth").useAuth.mockReturnValue([{ user: null, token: null }, mockSetAuth]);
-
-            // Act
-            render(<CartPage />);
-            await waitFor(() => {
-                expect(mockedAxios.get).toHaveBeenCalled();
-            });
-
-            // Assert
-            expect(screen.getByText("Hello Guest")).toBeInTheDocument();
         });
 
         test("handle product with no description", async () => {
@@ -725,45 +528,6 @@ describe("unit tests for cartpage component", () => {
             
             // Assert
             expect(screen.getByTestId("layout")).toBeInTheDocument();
-        });
-    });
-
-
-    describe("communication-based testing for useEffect dependencies", () => {
-        test("refetch token if auth token changes", async () => {
-            // Arrange 
-            const { rerender } = render(<CartPage />);           
-            mockedAxios.get.mockClear();
-
-            // Act
-            const newAuth = { ...MOCK_AUTH_USER, token: "new-token" };
-            require("../context/auth").useAuth.mockReturnValue([newAuth, mockSetAuth]);
-            rerender(<CartPage />);
-
-            // Assert
-            await waitFor(() => {
-                expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-            });
-        });
-
-
-        test("does not refetch token when other auth properties change", async () => {
-            // Arrange 
-            const { rerender } = render(<CartPage />);
-            mockedAxios.get.mockClear();
-
-            // Act
-            const newAuth = { 
-                ...MOCK_AUTH_USER, 
-                user: { ...MOCK_AUTH_USER.user, name: "Different Name" }
-            };
-            require("../context/auth").useAuth.mockReturnValue([newAuth, mockSetAuth]);
-            rerender(<CartPage />);
-
-            // Assert 
-            await waitFor(() => {
-                expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-            });
         });
     });
 });

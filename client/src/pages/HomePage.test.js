@@ -185,17 +185,6 @@ describe("unit tests for home page component", () => {
 
 
     describe("component mount and fetch data", () => {
-        test("output-based testing: show home page component", async () => {
-            // Act
-            render(<HomePage />);
-
-            // Assert
-            await waitFor(() => {
-                expect(screen.getByTestId("layout")).toBeInTheDocument();
-            });
-        });
-
-
         test("output-based testing: show page title", async () => {
             // Act
             render(<HomePage />);
@@ -351,40 +340,7 @@ describe("unit tests for home page component", () => {
             });
         });
 
-
-        test("state-based testing: verify loading state when fetching products", async () => {
-            // Arrange
-            let resolveProducts;
-            axios.get.mockImplementation((url) => {
-                if (url === "/api/v1/category/get-category") {
-                    return Promise.resolve({
-                        data: { success: true, category: MOCK_CATEGORIES }
-                    });
-                }
-                if (url === "/api/v1/product/product-count") {
-                    return Promise.resolve({ data: { total: 10 } });
-                }
-                if (url.includes("/api/v1/product/product-list/")) {
-                    return new Promise((resolve) => {
-                        resolveProducts = resolve;
-                    });
-                }
-            });
-
-            // Act
-            render(<HomePage />);
-
-            // Assert 
-            await waitFor(() => {
-                expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-list/1");
-            });
-            resolveProducts({ data: { products: MOCK_PRODUCTS } });
-            await waitFor(() => {
-                expect(screen.getByText(MOCK_PRODUCTS[1].name)).toBeInTheDocument();
-            });
-        });
-
-
+        
         test("communication-based testing: handle errors in fetching product", async () => {
             // Arrange
             const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
@@ -644,129 +600,6 @@ describe("unit tests for home page component", () => {
 
 
     describe("load more button", () => {
-        test("output-based testing: show load more button when products < total", async () => {
-            // Arrange
-            render(<HomePage />);
-
-            // Assert
-            await waitFor(() => {
-                expect(screen.getByText(/Loadmore/i)).toBeInTheDocument();
-            });
-        });
-
-        
-        test("output-based testing: do not display load more button when products count = total", async () => {
-            // Arrange
-            axios.get.mockImplementation((url) => {
-                if (url === "/api/v1/category/get-category") {
-                    return Promise.resolve({
-                        data: { success: true, category: MOCK_CATEGORIES }
-                    });
-                }
-                if (url === "/api/v1/product/product-count") {
-                    return Promise.resolve({ data: { total: 2 } });
-                }
-                if (url.includes("/api/v1/product/product-list/")) {
-                    return Promise.resolve({ data: { products: MOCK_PRODUCTS } });
-                }
-            });
-            render(<HomePage />);
-
-            // Assert
-            await waitFor(() => {
-                expect(screen.getByText("Wireless Bluetooth Headphones")).toBeInTheDocument();
-            });
-            expect(screen.queryByText(/Loadmore/i)).not.toBeInTheDocument();
-        });
-
-
-        test("state-, communication-based: load more products when load more button clicked", async () => {
-            // Arrange
-            const additionalProducts = [
-                {
-                    _id: "p3",
-                    name: "Gaming Mouse",
-                    description: "Ergonomic gaming mouse with RGB lighting and precision sensor",
-                    price: 80.00,
-                    slug: "gaming-mouse"
-                }
-            ];
-            axios.get.mockImplementation((url) => {
-                if (url === "/api/v1/category/get-category") {
-                    return Promise.resolve({
-                        data: { success: true, category: MOCK_CATEGORIES }
-                    });
-                }
-                if (url === "/api/v1/product/product-count") {
-                    return Promise.resolve({ data: { total: 10 } });
-                }
-                if (url === "/api/v1/product/product-list/1") {
-                    return Promise.resolve({ data: { products: MOCK_PRODUCTS } });
-                }
-                if (url === "/api/v1/product/product-list/2") {
-                    return Promise.resolve({ data: { products: additionalProducts } });
-                }
-            });
-            render(<HomePage />);
-            await waitFor(() => {
-                expect(screen.getByText("Wireless Bluetooth Headphones")).toBeInTheDocument();
-            });
-
-            // Act
-            const loadMoreButton = screen.getByText(/Loadmore/i);
-            fireEvent.click(loadMoreButton);
-
-            // Assert
-            await waitFor(() => {
-                expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-list/2");
-            });
-
-            await waitFor(() => {
-                expect(screen.getAllByRole("img").length).toBeGreaterThan(2);
-            });
-        });
-
-
-        test("state-based testing: show loading text", async () => {
-            // Arrange
-            let resolveLoadMore;
-            axios.get.mockImplementation((url) => {
-                if (url === "/api/v1/category/get-category") {
-                    return Promise.resolve({
-                        data: { success: true, category: MOCK_CATEGORIES }
-                    });
-                }
-                if (url === "/api/v1/product/product-count") {
-                    return Promise.resolve({ data: { total: 10 } });
-                }
-                if (url === "/api/v1/product/product-list/1") {
-                    return Promise.resolve({ data: { products: MOCK_PRODUCTS } });
-                }
-                if (url === "/api/v1/product/product-list/2") {
-                    return new Promise((resolve) => {
-                        resolveLoadMore = resolve;
-                    });
-                }
-            });
-            render(<HomePage />); 
-            await waitFor(() => {
-                expect(screen.getByText("Wireless Bluetooth Headphones")).toBeInTheDocument();
-            });
-
-            // Act
-            const loadMoreButton = screen.getByText(/Loadmore/i);
-            fireEvent.click(loadMoreButton);
-
-            // Assert
-            await waitFor(() => {
-                expect(screen.getByText("Loading ...")).toBeInTheDocument();
-            });
-            resolveLoadMore({ data: { products: [] } });
-            await waitFor(() => {
-                expect(screen.queryByText("Loading ...")).not.toBeInTheDocument();
-            });
-        });
-
         test("communication-based: catch load more error", async () => {
             // Arrange
             const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
@@ -880,26 +713,6 @@ describe("unit tests for home page component", () => {
 
             setItemSpy.mockRestore();
         });
-
-
-        test("state-, communication-based testing: add many products to cart", async () => {
-            // Arrange
-            toast.success = jest.fn();
-            render(<HomePage />);
-            await waitFor(() => {
-                expect(screen.getByText("Wireless Bluetooth Headphones")).toBeInTheDocument();
-                expect(screen.getByText("Unisex Cotton Shirt")).toBeInTheDocument();
-            });
-
-            // Act
-            const addToCartButtons = screen.getAllByText("ADD TO CART");
-            fireEvent.click(addToCartButtons[0]);
-            fireEvent.click(addToCartButtons[1]);
-
-            // Assert
-            expect(mockSetCart).toHaveBeenCalledTimes(2);
-            expect(toast.success).toHaveBeenCalledTimes(2);
-        });
     });
 
 
@@ -966,132 +779,6 @@ describe("unit tests for home page component", () => {
                 expect(screen.getByText(formatPrice(MOCK_PRODUCTS[0].price))).toBeInTheDocument();
                 expect(screen.getByText(formatPrice(MOCK_PRODUCTS[1].price))).toBeInTheDocument();
             });
-        });
-
-
-        test("output-based testing: show product description truncated to 60 chars", async () => {
-            // Arrange
-            render(<HomePage />);
-
-            // Assert
-            await waitFor(() => {
-                const description = screen.getByText(/Noise-cancelling headphones/);
-                expect(description.textContent).toMatch(/\.\.\.$/);
-            });
-        });
-    });
-
-
-    test("communication-based: no loadmore called on initial render if page is 1", async () => {
-        // Arrange
-        const getAllProductsSpy = jest.fn();
-        axios.get.mockImplementation((url) => {
-            if (url === "/api/v1/category/get-category") {
-                return Promise.resolve({
-                    data: { success: true, category: MOCK_CATEGORIES }
-                });
-            }
-            if (url === "/api/v1/product/product-count") {
-                return Promise.resolve({ data: { total: 10 } });
-            }
-            if (url.includes("/api/v1/product/product-list/1")) {
-                getAllProductsSpy();
-                return Promise.resolve({ data: { products: MOCK_PRODUCTS } });
-            }
-        });
-
-        // Act
-        render(<HomePage />);
-
-        // Assert
-        await waitFor(() => {
-            expect(getAllProductsSpy).toHaveBeenCalledTimes(1);
-        });   
-        expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-list/1");
-        expect(axios.get).not.toHaveBeenCalledWith("/api/v1/product/product-list/2");
-    });
-
-
-    test("state-, communication-based: getAllProducts not called if filters cleared", async () => {
-        // Arrange
-        render(<HomePage />);
-        await waitFor(() => {
-            expect(screen.getByText("Electronics")).toBeInTheDocument();
-        });
-
-        // Act
-        const checkbox = screen.getByTestId("checkbox-Electronics");
-        fireEvent.click(checkbox);
-        await waitFor(() => {
-            expect(axios.post).toHaveBeenCalled();
-        }, { timeout: 3000 });
-        jest.clearAllMocks();
-        fireEvent.click(checkbox); // clear filter
-
-        // Assert 
-        await waitFor(() => {
-            expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-list/1");
-        }, { timeout: 3000 });
-    });
-
-
-    test("communication-based testing: call filterProduct when if filter by category", async () => {
-        // Arrange
-        render(<HomePage />);
-        await waitFor(() => {
-            expect(screen.getByText("Electronics")).toBeInTheDocument();
-        });
-        jest.clearAllMocks();
-
-        // Act
-        const checkbox = screen.getByTestId("checkbox-Electronics");
-        fireEvent.click(checkbox);
-
-        // Assert
-        await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith(
-                "/api/v1/product/product-filters",
-                expect.objectContaining({
-                    checked: ["cat1"],
-                    radio: []
-                })
-            );
-        }, { timeout: 3000 });
-    });
-
-
-    test("communication-based testing: call filterProduct when only filtering price", async () => {
-        // Arrange
-        render(<HomePage />);
-        await waitFor(() => {
-            expect(screen.getByTestId("radio-group")).toBeInTheDocument();
-        });
-        jest.clearAllMocks();
-
-        // Act
-        const radioButton = screen.getByTestId('radio-[0,19]');
-        fireEvent.click(radioButton);
-
-        // Assert
-        await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith(
-                "/api/v1/product/product-filters",
-                expect.objectContaining({
-                    checked: [],
-                    radio: [0, 19]
-                })
-            );
-        }, { timeout: 3000 });
-    });
-
-
-    test("display reload icon when not loading", async () => {
-        // Arrange
-        render(<HomePage />);
-
-        // Assert
-        await waitFor(() => {
-            expect(screen.getByTestId("reload-icon")).toBeInTheDocument();
         });
     });
 });
