@@ -286,3 +286,7 @@ I am in charge of the unit testing for the authentication module across both the
 #### Milestone 1 Unit Test
 
 For **milestone 1**, I have done unit test for all components under Authentication (_more information can be seen in the MS1 report_).
+
+## 7. MS1 CI URL
+
+**CI URL**: https://github.com/cs4218/cs4218-2520-ecom-project-c24218-2520-team01/actions/runs/22282001657
