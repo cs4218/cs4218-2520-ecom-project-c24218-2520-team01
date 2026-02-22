@@ -7,6 +7,7 @@ import useCategory from "../hooks/useCategory";
 import { useCart } from "../context/cart";
 import { Badge } from "antd";
 import "../styles/Header.css";
+
 const Header = () => {
   const [auth, setAuth] = useAuth();
   const [cart] = useCart();
@@ -61,7 +62,7 @@ const Header = () => {
                     </Link>
                   </li>
                   {categories?.map((c) => (
-                    <li>
+                    <li key={c.slug}>
                       <Link
                         className="dropdown-item"
                         to={`/category/${c.slug}`}
