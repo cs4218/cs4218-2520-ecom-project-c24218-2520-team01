@@ -248,6 +248,9 @@ I am responsible for unit testing frontend components, context providers, and on
    - `pages/user/Profile.js`
    - `controllers/authController.js` (specifically `updateProfileController`)
 
+#### Milestone 1 Unit Test
+For **milestone 1**, I have done unit tests for all client components (pages, context, components) (*more information can be seen in the MS1 report*).
+
 ### Wong Sheen Kerr (A0269647J)
 I am in charge of the unit testing for the authentication module across both the backend and frontend, namely:
 
