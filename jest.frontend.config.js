@@ -1,59 +1,55 @@
 export default {
-	// name displayed during tests
-	displayName: "frontend",
+  // name displayed during tests
+  displayName: "frontend",
 
-	// simulates browser environment in jest
-	// e.g., using document.querySelector in your tests
-	testEnvironment: "jest-environment-jsdom",
+  // simulates browser environment in jest
+  // e.g., using document.querySelector in your tests
+  testEnvironment: "jest-environment-jsdom",
 
-	// jest does not recognise jsx files by default, so we use babel to transform any jsx files
-	transform: {
-		"^.+\\.jsx?$": "babel-jest",
-	},
+  // jest does not recognise jsx files by default, so we use babel to transform any jsx files
+  transform: {
+    "^.+\\.jsx?$": "babel-jest",
+  },
 
-	// tells jest how to handle css/scss imports in your tests
-	moduleNameMapper: {
-		"\\.(css|scss)$": "identity-obj-proxy",
-	},
+  // tells jest how to handle css/scss imports in your tests
+  moduleNameMapper: {
+    "\\.(css|scss)$": "identity-obj-proxy",
+  },
 
-	// ignore all node_modules except styleMock (needed for css imports)
-	transformIgnorePatterns: ["/node_modules/(?!(styleMock\\.js)$)"],
+  // ignore all node_modules except styleMock (needed for css imports)
+  transformIgnorePatterns: ["/node_modules/(?!(styleMock\\.js)$)"],
 
-	// only run these tests
-	testMatch: [
-		"<rootDir>/client/src/pages/Auth/*.test.js",
-		"<rootDir>/client/src/context/*.test.js",
-		"<rootDir>/client/src/components/Routes/*.test.js",
-		"<rootDir>/client/src/context/search.test.js",
-		"<rootDir>/client/src/components/Form/SearchInput.test.js",
-		"<rootDir>/client/src/pages/Search.test.js",
-		"<rootDir>/client/src/pages/ProductDetails.test.js",
-		"<rootDir>/client/src/pages/CategoryProduct.test.js",
-		"<rootDir>/client/src/context/cart.test.js",
-		"<rootDir>/client/src/pages/CartPage.test.js",
-		"<rootDir>/client/src/pages/HomePage.test.js",
-	],
+  // only run these tests
+  testMatch: [
+    "<rootDir>/client/src/pages/Auth/*.test.js",
+    "<rootDir>/client/src/context/*.test.js",
+    "<rootDir>/client/src/pages/admin/*.test.js",
+    "<rootDir>/client/src/pages/user/*.test.js",
+    "<rootDir>/client/src/components/**/*.test.js",
+    "<rootDir>/client/src/components/Routes/*.test.js",
+    "<rootDir>/client/src/components/UserMenu.test.js",
+  ],
 
-	// jest code coverage
-	collectCoverage: true,
-	collectCoverageFrom: [
-		"client/src/pages/Auth/**",
-		"client/src/context/**",
-		"client/src/components/Routes/**",
-		"client/src/context/search.js",
-		"client/src/components/Form/SearchInput.js",
-		"client/src/pages/Search.js",
-		"client/src/pages/ProductDetails.js",
-		"client/src/pages/CategoryProduct.js",
-		"client/src/context/cart.js",
-		"client/src/pages/CartPage.js",
-		"client/src/pages/HomePage.js",
-	],
-	coverageThreshold: {
-		global: {
-		lines: 100,
-		functions: 100,
-		},
-	},
-	setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
+  // jest code coverage
+  collectCoverage: true,
+  collectCoverageFrom: [
+    "client/src/pages/Auth/**",
+    "client/src/context/**",
+    "client/src/components/Routes/**",
+    "client/src/components/UserMenu.js",
+    "client/src/components/AdminMenu.js",
+    "client/src/components/Form/CategoryForm.js",
+    "client/src/pages/user/*.js",
+    "client/src/pages/admin/*.js",
+  ],
+  coverageThreshold: {
+    global: {
+      lines: 100,
+      functions: 100,
+    },
+  },
+  setupFilesAfterEnv: [
+    "<rootDir>/client/src/setupTests.js",
+    "<rootDir>/jest.setup.js"
+  ],
 };

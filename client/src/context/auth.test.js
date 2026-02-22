@@ -3,7 +3,7 @@ import {
 	render,
 	screen,
 	waitFor,
-	renderHook,
+	renderHook, // renderHook information attained from: https://testing-library.com/docs/react-testing-library/api/#renderhook
 	act,
 } from "@testing-library/react";
 import { AuthProvider, useAuth } from "./auth";
@@ -286,7 +286,10 @@ describe("Auth Context", () => {
 					consoleErrorSpy.mockRestore();
 				});
 			});
-
+			/**
+			 * External Reference:
+			 * Parameterized test pattern adapted from: https://stackoverflow.com/questions/52996062/using-jests-test-each-parameterized-test-variable-scope
+			 **/
 			describe("setAuth Errors", () => {
 				it.each([
 					["token with special characters", "tok@n!#$%&'*+/=?^_`{|}~.-"],

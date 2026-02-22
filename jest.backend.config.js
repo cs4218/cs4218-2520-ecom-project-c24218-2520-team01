@@ -10,6 +10,7 @@ export default {
 		"<rootDir>/controllers/*.test.js",
 		"<rootDir>/helpers/*.test.js",
 		"<rootDir>/middlewares/*.test.js",
+		"<rootDir>/config/*.test.js"
 	],
 
 	// transform files with babel
@@ -27,7 +28,7 @@ export default {
 
 	// jest code coverage
 	collectCoverage: true,
-	collectCoverageFrom: ["controllers/**", "helpers/**", "middlewares/**"],
+	collectCoverageFrom: ["controllers/**", "helpers/**", "middlewares/**", "config/**"],
 	coverageThreshold: {
 		global: {
 			lines: 100,

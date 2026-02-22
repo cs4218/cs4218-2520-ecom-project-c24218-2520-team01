@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
+
+// Bugs fixed by Nicholas Cheng, A0269648H
 
 export default function useCategory() {
   const [categories, setCategories] = useState([]);
@@ -10,7 +13,7 @@ export default function useCategory() {
       const { data } = await axios.get("/api/v1/category/get-category");
       setCategories(data?.category);
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to fetch categories");
     }
   };
 
