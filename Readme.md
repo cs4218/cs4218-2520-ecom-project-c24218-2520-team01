@@ -147,21 +147,21 @@ I was responsible for unit testing admin-related frontend componenets as well as
 - `controllers/authController.js`
   - `userController` - New function
 
-- `config/db\.js `
-- `models/userModel\.js`
+- `config/db.js `
+- `models/userModel.js`
 
 **Client Files:**
 
-- `components/AdminMenu\.js`
-- `components/Form/CategoryForm\.js`
+- `components/AdminMenu.js`
+- `components/Form/CategoryForm.js`
 
-- `pages/admin/AdminDashboard\.js`
-- `pages/admin/CreateCategory\.js`
-- `pages/admin/CreateProduct\.js`
-- `pages/admin/UpdateProduct\.js`
-- `pages/admin/AdminOrders\.js`
-- `pages/admin/Products\.js`
-- `pages/admin/Users\.js`
+- `pages/admin/AdminDashboard.js`
+- `pages/admin/CreateCategory.js`
+- `pages/admin/CreateProduct.js`
+- `pages/admin/UpdateProduct.js`
+- `pages/admin/AdminOrders.js`
+- `pages/admin/Products.js`
+- `pages/admin/Users.js`
 
 ### Wong Sheen Kerr (A0269647J)
 
