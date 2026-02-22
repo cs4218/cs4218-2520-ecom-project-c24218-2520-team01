@@ -50,10 +50,10 @@ export const createProductController = async (req, res) => {
             ...req.fields,
             slug: slugify(name),
         });
-        if (photo) {
-            products.photo.data = fs.readFileSync(photo.path);
-            products.photo.contentType = photo.type;
-        }
+
+        products.photo.data = fs.readFileSync(photo.path);
+        products.photo.contentType = photo.type;
+
         await products.save();
         res.status(201).send({
             success: true,
@@ -241,10 +241,10 @@ export const updateProductController = async (req, res) => {
             { ...req.fields, slug: slugify(name) },
             { new: true },
         );
-        if (photo) {
-            products.photo.data = fs.readFileSync(photo.path);
-            products.photo.contentType = photo.type;
-        }
+
+        products.photo.data = fs.readFileSync(photo.path);
+        products.photo.contentType = photo.type;
+
         await products.save();
         res.status(201).send({
             success: true,
@@ -410,12 +410,12 @@ export const braintreeTokenController = async (req, res) => {
                 res.status(500).send({
                     success: false,
                     message: "Error while generating token",
-                    error
+                    error,
                 });
             } else {
                 res.status(200).send({
                     success: true,
-                    data: response
+                    data: response,
                 });
             }
         });
@@ -424,7 +424,7 @@ export const braintreeTokenController = async (req, res) => {
         res.status(500).send({
             success: false,
             message: "Error with braintree",
-            error
+            error,
         });
     }
 };
@@ -477,17 +477,17 @@ export const brainTreePaymentController = async (req, res) => {
                     res.status(500).send({
                         success: false,
                         message: "Error while making transaction",
-                        error
+                        error,
                     });
                 }
-            }
+            },
         );
     } catch (error) {
         console.log(error);
         res.status(500).send({
             success: false,
             message: "Error with braintree",
-            error
+            error,
         });
     }
 };

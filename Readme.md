@@ -23,76 +23,76 @@ Virtual Vault is a full-stack MERN (MongoDB, Express.js, React.js, Node.js) e-co
 ### 1. Installing Node.js
 
 1. **Download and Install Node.js**:
-   - Visit [nodejs.org](https://nodejs.org) to download and install Node.js.
+    - Visit [nodejs.org](https://nodejs.org) to download and install Node.js.
 
 2. **Verify Installation**:
-   - Open your terminal and check the installed versions of Node.js and npm:
-     ```bash
-     node -v
-     npm -v
-     ```
+    - Open your terminal and check the installed versions of Node.js and npm:
+        ```bash
+        node -v
+        npm -v
+        ```
 
 ### 2. MongoDB Setup
 
 1. **Download and Install MongoDB Compass**:
-   - Visit [MongoDB Compass](https://www.mongodb.com/products/tools/compass) and download and install MongoDB Compass for your operating system.
+    - Visit [MongoDB Compass](https://www.mongodb.com/products/tools/compass) and download and install MongoDB Compass for your operating system.
 
 2. **Create a New Cluster**:
-   - Sign up or log in to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register).
-   - After logging in, create a project and within that project deploy a free cluster.
+    - Sign up or log in to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register).
+    - After logging in, create a project and within that project deploy a free cluster.
 
 3. **Configure Database Access**:
-   - Create a new user for your database (if not alredy done so) in MongoDB Atlas.
-   - Navigate to "Database Access" under "Security" and create a new user with the appropriate permissions.
+    - Create a new user for your database (if not alredy done so) in MongoDB Atlas.
+    - Navigate to "Database Access" under "Security" and create a new user with the appropriate permissions.
 
 4. **Whitelist IP Address**:
-   - Go to "Network Access" under "Security" and whitelist your IP address to allow access from your machine.
-   - For example, you could whitelist 0.0.0.0 to allow access from anywhere for ease of use.
+    - Go to "Network Access" under "Security" and whitelist your IP address to allow access from your machine.
+    - For example, you could whitelist 0.0.0.0 to allow access from anywhere for ease of use.
 
 5. **Connect to the Database**:
-   - In your cluster's page on MongoDB Atlas, click on "Connect" and choose "Compass".
-   - Copy the connection string.
+    - In your cluster's page on MongoDB Atlas, click on "Connect" and choose "Compass".
+    - Copy the connection string.
 
 6. **Establish Connection with MongoDB Compass**:
-   - Open MongoDB Compass on your local machine, paste the connection string (replace the necessary placeholders), and establish a connection to your cluster.
+    - Open MongoDB Compass on your local machine, paste the connection string (replace the necessary placeholders), and establish a connection to your cluster.
 
 ### 3. Application Setup
 
 To download and use the MERN (MongoDB, Express.js, React.js, Node.js) app from GitHub, follow these general steps:
 
 1. **Clone the Repository**
-   - Go to the GitHub repository of the MERN app.
-   - Click on the "Code" button and copy the URL of the repository.
-   - Open your terminal or command prompt.
-   - Use the `git clone` command followed by the repository URL to clone the repository to your local machine:
-     ```bash
-     git clone <repository_url>
-     ```
-   - Navigate into the cloned directory.
+    - Go to the GitHub repository of the MERN app.
+    - Click on the "Code" button and copy the URL of the repository.
+    - Open your terminal or command prompt.
+    - Use the `git clone` command followed by the repository URL to clone the repository to your local machine:
+        ```bash
+        git clone <repository_url>
+        ```
+    - Navigate into the cloned directory.
 
 2. **Install Frontend and Backend Dependencies**
-   - Run the following command in your project's root directory:
+    - Run the following command in your project's root directory:
 
-     ```
-     npm install && cd client && npm install && cd ..
-     ```
+        ```
+        npm install && cd client && npm install && cd ..
+        ```
 
 3. **Add database connection string to `.env`**
-   - Add the connection string copied from MongoDB Atlas to the `.env` file inside the project directory (replace the necessary placeholders):
-     ```env
-     MONGO_URL = <connection string>
-     ```
+    - Add the connection string copied from MongoDB Atlas to the `.env` file inside the project directory (replace the necessary placeholders):
+        ```env
+        MONGO_URL = <connection string>
+        ```
 
 4. **Adding sample data to database**
-   - Download “Sample DB Schema” from Canvas and extract it.
-   - In MongoDB Compass, create a database named `test` under your cluster.
-   - Add four collections to this database: `categories`, `orders`, `products`, and `users`.
-   - Under each collection, click "ADD DATA" and import the respective JSON from the extracted "Sample DB Schema".
+    - Download “Sample DB Schema” from Canvas and extract it.
+    - In MongoDB Compass, create a database named `test` under your cluster.
+    - Add four collections to this database: `categories`, `orders`, `products`, and `users`.
+    - Under each collection, click "ADD DATA" and import the respective JSON from the extracted "Sample DB Schema".
 
 5. **Running the Application**
-   - Open your web browser.
-   - Use `npm run dev` to run the app from root directory, which starts the development server.
-   - Navigate to `http://localhost:3000` to access the application.
+    - Open your web browser.
+    - Use `npm run dev` to run the app from root directory, which starts the development server.
+    - Navigate to `http://localhost:3000` to access the application.
 
 ## 5. Unit Testing with Jest
 
@@ -106,10 +106,10 @@ To begin unit testing with Jest in your project, follow these steps:
 1. **Install Jest**:  
    Use your preferred package manager to install Jest. For instance, with npm:
 
-   ```bash
-   npm install --save-dev jest
+    ```bash
+    npm install --save-dev jest
 
-   ```
+    ```
 
 2. **Write Tests**  
    Create test files for your components or units where you define test cases to evaluate their behaviour.
@@ -117,22 +117,22 @@ To begin unit testing with Jest in your project, follow these steps:
 3. **Run Tests**  
    Execute your tests using Jest to ensure that your components meet the expected behaviour.  
    You can run the tests by using the following command in the root of the directory:
-   - **Frontend tests**
+    - **Frontend tests**
 
-     ```bash
-     npm run test:frontend
-     ```
+        ```bash
+        npm run test:frontend
+        ```
 
-   - **Backend tests**
+    - **Backend tests**
 
-     ```bash
-     npm run test:backend
-     ```
+        ```bash
+        npm run test:backend
+        ```
 
-   - **All the tests**
-     ```bash
-     npm run test
-     ```
+    - **All the tests**
+        ```bash
+        npm run test
+        ```
 
 ## 6. Who Handled What
 
@@ -143,7 +143,7 @@ I was responsible for testing the following components:
 **Server Files:**
 
 - `controllers/authController.js`
-  - `userController` - New function
+    - `getUsersController` - New function
 
 - `config/db.js `
 - `models/userModel.js`
@@ -162,96 +162,106 @@ I was responsible for testing the following components:
 - `pages/admin/Users.js`
 
 #### Milestone 1 Unit Test
-For **milestone 1**, I unit tested all files specified above with the exception of `userModel.js` due to it being left for integration testing.  (*more information can be seen in the MS1 report*).
+
+For **milestone 1**, I unit tested all files specified above with the exception of `userModel.js` due to it being left for integration testing. (_more information can be seen in the MS1 report_).
 
 ### Muhammad Zaidan bin Sani (A0273278U)
+
 I am responsible for testing the following components:
 
 - Product CRUD
- - `controllers/productController`
-  - `createProductController`
-  - `deleteProductController`
-  - `updateProductController`
-  - `getProductController`
-  - `getSingleProductController`
-  - `productPhotoController`
+    - `controllers/productController`
+        - `createProductController`
+        - `deleteProductController`
+        - `updateProductController`
+        - `getProductController`
+        - `getSingleProductController`
+        - `productPhotoController`
 - Product filters
- - `controllers/productController`
-  - `productFiltersController`
-  - `productCountController`
-  - `productListController`
-  - `searchProductController`
-  - `relatedProductsController`
-  - `productCategoryController`
+    - `controllers/productController`
+        - `productFiltersController`
+        - `productCountController`
+        - `productListController`
+        - `searchProductController`
+        - `relatedProductsController`
+        - `productCategoryController`
 - Product model
- - `models/productModel`
+    - `models/productModel`
 
 #### Milestone 1 Unit Test
-For **milestone 1**, I unit tested every function seen under Product CRUD and product filters above, and left the product model for integration testing  (*more information can be seen in the MS1 report*).
+
+For **milestone 1**, I unit tested every function seen under Product CRUD and product filters above, and left the product model for integration testing (_more information can be seen in the MS1 report_).
 
 ### Nicholas Cheng De Fei (A0269648H)
+
 I am responsible for testing the following components:
 
-*Server Files:*
-- Category CRUD (*controllers/categoryController\.js*):
-  - `createCategoryController`
-  - `updateCategoryController`
-  - `deleteCategoryController`
-  - `categoryControlller`
-  - `singleCategoryController`
+_Server Files:_
 
-- Payment (*controllers/productController\.js*):
-  - `braintreeTokenController`
-  - `brainTreePaymentController`
+- Category CRUD (_controllers/categoryController\.js_):
+    - `createCategoryController`
+    - `updateCategoryController`
+    - `deleteCategoryController`
+    - `categoryControlller`
+    - `singleCategoryController`
 
-- Orders CRUD (*controllers/authController\.js*):
-  - `getOrdersController`
-  - `getAllOrdersController`
-  - `orderStatusController`
+- Payment (_controllers/productController\.js_):
+    - `braintreeTokenController`
+    - `brainTreePaymentController`
+
+- Orders CRUD (_controllers/authController\.js_):
+    - `getOrdersController`
+    - `getAllOrdersController`
+    - `orderStatusController`
 
 - Models:
-  - `models/categoryModel\.js`
-  - `models/orderModel\.js`
+    - `models/categoryModel\.js`
+    - `models/orderModel\.js`
 
-*Client Files:*
-  - `hooks/useCategory\.js`
-  - `pages/Categories\.js`
+_Client Files:_
+
+- `hooks/useCategory\.js`
+- `pages/Categories\.js`
 
 #### Milestone 1 Unit Test
-For **milestone 1**, I have done unit test for all components except for those under `Models`. The models will tested during integration testing (*more information can be seen in the MS1 report*).
+
+For **milestone 1**, I have done unit test for all components except for those under `Models`. The models will tested during integration testing (_more information can be seen in the MS1 report_).
 
 ### Rachel Tai Ke Jia (A0258603A)
-I am responsible for unit testing frontend components, context providers, and one backend controller: 
+
+I am responsible for unit testing frontend components, context providers, and one backend controller:
 
 - General Components and Pages
-   - `components/Footer.js`
-   - `components/Header.js`
-   - `components/Layout.js`
-   - `components/Spinner.js`
-   - `pages/About.js`
-   - `pages/Pagenotfound.js`
-   - `pages/Contact.js`
-   - `pages/Policy.js`
+    - `components/Footer.js`
+    - `components/Header.js`
+    - `components/Layout.js`
+    - `components/Spinner.js`
+    - `pages/About.js`
+    - `pages/Pagenotfound.js`
+    - `pages/Contact.js`
+    - `pages/Policy.js`
 - Search, Product, Cart, and Home
-   - `components/Form/SearchInput.js`
-   - `context/search.js`
-   - `pages/Search.js`
-   - `pages/ProductDetails.js`
-   - `pages/CategoryProduct.js`
-   - `context/cart.js`
-   - `pages/CartPage.js`
-   - `pages/Homepage.js`
-- User, Dashboard, Orders, Profile, and Auth Controller: 
-   - `components/UserMenu.js`
-   - `pages/user/Dashboard.js`
-   - `pages/user/Orders.js`
-   - `pages/user/Profile.js`
-   - `controllers/authController.js` (specifically `updateProfileController`)
+    - `components/Form/SearchInput.js`
+    - `context/search.js`
+    - `pages/Search.js`
+    - `pages/ProductDetails.js`
+    - `pages/CategoryProduct.js`
+    - `context/cart.js`
+    - `pages/CartPage.js`
+    - `pages/Homepage.js`
+- User, Dashboard, Orders, Profile, and Auth Controller:
+    - `components/UserMenu.js`
+    - `pages/user/Dashboard.js`
+    - `pages/user/Orders.js`
+    - `pages/user/Profile.js`
+    - `controllers/authController.js` (specifically `updateProfileController`)
 
 #### Milestone 1 Unit Test
-For **milestone 1**, I have done unit tests for all client components (pages, context, components) (*more information can be seen in the MS1 report*).
+
+For **milestone 1**, I have done unit tests for all client components (pages, context, components) (_more information can be seen in the MS1 report_).
 
 ### Wong Sheen Kerr (A0269647J)
+
 I am in charge of the unit testing for the authentication module across both the backend and frontend, namely:
 
 **Server Files:**
@@ -259,10 +269,10 @@ I am in charge of the unit testing for the authentication module across both the
 - `helpers/authHelper.js` (2 functions: `hashPassword`, `comparePassword`)
 - `middlewares/authMiddleware.js` (2 functions: `requireSignIn`, `isAdmin`)
 - `controllers/authController.js` – Auth functions only:
-  - `registerController`
-  - `loginController`
-  - `forgotPasswordController`
-  - `testController`
+    - `registerController`
+    - `loginController`
+    - `forgotPasswordController`
+    - `testController`
 
 **Client Files:**
 
@@ -274,4 +284,5 @@ I am in charge of the unit testing for the authentication module across both the
 - `pages/Auth/ForgotPassword.js` – New file I added
 
 #### Milestone 1 Unit Test
-For **milestone 1**, I have done unit test for all components under Authentication (*more information can be seen in the MS1 report*).
+
+For **milestone 1**, I have done unit test for all components under Authentication (_more information can be seen in the MS1 report_).
