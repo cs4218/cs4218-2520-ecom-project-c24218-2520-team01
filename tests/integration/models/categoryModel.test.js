@@ -40,7 +40,7 @@ describe("Category Schema on MongoDB", () => {
             await categoryObject.save();
         });
         describe("Test name field behaviour", () => {
-            test("Successfully create a new & unique category inside the database", async () => {
+            test("Successfully create a new category when a unique name is given", async () => {
                 // Arrange
                 const categoryData = {
                     name: "Electronics",
@@ -48,8 +48,8 @@ describe("Category Schema on MongoDB", () => {
                 };
 
                 // Act
-                const category = new Category(categoryData);
-                const savedCategory = await category.save();
+                const newCategory = new Category(categoryData);
+                const savedCategory = await newCategory.save();
 
                 // Assert
                 expect(savedCategory._id).toBeDefined();
@@ -94,6 +94,85 @@ describe("Category Schema on MongoDB", () => {
                 // Act & Assert
                 await expect(existingNameCategory.save()).rejects.toThrow();
             });
-        })
-    })
-})
+        });
+
+        describe("Test slug field behaviour", () => {
+            test("Successfully create a new category when a unique slug is given", async () => {
+                /**
+                 * Assumption: Having a look at the front end the slug is used to build the URL
+                 * so we assume that each category should have a unique slug if not multiple categories
+                 * will be linked to the same page which can be the case but we assume this is not.
+                 */
+                // Arrange
+                const categoryData = {
+                    name: "Clothes",
+                    slug: "clothes",
+                };
+
+                // Act
+                const newCategory = new Category(categoryData);
+                const savedCategory = await newCategory.save();
+
+                // Assert
+                expect(savedCategory._id).toBeDefined();
+                expect(savedCategory.name).toEqual(categoryData.name);
+                expect(savedCategory.slug).toEqual(categoryData.slug);
+            });
+
+            test("Slug value of a newly created category will be lowercase", async () => {
+                // Arrange
+                const categoryData = {
+                    name: "Clothes",
+                    slug: "CloThEs",
+                };
+
+                // Act
+                const newCategory = new Category(categoryData);
+                const savedCategory = await newCategory.save();
+
+                // Assert
+                expect(savedCategory._id).toBeDefined();
+                expect(savedCategory.name).toEqual(categoryData.name);
+                expect(savedCategory.slug).toEqual(categoryData.slug.toLowerCase());
+            });
+
+            test("Fail to create a category if the category slug is not given", async () => {
+                // Arrange
+                const categoryData = {
+                    name: "Electronics",
+                };
+
+                const missingSlugCategory = new Category(categoryData);
+
+                // Act & Assert
+                await expect(missingSlugCategory.save()).rejects.toThrow();
+            });
+
+            test("Fail to create a category if the category slug is blank", async () => {
+                // Arrange
+                const categoryData = {
+                    name: "Electronics",
+                    slug: "",
+                };
+
+                const blankSlugCategory = new Category(categoryData);
+
+                // Act & Assert
+                await expect(blankSlugCategory.save()).rejects.toThrow();
+            });
+
+            test("Fail to create a category if the category slug already exists", async () => {
+                // Arrange
+                const categoryData = {
+                    name: "Blocks",
+                    slug: "toys", // For some reason this category is for toys
+                };
+
+                const existingSlugCategory = new Category(categoryData);
+
+                // Act & Assert
+                await expect(existingSlugCategory.save()).rejects.toThrow();
+            });
+        });
+    });
+});
