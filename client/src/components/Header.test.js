@@ -86,7 +86,7 @@ describe('unit tests for header component', () => {
         jest.spyOn(authContext, 'useAuth').mockReturnValue(
             [{ user: null, token: '' }, jest.fn()]
         );
-        jest.spyOn(cartContext, 'useCart').mockReturnValue([[]]);
+        jest.spyOn(cartContext, 'useCart').mockReturnValue({ cart: [] });
         useCategory.default.mockReturnValue([]);
     });
 
