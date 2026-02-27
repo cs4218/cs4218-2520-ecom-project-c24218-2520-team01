@@ -47,7 +47,7 @@ describe("Unit test for Profile component", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        
+
         // Mock authenticated context and localStorage
         useAuth.mockReturnValue([MOCK_AUTH, setAuthMock]);
         localStorage.setItem(
@@ -96,8 +96,8 @@ describe("Unit test for Profile component", () => {
     test("Submitting the form calls the update Profile API", async () => {
         // Arrange
         // Mock axios API call
-        axios.put.mockResolvedValue({ 
-            data: { updatedUser: UPDATED_PROFILE_INPUT } 
+        axios.put.mockResolvedValue({
+            data: { updatedUser: UPDATED_PROFILE_INPUT }
         });
         const { getByText, getByPlaceholderText } = render(<Profile />);
 
@@ -116,7 +116,7 @@ describe("Unit test for Profile component", () => {
         // Assert
         await waitFor(() => {
             expect(axios.put).toHaveBeenCalledWith(
-                "/api/v1/auth/profile", 
+                "/api/v1/auth/profile",
                 expect.objectContaining({
                     name: UPDATED_PROFILE_INPUT.name,
                     phone: UPDATED_PROFILE_INPUT.phone,
@@ -170,7 +170,7 @@ describe("Unit test for Profile component", () => {
 
     test("Toast shows error message for API error", async () => {
         // Arrange
-        jest.spyOn(console, "log").mockImplementation(() => {});
+        jest.spyOn(console, "log").mockImplementation(() => { });
         axios.put.mockRejectedValue(new Error("Network Error"));
         const { getByText } = render(<Profile />);
 

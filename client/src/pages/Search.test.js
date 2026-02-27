@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import Search from "./Search";
-import { defaultState, newState } from "../test/searchTestUtils";
+import { defaultState, newState } from "../tests/searchTestUtils";
 
 // Rachel Tai Ke Jia, A0258603A
 
