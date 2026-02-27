@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import axios from "axios";
 import SearchInput from "./SearchInput";
-import { defaultState, newState } from "../../test/searchTestUtils";
+import { defaultState, newState } from "../../tests/searchTestUtils";
 
 // Rachel Tai Ke Jia, A0258603A
 
@@ -74,21 +74,21 @@ describe("Unit test for SearchInput component", () => {
 
         // Assert
         await waitFor(() => {
-                expect(axios.get).toHaveBeenCalledWith(
-                    "/api/v1/product/search/"
-                );
-                expect(setValuesMock).toHaveBeenCalledWith({
-                    keyword: "",
-                    results: newState.results
-                });
-                expect(navigateMock).toHaveBeenCalledWith("/search");
+            expect(axios.get).toHaveBeenCalledWith(
+                "/api/v1/product/search/"
+            );
+            expect(setValuesMock).toHaveBeenCalledWith({
+                keyword: "",
+                results: newState.results
+            });
+            expect(navigateMock).toHaveBeenCalledWith("/search");
         });
     });
 
 
     test("handleSubmit catches error", async () => {
         // Arrange
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
         axios.get.mockRejectedValue(new Error("API error"));
         render(<SearchInput />);
         const form = screen.getByRole("search");

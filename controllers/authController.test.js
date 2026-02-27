@@ -93,91 +93,91 @@ describe("Authentication", () => {
             });
         });
 
-		/**
-		 * AI Usage Declaration:
-		 * AI assistance was used in this file for:
-		 * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
-		 * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
-		 **/
-		describe("Error", () => {
-			/**
-			 * External Reference:
-			 * Parameterized test pattern adapted from: https://stackoverflow.com/questions/52996062/using-jests-test-each-parameterized-test-variable-scope
-			 **/
-			describe("Validation Errors", () => {
-				describe("missing field validation", () => {
-					it.each([
-						{
-							field: "name",
-							missingBody: {
-								email: "sheen@example.com",
-								password: "P@ssword123",
-								phone: "912345678",
-								address: "Test Address",
-								answer: "Bowling",
-							},
-							expectedMessage: "Name is required",
-						},
-						{
-							field: "email",
-							missingBody: {
-								name: "Sheen",
-								password: "P@ssword123",
-								phone: "912345678",
-								address: "Test Address",
-								answer: "Bowling",
-							},
-							expectedMessage: "Email is required",
-						},
-						{
-							field: "password",
-							missingBody: {
-								name: "Sheen",
-								email: "sheen@example.com",
-								phone: "912345678",
-								address: "Test Address",
-								answer: "Bowling",
-							},
-							expectedMessage: "Password is required",
-						},
-						{
-							field: "phone",
-							missingBody: {
-								name: "Sheen",
-								email: "sheen@example.com",
-								password: "P@ssword123",
-								address: "Test Address",
-								answer: "Bowling",
-							},
-							expectedMessage: "Phone number is required",
-						},
-						{
-							field: "address",
-							missingBody: {
-								name: "Sheen",
-								email: "sheen@example.com",
-								password: "P@ssword123",
-								phone: "912345678",
-								answer: "Bowling",
-							},
-							expectedMessage: "Address is required",
-						},
-						{
-							field: "answer",
-							missingBody: {
-								name: "Sheen",
-								email: "sheen@example.com",
-								password: "P@ssword123",
-								phone: "912345678",
-								address: "Test Address",
-							},
-							expectedMessage: "Answer is required",
-						},
-					])(
-						"should return error if $field is missing",
-						async ({ missingBody, expectedMessage }) => {
-							// Arrange
-							const req = { body: missingBody };
+        /**
+         * AI Usage Declaration:
+         * AI assistance was used in this file for:
+         * Generating edge case test scenarios, including boundary values, invalid inputs, and error conditions.
+         * How the output was used: Based on the list of edge cases generated, I created test cases for the most relevant scenarios.
+         **/
+        describe("Error", () => {
+            /**
+             * External Reference:
+             * Parameterized test pattern adapted from: https://stackoverflow.com/questions/52996062/using-jests-test-each-parameterized-test-variable-scope
+             **/
+            describe("Validation Errors", () => {
+                describe("missing field validation", () => {
+                    it.each([
+                        {
+                            field: "name",
+                            missingBody: {
+                                email: "sheen@example.com",
+                                password: "P@ssword123",
+                                phone: "912345678",
+                                address: "Test Address",
+                                answer: "Bowling",
+                            },
+                            expectedMessage: "Name is required",
+                        },
+                        {
+                            field: "email",
+                            missingBody: {
+                                name: "Sheen",
+                                password: "P@ssword123",
+                                phone: "912345678",
+                                address: "Test Address",
+                                answer: "Bowling",
+                            },
+                            expectedMessage: "Email is required",
+                        },
+                        {
+                            field: "password",
+                            missingBody: {
+                                name: "Sheen",
+                                email: "sheen@example.com",
+                                phone: "912345678",
+                                address: "Test Address",
+                                answer: "Bowling",
+                            },
+                            expectedMessage: "Password is required",
+                        },
+                        {
+                            field: "phone",
+                            missingBody: {
+                                name: "Sheen",
+                                email: "sheen@example.com",
+                                password: "P@ssword123",
+                                address: "Test Address",
+                                answer: "Bowling",
+                            },
+                            expectedMessage: "Phone number is required",
+                        },
+                        {
+                            field: "address",
+                            missingBody: {
+                                name: "Sheen",
+                                email: "sheen@example.com",
+                                password: "P@ssword123",
+                                phone: "912345678",
+                                answer: "Bowling",
+                            },
+                            expectedMessage: "Address is required",
+                        },
+                        {
+                            field: "answer",
+                            missingBody: {
+                                name: "Sheen",
+                                email: "sheen@example.com",
+                                password: "P@ssword123",
+                                phone: "912345678",
+                                address: "Test Address",
+                            },
+                            expectedMessage: "Answer is required",
+                        },
+                    ])(
+                        "should return error if $field is missing",
+                        async ({ missingBody, expectedMessage }) => {
+                            // Arrange
+                            const req = { body: missingBody };
 
                             // Act
                             await registerController(req, res);
@@ -274,15 +274,15 @@ describe("Authentication", () => {
                             // Act
                             await registerController(req, res);
 
-							// Assert
-							expect(res.send).toHaveBeenCalledWith({
-								success: false,
-								message: expectedMessage,
-							});
-						},
-					);
-				});
-			});
+                            // Assert
+                            expect(res.send).toHaveBeenCalledWith({
+                                success: false,
+                                message: expectedMessage,
+                            });
+                        },
+                    );
+                });
+            });
 
             describe("Database Errors", () => {
                 it("should return error if user already exists", async () => {
@@ -342,25 +342,25 @@ describe("Authentication", () => {
                 });
             });
 
-			describe("Input Boundary Errors", () => {
-				describe("special characters in name", () => {
-					it.each([
-						{ description: "name with hyphen", name: "Mary-Jane" },
-						{ description: "name with apostrophe", name: "O'Connor" },
-						{ description: "name with unicode", name: "José García" },
-						{ description: "name with numbers", name: "X123" },
-					])("should accept $description", async ({ name }) => {
-						// Arrange
-						const req = {
-							body: {
-								name: name,
-								email: "test@example.com",
-								password: "P@ssword123",
-								phone: "912345678",
-								address: "Test Address",
-								answer: "Bowling",
-							},
-						};
+            describe("Input Boundary Errors", () => {
+                describe("special characters in name", () => {
+                    it.each([
+                        { description: "name with hyphen", name: "Mary-Jane" },
+                        { description: "name with apostrophe", name: "O'Connor" },
+                        { description: "name with unicode", name: "José García" },
+                        { description: "name with numbers", name: "X123" },
+                    ])("should accept $description", async ({ name }) => {
+                        // Arrange
+                        const req = {
+                            body: {
+                                name: name,
+                                email: "test@example.com",
+                                password: "P@ssword123",
+                                phone: "912345678",
+                                address: "Test Address",
+                                answer: "Bowling",
+                            },
+                        };
 
                         userModel.findOne.mockResolvedValue(null);
                         const mockSave = jest.fn().mockResolvedValue({
@@ -474,31 +474,31 @@ describe("Authentication", () => {
             });
         });
 
-		describe("Error", () => {
-			/**
-			 * External Reference:
-			 * Parameterized test pattern adapted from: https://stackoverflow.com/questions/52996062/using-jests-test-each-parameterized-test-variable-scope
-			 **/
-			describe("Validation Errors", () => {
-				describe("missing field validation", () => {
-					it.each([
-						{
-							description: "email is missing",
-							body: { password: "P@ssword123" },
-						},
-						{
-							description: "password is missing",
-							body: { email: "sheen@example.com" },
-						},
-						{
-							description: "both email and password are missing",
-							body: {},
-						},
-					])(
-						"should return error if $description",
-						async ({ body, description }) => {
-							// Arrange
-							const req = { body };
+        describe("Error", () => {
+            /**
+             * External Reference:
+             * Parameterized test pattern adapted from: https://stackoverflow.com/questions/52996062/using-jests-test-each-parameterized-test-variable-scope
+             **/
+            describe("Validation Errors", () => {
+                describe("missing field validation", () => {
+                    it.each([
+                        {
+                            description: "email is missing",
+                            body: { password: "P@ssword123" },
+                        },
+                        {
+                            description: "password is missing",
+                            body: { email: "sheen@example.com" },
+                        },
+                        {
+                            description: "both email and password are missing",
+                            body: {},
+                        },
+                    ])(
+                        "should return error if $description",
+                        async ({ body, description }) => {
+                            // Arrange
+                            const req = { body };
 
                             // Act
                             await loginController(req, res);
@@ -546,352 +546,352 @@ describe("Authentication", () => {
                     );
                 });
 
-				it("should return 'Invalid password' for whitespace-only password with valid user", async () => {
-					// Arrange
-					const req = {
-						body: { email: "sheen@example.com", password: "   " },
-					};
+                it("should return 'Invalid password' for whitespace-only password with valid user", async () => {
+                    // Arrange
+                    const req = {
+                        body: { email: "sheen@example.com", password: "   " },
+                    };
 
-					const mockUser = {
-						_id: "123",
-						name: "Sheen",
-						email: "sheen@example.com",
-						password: "hashedPassword",
-					};
+                    const mockUser = {
+                        _id: "123",
+                        name: "Sheen",
+                        email: "sheen@example.com",
+                        password: "hashedPassword",
+                    };
 
-					userModel.findOne.mockResolvedValue(mockUser);
-					comparePassword.mockResolvedValue(false);
+                    userModel.findOne.mockResolvedValue(mockUser);
+                    comparePassword.mockResolvedValue(false);
 
-					// Act
-					await loginController(req, res);
+                    // Act
+                    await loginController(req, res);
 
-					// Assert
-					expect(res.status).toHaveBeenCalledWith(401);
-					expect(res.send).toHaveBeenCalledWith({
-						success: false,
-						message: "Invalid password",
-					});
-				});
-			});
-		});
+                    // Assert
+                    expect(res.status).toHaveBeenCalledWith(401);
+                    expect(res.send).toHaveBeenCalledWith({
+                        success: false,
+                        message: "Invalid password",
+                    });
+                });
+            });
+        });
 
-		describe("Authentication Errors", () => {
-			it("should return error if email is not found", async () => {
-				// Arrange
-				const req = {
-					body: {
-						email: "FAKER@example.com",
-						password: "P@ssword123",
-					},
-				};
+        describe("Authentication Errors", () => {
+            it("should return error if email is not found", async () => {
+                // Arrange
+                const req = {
+                    body: {
+                        email: "FAKER@example.com",
+                        password: "P@ssword123",
+                    },
+                };
 
-				userModel.findOne.mockResolvedValue(null);
+                userModel.findOne.mockResolvedValue(null);
 
-				// Act
-				await loginController(req, res);
+                // Act
+                await loginController(req, res);
 
-				// Assert
-				expect(res.status).toHaveBeenCalledWith(404);
-				expect(res.send).toHaveBeenCalledWith({
-					success: false,
-					message: "Email is not registered",
-				});
-			});
+                // Assert
+                expect(res.status).toHaveBeenCalledWith(404);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: "Email is not registered",
+                });
+            });
 
-			it("should return error if password is incorrect", async () => {
-				// Arrange
-				const req = {
-					body: {
-						email: "sheen@example.com",
-						password: "noPassword",
-					},
-				};
+            it("should return error if password is incorrect", async () => {
+                // Arrange
+                const req = {
+                    body: {
+                        email: "sheen@example.com",
+                        password: "noPassword",
+                    },
+                };
 
-				const mockUser = {
-					_id: "123",
-					name: "Sheen",
-					email: "sheen@example.com",
-					password: "correctPassword",
-				};
+                const mockUser = {
+                    _id: "123",
+                    name: "Sheen",
+                    email: "sheen@example.com",
+                    password: "correctPassword",
+                };
 
-				userModel.findOne.mockResolvedValue(mockUser);
-				comparePassword.mockResolvedValue(false);
+                userModel.findOne.mockResolvedValue(mockUser);
+                comparePassword.mockResolvedValue(false);
 
-				// Act
-				await loginController(req, res);
+                // Act
+                await loginController(req, res);
 
-				// Assert
-				expect(res.status).toHaveBeenCalledWith(401);
-				expect(res.send).toHaveBeenCalledWith({
-					success: false,
-					message: "Invalid password",
-				});
-			});
-		});
+                // Assert
+                expect(res.status).toHaveBeenCalledWith(401);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: "Invalid password",
+                });
+            });
+        });
 
-		describe("Database Errors", () => {
-			it("should handle database errors", async () => {
-				// Arrange
-				const req = {
-					body: {
-						email: "sheen@example.com",
-						password: "P@ssword123",
-					},
-				};
+        describe("Database Errors", () => {
+            it("should handle database errors", async () => {
+                // Arrange
+                const req = {
+                    body: {
+                        email: "sheen@example.com",
+                        password: "P@ssword123",
+                    },
+                };
 
-				userModel.findOne.mockRejectedValue(new Error("Database error"));
+                userModel.findOne.mockRejectedValue(new Error("Database error"));
 
-				// Act
-				await loginController(req, res);
+                // Act
+                await loginController(req, res);
 
-				// Assert
-				expect(res.status).toHaveBeenCalledWith(500);
-				expect(res.send).toHaveBeenCalledWith({
-					success: false,
-					message: "Error in login",
-					error: expect.any(Error),
-				});
-			});
-		});
-	});
+                // Assert
+                expect(res.status).toHaveBeenCalledWith(500);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: "Error in login",
+                    error: expect.any(Error),
+                });
+            });
+        });
+    });
 });
 
 //Wong Sheen Kerr (A0269647J)
 describe("forgotPasswordController", () => {
-	let res;
+    let res;
 
-	beforeEach(() => {
-		res = {
-			status: jest.fn().mockReturnThis(),
-			send: jest.fn(),
-			json: jest.fn(),
-		};
-		jest.clearAllMocks();
-	});
+    beforeEach(() => {
+        res = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn(),
+            json: jest.fn(),
+        };
+        jest.clearAllMocks();
+    });
 
-	describe("Success", () => {
-		it("should send reset info successfully", async () => {
-			// Arrange
-			const req = {
-				body: {
-					email: "sheen@example.com",
-					answer: "Bowling",
-					newPassword: "newP@ssword123",
-				},
-			};
+    describe("Success", () => {
+        it("should send reset info successfully", async () => {
+            // Arrange
+            const req = {
+                body: {
+                    email: "sheen@example.com",
+                    answer: "Bowling",
+                    newPassword: "newP@ssword123",
+                },
+            };
 
-			const mockUser = {
-				_id: "123",
-				email: "sheen@example.com",
-				answer: "Bowling",
-			};
+            const mockUser = {
+                _id: "123",
+                email: "sheen@example.com",
+                answer: "Bowling",
+            };
 
-			userModel.findOne.mockResolvedValue(mockUser);
-			hashPassword.mockResolvedValue("hashedNewPassword");
-			userModel.findByIdAndUpdate.mockResolvedValue(true);
+            userModel.findOne.mockResolvedValue(mockUser);
+            hashPassword.mockResolvedValue("hashedNewPassword");
+            userModel.findByIdAndUpdate.mockResolvedValue(true);
 
-			// Act
-			await forgotPasswordController(req, res);
+            // Act
+            await forgotPasswordController(req, res);
 
-			// Assert
-			expect(res.status).toHaveBeenCalledWith(200);
-			expect(res.send).toHaveBeenCalledWith({
-				success: true,
-				message: "Password reset successfully",
-			});
-		});
-	});
+            // Assert
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith({
+                success: true,
+                message: "Password reset successfully",
+            });
+        });
+    });
 
-	describe("Error", () => {
-		/**
-		 * External Reference:
-		 * Parameterized test pattern adapted from: https://stackoverflow.com/questions/52996062/using-jests-test-each-parameterized-test-variable-scope
-		 **/
-		describe("Validation Errors", () => {
-			describe("missing field validation", () => {
-				it.each([
-					{
-						field: "email",
-						body: { answer: "Bowling", newPassword: "newP@ssword123" },
-						expectedMessage: "Email is required",
-					},
-					{
-						field: "answer",
-						body: {
-							email: "sheen@example.com",
-							newPassword: "newP@ssword123",
-						},
-						expectedMessage: "Answer is required",
-					},
-					{
-						field: "newPassword",
-						body: { email: "sheen@example.com", answer: "Bowling" },
-						expectedMessage: "New password is required",
-					},
-				])(
-					"should return error if $field is missing",
-					async ({ body, expectedMessage }) => {
-						// Arrange
-						const req = { body };
+    describe("Error", () => {
+        /**
+         * External Reference:
+         * Parameterized test pattern adapted from: https://stackoverflow.com/questions/52996062/using-jests-test-each-parameterized-test-variable-scope
+         **/
+        describe("Validation Errors", () => {
+            describe("missing field validation", () => {
+                it.each([
+                    {
+                        field: "email",
+                        body: { answer: "Bowling", newPassword: "newP@ssword123" },
+                        expectedMessage: "Email is required",
+                    },
+                    {
+                        field: "answer",
+                        body: {
+                            email: "sheen@example.com",
+                            newPassword: "newP@ssword123",
+                        },
+                        expectedMessage: "Answer is required",
+                    },
+                    {
+                        field: "newPassword",
+                        body: { email: "sheen@example.com", answer: "Bowling" },
+                        expectedMessage: "New password is required",
+                    },
+                ])(
+                    "should return error if $field is missing",
+                    async ({ body, expectedMessage }) => {
+                        // Arrange
+                        const req = { body };
 
-						// Act
-						await forgotPasswordController(req, res);
+                        // Act
+                        await forgotPasswordController(req, res);
 
-						// Assert
-						expect(res.status).toHaveBeenCalledWith(400);
-						expect(res.send).toHaveBeenCalledWith({
-							success: false,
-							message: expectedMessage,
-						});
-						expect(userModel.findOne).not.toHaveBeenCalled();
-					},
-				);
-			});
+                        // Assert
+                        expect(res.status).toHaveBeenCalledWith(400);
+                        expect(res.send).toHaveBeenCalledWith({
+                            success: false,
+                            message: expectedMessage,
+                        });
+                        expect(userModel.findOne).not.toHaveBeenCalled();
+                    },
+                );
+            });
 
-			describe("empty string validation", () => {
-				it.each([
-					{
-						field: "email",
-						body: {
-							email: "",
-							answer: "Bowling",
-							newPassword: "newP@ssword123",
-						},
-						expectedMessage: "Email is required",
-					},
-					{
-						field: "answer",
-						body: {
-							email: "sheen@example.com",
-							answer: "",
-							newPassword: "newP@ssword123",
-						},
-						expectedMessage: "Answer is required",
-					},
-					{
-						field: "newPassword",
-						body: {
-							email: "sheen@example.com",
-							answer: "Bowling",
-							newPassword: "",
-						},
-						expectedMessage: "New password is required",
-					},
-				])(
-					"should return error if $field is empty string",
-					async ({ body, expectedMessage }) => {
-						// Arrange
-						const req = { body };
+            describe("empty string validation", () => {
+                it.each([
+                    {
+                        field: "email",
+                        body: {
+                            email: "",
+                            answer: "Bowling",
+                            newPassword: "newP@ssword123",
+                        },
+                        expectedMessage: "Email is required",
+                    },
+                    {
+                        field: "answer",
+                        body: {
+                            email: "sheen@example.com",
+                            answer: "",
+                            newPassword: "newP@ssword123",
+                        },
+                        expectedMessage: "Answer is required",
+                    },
+                    {
+                        field: "newPassword",
+                        body: {
+                            email: "sheen@example.com",
+                            answer: "Bowling",
+                            newPassword: "",
+                        },
+                        expectedMessage: "New password is required",
+                    },
+                ])(
+                    "should return error if $field is empty string",
+                    async ({ body, expectedMessage }) => {
+                        // Arrange
+                        const req = { body };
 
-						// Act
-						await forgotPasswordController(req, res);
+                        // Act
+                        await forgotPasswordController(req, res);
 
-						// Assert
-						expect(res.status).toHaveBeenCalledWith(400);
-						expect(res.send).toHaveBeenCalledWith({
-							success: false,
-							message: expectedMessage,
-						});
-					},
-				);
-			});
-		});
+                        // Assert
+                        expect(res.status).toHaveBeenCalledWith(400);
+                        expect(res.send).toHaveBeenCalledWith({
+                            success: false,
+                            message: expectedMessage,
+                        });
+                    },
+                );
+            });
+        });
 
-		describe("Database Errors", () => {
-			it("should return error if user not found", async () => {
-				// Arrange
-				const req = {
-					body: {
-						email: "nonexistent@example.com",
-						answer: "Bowling",
-						newPassword: "newP@ssword123",
-					},
-				};
+        describe("Database Errors", () => {
+            it("should return error if user not found", async () => {
+                // Arrange
+                const req = {
+                    body: {
+                        email: "nonexistent@example.com",
+                        answer: "Bowling",
+                        newPassword: "newP@ssword123",
+                    },
+                };
 
-				userModel.findOne.mockResolvedValue(null);
+                userModel.findOne.mockResolvedValue(null);
 
-				// Act
-				await forgotPasswordController(req, res);
+                // Act
+                await forgotPasswordController(req, res);
 
-				// Assert
-				expect(res.status).toHaveBeenCalledWith(404);
-				expect(res.send).toHaveBeenCalledWith({
-					success: false,
-					message: "Wrong email or answer",
-				});
-			});
+                // Assert
+                expect(res.status).toHaveBeenCalledWith(404);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: "Wrong email or answer",
+                });
+            });
 
-			it("should handle database errors", async () => {
-				// Arrange
-				const req = {
-					body: {
-						email: "sheen@example.com",
-						answer: "Bowling",
-						newPassword: "newP@ssword123",
-					},
-				};
+            it("should handle database errors", async () => {
+                // Arrange
+                const req = {
+                    body: {
+                        email: "sheen@example.com",
+                        answer: "Bowling",
+                        newPassword: "newP@ssword123",
+                    },
+                };
 
-				userModel.findOne.mockRejectedValue(new Error("Database error"));
+                userModel.findOne.mockRejectedValue(new Error("Database error"));
 
-				// Act
-				await forgotPasswordController(req, res);
+                // Act
+                await forgotPasswordController(req, res);
 
-				// Assert
-				expect(res.status).toHaveBeenCalledWith(500);
-				expect(res.send).toHaveBeenCalledWith({
-					success: false,
-					message: "Something went wrong",
-					error: expect.any(Error),
-				});
-			});
-		});
-	});
+                // Assert
+                expect(res.status).toHaveBeenCalledWith(500);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: "Something went wrong",
+                    error: expect.any(Error),
+                });
+            });
+        });
+    });
 });
 
 //Wong Sheen Kerr (A0269647J)
 describe("testController", () => {
-	// Debug controller — health check for the auth pipeline.
-	// Route: GET /api/v1/auth/test → requireSignIn → isAdmin → testController
-	// If can receive "Protected Routes", means both requireSignIn (JWT) and isAdmin middleware passed.
-	// If either fails, an error will be returned before reaching here.
-	let res;
+    // Debug controller — health check for the auth pipeline.
+    // Route: GET /api/v1/auth/test → requireSignIn → isAdmin → testController
+    // If can receive "Protected Routes", means both requireSignIn (JWT) and isAdmin middleware passed.
+    // If either fails, an error will be returned before reaching here.
+    let res;
 
-	beforeEach(() => {
-		res = {
-			send: jest.fn(),
-		};
-		jest.clearAllMocks();
-	});
+    beforeEach(() => {
+        res = {
+            send: jest.fn(),
+        };
+        jest.clearAllMocks();
+    });
 
-	describe("Success", () => {
-		it("should return success message for authenticated user", () => {
-			// Arrange
-			const req = {};
+    describe("Success", () => {
+        it("should return success message for authenticated user", () => {
+            // Arrange
+            const req = {};
 
-			// Act
-			testController(req, res);
+            // Act
+            testController(req, res);
 
-			// Assert
-			expect(res.send).toHaveBeenCalledWith("Protected Routes");
-		});
-	});
+            // Assert
+            expect(res.send).toHaveBeenCalledWith("Protected Routes");
+        });
+    });
 
-	describe("Error", () => {
-		it("should handle errors in catch block", () => {
-			// Arrange
-			const req = {};
-			const sendError = new Error("Simulated send error");
-			const errorRes = {
-				send: jest
-					.fn()
-					.mockImplementationOnce(() => {
-						throw sendError;
-					})
-					.mockImplementation(() => {}),
-			};
+    describe("Error", () => {
+        it("should handle errors in catch block", () => {
+            // Arrange
+            const req = {};
+            const sendError = new Error("Simulated send error");
+            const errorRes = {
+                send: jest
+                    .fn()
+                    .mockImplementationOnce(() => {
+                        throw sendError;
+                    })
+                    .mockImplementation(() => { }),
+            };
 
-			// Act
-			testController(req, errorRes);
+            // Act
+            testController(req, errorRes);
 
             // Assert
             expect(console.log).toHaveBeenCalledWith(sendError);
@@ -1506,7 +1506,7 @@ describe("Unit test for updateProfileController", () => {
 
     test("Update profile including password", async () => {
         // Arrange
-        req.body = { 
+        req.body = {
             ...UPDATED_PROFILE_INPUT
         };
         userModel.findById.mockResolvedValue(MOCK_USER);
@@ -1515,9 +1515,9 @@ describe("Unit test for updateProfileController", () => {
         hashPassword.mockResolvedValue("hashed-password");
 
         // Mock database update and return updated user
-        userModel.findByIdAndUpdate.mockResolvedValue({ 
-            ...UPDATED_USER, 
-            password: "hashed-password" 
+        userModel.findByIdAndUpdate.mockResolvedValue({
+            ...UPDATED_USER,
+            password: "hashed-password"
         });
 
         // Act
@@ -1534,9 +1534,9 @@ describe("Unit test for updateProfileController", () => {
         expect(res.send).toHaveBeenCalledWith(
             expect.objectContaining({
                 success: true,
-                updatedUser: { 
-                    ...UPDATED_USER, 
-                    password: "hashed-password" 
+                updatedUser: {
+                    ...UPDATED_USER,
+                    password: "hashed-password"
                 }
             })
         );
@@ -1584,7 +1584,7 @@ describe("Unit test for updateProfileController", () => {
 
     test("updateProfileController handles errors", async () => {
         // Arrange
-        jest.spyOn(console, "log").mockImplementation(() => {});
+        jest.spyOn(console, "log").mockImplementation(() => { });
         userModel.findById.mockRejectedValue(new Error("Network connection error"));
 
         // Act

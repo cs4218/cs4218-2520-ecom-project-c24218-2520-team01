@@ -13,7 +13,7 @@
 import React from "react";
 import { render, act } from "@testing-library/react";
 import { SearchProvider, useSearch } from "./search";
-import { defaultState, newState, createContext } from "../test/searchTestUtils";
+import { defaultState, newState, createContext } from "../tests/searchTestUtils";
 
 // Rachel Tai Ke Jia, A0258603A
 
@@ -58,7 +58,7 @@ describe("unit test for search context", () => {
         // Arrange
         let capturedValue;
         const RenderedWithoutProvider = () => {
-            capturedValue = useSearch();        
+            capturedValue = useSearch();
             return null;
         };
 
@@ -69,13 +69,13 @@ describe("unit test for search context", () => {
         expect(capturedValue).toBeUndefined();
     });
 
-    
+
     test("search context updates keyword only", () => {
         // Arrange
         context.renderContext();
 
         // Act
-        act(() => { 
+        act(() => {
             context.getSetter()((prev) => ({
                 ...prev,
                 keyword: newState.keyword
@@ -170,7 +170,7 @@ describe("unit test for search context", () => {
             // Assert 
             expect(consumerAState).toEqual(defaultState);
             expect(consumerAState).toEqual(consumerBState);
-        });  
+        });
 
 
         test("updating state from one consumer should show in another consumer", () => {

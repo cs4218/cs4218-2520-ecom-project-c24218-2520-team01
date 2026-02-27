@@ -3,7 +3,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { newState } from "../test/searchTestUtils";
+import { newState } from "../tests/searchTestUtils";
 import ProductDetails from "./ProductDetails";
 
 // Mock axios
@@ -31,12 +31,12 @@ jest.mock("react-toastify", () => ({
 
 // Mock useCart hook
 jest.mock('../context/cart', () => {
-  const originalModule = jest.requireActual('../context/cart');
+    const originalModule = jest.requireActual('../context/cart');
 
-  return {
-    ...originalModule, 
-    useCart: jest.fn()
-  };
+    return {
+        ...originalModule,
+        useCart: jest.fn()
+    };
 });
 
 // Mock addToCart
@@ -90,7 +90,7 @@ describe("unit test for product details component", () => {
             `/api/v1/product/get-product/test-product`
         );
         expect(axios.get).toHaveBeenCalledWith(
-            `/api/v1/product/related-product/${product._id}/${product.category._id}`        
+            `/api/v1/product/related-product/${product._id}/${product.category._id}`
         );
     });
 
@@ -130,7 +130,7 @@ describe("unit test for product details component", () => {
             currency: "USD"
         });
         const price = screen.getByText(/Price:/);
-        expect(price).toHaveTextContent(formattedPrice);        
+        expect(price).toHaveTextContent(formattedPrice);
         expect(screen.getByText(`Category: ${product.category.name}`)).toBeInTheDocument();
     });
 
@@ -202,7 +202,7 @@ describe("unit test for product details component", () => {
         fireEvent.click(button);
 
         // Assert
-        expect(mockNavigate).toHaveBeenCalledWith(`/product/${relatedProduct.slug}`);    
+        expect(mockNavigate).toHaveBeenCalledWith(`/product/${relatedProduct.slug}`);
     });
 
 
@@ -316,7 +316,7 @@ describe("unit test for product details component", () => {
 
     test("handles error when getproduct is unsuccessful", async () => {
         // Arrange
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
         axios.get
             .mockRejectedValueOnce(new Error("Failed to fetch product"))
 
@@ -334,24 +334,24 @@ describe("unit test for product details component", () => {
                 "Failed to fetch product", new Error("Failed to fetch product")
             );
         });
-        
+
         consoleSpy.mockRestore();
     });
 
 
     test("handles error when getsimilarproduct is unsuccessful", async () => {
         // Arrange
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
         const product = newState.results[0];
         axios.get
             .mockResolvedValueOnce({
-                data: { 
-                    success: true, 
+                data: {
+                    success: true,
                     product: product
                 }
             })
             .mockRejectedValueOnce(new Error("Network error"));
-        
+
         // Act
         render(
             <MemoryRouter>
@@ -364,7 +364,7 @@ describe("unit test for product details component", () => {
         await waitFor(() => {
             expect(consoleSpy).toHaveBeenCalledTimes(1);
             expect(consoleSpy).toHaveBeenCalledWith(
-                "Failed to fetch related products",new Error("Network error")
+                "Failed to fetch related products", new Error("Network error")
             );
         });
 
