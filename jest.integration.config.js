@@ -5,10 +5,16 @@ export default {
 	// when testing backend
 	testEnvironment: "node",
 
+	// Run tests serially to avoid database conflicts
+	maxWorkers: 1,
+
 	// which test to run
 	testMatch: [
-		"<rootDir>/tests/integration/models/*.test.js",
+		"<rootDir>/tests/integration/**/*.test.js",
 	],
+
+	// keep backend integration tests isolated from frontend jsdom tests
+	testPathIgnorePatterns: ["<rootDir>/tests/integration/frontend/"],
 
 	// transform files with babel
 	transform: {
@@ -22,6 +28,9 @@ export default {
 	testEnvironmentOptions: {
 		experimentalEsmSupport: true,
 	},
+
+	// ensure env is loaded before imports in tests
+	setupFiles: ["<rootDir>/tests/integration/setup/jest.integration.setup.js"],
 
 	// jest code coverage
 	collectCoverage: true,
