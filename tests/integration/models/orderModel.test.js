@@ -93,7 +93,7 @@ describe("Order Schema on MongoDB", () => {
                     products: [dummyProductId, dummyProductId],
                     payment: paymentObject,
                     buyer: dummyUserId,
-                    status: "Not Process",
+                    status: "Shipped",
                 });
 
                 // Act
@@ -104,7 +104,7 @@ describe("Order Schema on MongoDB", () => {
                 expect(order.products).toEqual([dummyProductId, dummyProductId])
                 expect(order.payment).toEqual(paymentObject)
                 expect(order.buyer).toEqual(dummyUserId)
-                expect(order.status).toEqual("Not Process")
+                expect(order.status).toEqual("Shipped")
             });
 
             test("Should throw error if products is empty", async () => {
@@ -117,7 +117,19 @@ describe("Order Schema on MongoDB", () => {
                     products: [],
                     payment: paymentObject,
                     buyer: dummyUserId,
-                    status: "Not Process",
+                    status: "Shipped",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+
+            test("Should throw error if products is not defined", async () => {
+                // Arrange
+                const orderObject = new Order({
+                    payment: paymentObject,
+                    buyer: dummyUserId,
+                    status: "Shipped",
                 });
 
                 // Act & Assert
