@@ -85,6 +85,7 @@ describe("Order Schema on MongoDB", () => {
             // Clear all orders before each test
             await Order.deleteMany({});
         });
+
         describe("Successfully create order object", () => {
             // This is the success case where everything is provided correctly
             test("Successfully create order with at least 1 product", async () => {
@@ -245,6 +246,73 @@ describe("Order Schema on MongoDB", () => {
 
                 // Act & Assert
                 await expect(orderObject.save()).rejects.toThrow();
+            });
+        });
+
+        describe("Test status field behaviour", () => {
+
+            test("Defaut value for status is not provided is 'Not Process'", async () => {
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
+                    payment: paymentObject,
+                    buyer: dummyUserId,
+                });
+
+                // Act
+                const order = await orderObject.save()
+
+                // Assert
+                expect(order.status).toBe("Not Process")
+            });
+
+            test("Should throw an error if status is not a valid enum value", async () => {
+                // It will accept one of the 5 values: "Not Process", "Processing", "Shipped", "Delivered", "Cancel"
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
+                    payment: paymentObject,
+                    buyer: dummyUserId,
+                    status: "Funny Status",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+
+            test("Should update status to another valid status", async () => {
+                // It will accept one of the 5 values: "Not Process", "Processing", "Shipped", "Delivered", "Cancel"
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
+                    payment: paymentObject,
+                    buyer: dummyUserId,
+                    status: "Processing",
+                });
+
+                const order = await orderObject.save()
+
+                // Act
+                const updatedOrder = await Order.findByIdAndUpdate(order._id, { status: "Delivered" }, { new: true })
+
+                // Assert
+                expect(updatedOrder.status).toBe("Delivered")
+            });
+
+            test("Should throw an error when updaying status to a invalid status", async () => {
+                // It will accept one of the 5 values: "Not Process", "Processing", "Shipped", "Delivered", "Cancel"
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
+                    payment: paymentObject,
+                    buyer: dummyUserId,
+                    status: "Processing",
+                });
+
+                const order = await orderObject.save()
+
+                // Act & Assert
+                await expect(Order.findByIdAndUpdate(order._id, { status: "Finished" }, { runValidators: true })).rejects.toThrow();
             });
         });
     });
