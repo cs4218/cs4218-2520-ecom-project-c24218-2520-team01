@@ -88,7 +88,7 @@ describe("Order Schema on MongoDB", () => {
 
         describe("Successfully create order object", () => {
             // This is the success case where everything is provided correctly
-            test("Successfully create order with at least 1 product", async () => {
+            test("Successfully create order with all valid field values", async () => {
                 // Arrange
                 const orderObject = new Order({
                     products: [dummyProductId, dummyProductId],
