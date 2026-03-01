@@ -31,7 +31,16 @@ const orderSchema = new mongoose.Schema(
         },
       ],
     },
-    payment: {},
+    payment: {
+      type: Object,
+      required: true,
+      validate: {
+        validator: function (paymentObject) {
+          return paymentObject && Object.keys(paymentObject).length > 0;
+        },
+        message: "An order must contain a valid payment."
+      },
+    },
     buyer: {
       type: mongoose.ObjectId,
       ref: "users",
