@@ -140,7 +140,7 @@ describe("Order Schema on MongoDB", () => {
             test("Should throw am error if product id is invalid", async () => {
                 /**
                  * Assumption: If the product ID does not match any of the
-                 * existing products id then this order will be invalid
+                 * existing products id then this order will be invalid.
                  */
                 // Arrange
                 const orderObject = new Order({
@@ -194,6 +194,52 @@ describe("Order Schema on MongoDB", () => {
                 const orderObject = new Order({
                     products: [dummyProductId],
                     buyer: dummyUserId,
+                    status: "Shipped",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+        });
+
+        describe("Test buyer field behaviour", () => {
+            test("Should throw an error if buyer is not defined", async () => {
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
+                    payment: paymentObject,
+                    status: "Shipped",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+
+            test("Should throw am error if buyer id is invalid", async () => {
+                /**
+                 * Assumption: If the buyer ID does not match any of the
+                 * existing buyer id then this order will be invalid.
+                 */
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
+                    payment: paymentObject,
+                    buyer: new mongoose.Types.ObjectId(),
+                    status: "Shipped",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+
+            test("Should throw an error if buyer id is wrong", async () => {
+                // This test is is different as this is if the id is not based
+                // on MongoDB's ObjectId syntax.
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
+                    payment: paymentObject,
+                    buyer: "abcde",
                     status: "Shipped",
                 });
 
