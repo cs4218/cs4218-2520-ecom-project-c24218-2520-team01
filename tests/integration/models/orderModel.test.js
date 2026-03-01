@@ -299,7 +299,7 @@ describe("Order Schema on MongoDB", () => {
                 expect(updatedOrder.status).toBe("Delivered")
             });
 
-            test("Should throw an error when updaying status to a invalid status", async () => {
+            test("Should throw an error when updating status to an invalid status", async () => {
                 // It will accept one of the 5 values: "Not Process", "Processing", "Shipped", "Delivered", "Cancel"
                 // Arrange
                 const orderObject = new Order({
