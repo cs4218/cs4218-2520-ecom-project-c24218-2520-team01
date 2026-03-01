@@ -44,6 +44,17 @@ const orderSchema = new mongoose.Schema(
     buyer: {
       type: mongoose.ObjectId,
       ref: "users",
+      required: true,
+      validate: {
+        validator: async function (buyerId) {
+          const existingUser = await mongoose.model("users").findOne({ _id: buyerId });
+          if (!existingUser) {
+            return false;
+          }
+          return true;
+        },
+        message: "Buyer ID provided does not exist in the database."
+      },
     },
     status: {
       type: String,
