@@ -85,8 +85,8 @@ describe("Order Schema on MongoDB", () => {
             // Clear all orders before each test
             await Order.deleteMany({});
         });
-        describe("Test products field behaviour", () => {
-
+        describe("Successfully create order object", () => {
+            // This is the success case where everything is provided correctly
             test("Successfully create order with at least 1 product", async () => {
                 // Arrange
                 const orderObject = new Order({
@@ -106,8 +106,9 @@ describe("Order Schema on MongoDB", () => {
                 expect(order.buyer).toEqual(dummyUserId)
                 expect(order.status).toEqual("Shipped")
             });
-
-            test("Should throw error if products is empty", async () => {
+        })
+        describe("Test products field behaviour", () => {
+            test("Should throw an error if products is empty", async () => {
                 /**
                  * Assumption: We should not allow empty products as this will mean the order
                  * is empty and invalid.
@@ -124,10 +125,74 @@ describe("Order Schema on MongoDB", () => {
                 await expect(orderObject.save()).rejects.toThrow();
             });
 
-            test("Should throw error if products is not defined", async () => {
+            test("Should throw an error if products is not defined", async () => {
                 // Arrange
                 const orderObject = new Order({
                     payment: paymentObject,
+                    buyer: dummyUserId,
+                    status: "Shipped",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+
+            test("Should throw am error if product id is invalid", async () => {
+                /**
+                 * Assumption: If the product ID does not match any of the
+                 * existing products id then this order will be invalid
+                 */
+                // Arrange
+                const orderObject = new Order({
+                    products: [new mongoose.Types.ObjectId(), dummyProductId],
+                    payment: paymentObject,
+                    buyer: dummyUserId,
+                    status: "Shipped",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+
+            test("Should throw an error if product id is wrong", async () => {
+                // This test is is different as this is if the id is not based
+                // on MongoDB's ObjectId syntax.
+                // Arrange
+                const orderObject = new Order({
+                    products: ["abcde", dummyProductId],
+                    payment: paymentObject,
+                    buyer: dummyUserId,
+                    status: "Shipped",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+        });
+
+        describe("Test payment field behaviour", () => {
+            test("Should throw an error if payment is empty", async () => {
+                /**
+                 * Assumption: We should not allow empty payment
+                 * as we assume the payment information is important for the company
+                 * when used for auditing purposes and ensuring payment is made.
+                 */
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
+                    payment: {},
+                    buyer: dummyUserId,
+                    status: "Shipped",
+                });
+
+                // Act & Assert
+                await expect(orderObject.save()).rejects.toThrow();
+            });
+
+            test("Should throw an error if payment is not defined", async () => {
+                // Arrange
+                const orderObject = new Order({
+                    products: [dummyProductId],
                     buyer: dummyUserId,
                     status: "Shipped",
                 });
