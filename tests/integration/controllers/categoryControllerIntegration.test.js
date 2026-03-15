@@ -514,6 +514,7 @@ describe('Integration tests for Category Controller with the Database, Express R
     });
 
     beforeEach(async () => {
+        await userModel.deleteMany({});
 
         // Create an admin user to generate a valid token
         const adminUser = await new userModel({
