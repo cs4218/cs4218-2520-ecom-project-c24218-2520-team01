@@ -288,6 +288,24 @@ describe('Integration tests for Category Controller + Database', () => {
             const count = await categoryModel.countDocuments();
             expect(count).toBe(2);
         });
+
+        test('Return 500 when category id is invalid and database state remains unchanged', async () => {
+            req.params.id = "invalid id";
+            req.body.name = 'Toys';
+
+            await updateCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'Error while updating category',
+                error: expect.any(Object)
+            });
+
+            // Assert database state
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(2);
+        });
     });
 
     describe('Get all categories', () => {
@@ -314,10 +332,6 @@ describe('Integration tests for Category Controller + Database', () => {
                     expect.objectContaining({ name: 'Clothes', slug: 'clothes' })
                 ]
             });
-
-            // Should have 2 items in the body array
-            const callArgs = res.send.mock.calls[0][0];
-            expect(callArgs.category.length).toBe(2);
         });
 
         test('Successfully fetch empty list when there are no categories', async () => {
