@@ -665,6 +665,10 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
         });
 
+        afterAll(async () => {
+            await categoryModel.deleteMany({});
+        });
+
         test('Update a category successfully with a valid admin token', async () => {
             // This is to get the id for the category
             const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
@@ -777,6 +781,79 @@ describe('Integration tests for Category Controller with the Database, Express R
             // Assert database state remains unchanged
             const categoryInDb = await categoryModel.findOne({ name: 'Electronic' });
             expect(categoryInDb.name).toBe('Electronic');
+        });
+    });
+
+    describe('Get all categories via API requests', () => {
+
+        beforeAll(async () => {
+            // Add some categories for testing
+            await categoryModel.create({
+                name: 'Electronic',
+                slug: 'electronic'
+            });
+            await categoryModel.create({
+                name: 'Toys',
+                slug: 'toys'
+            });
+        });
+
+        afterAll(async () => {
+            await categoryModel.deleteMany({});
+        });
+
+        /**
+         * We do not need to test if the api request returns an empty list because 
+         * it still returns something but it is just empty.
+         */
+        test('Successfully fetch all categories', async () => {
+
+            const res = await request(app).get('/api/v1/category/get-category');
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.message).toBe('All categories fetched');
+            expect(res.body.category).toBeInstanceOf(Array);
+            expect(res.body.category.length).toBe(2);
+            expect(res.body.category).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ name: 'Electronic', slug: 'electronic' }),
+                    expect.objectContaining({ name: 'Toys', slug: 'toys' })
+                ])
+            );
+        });
+    });
+
+    describe('Get single category via API requests', () => {
+
+        beforeAll(async () => {
+            // Add some categories for testing
+            await categoryModel.create({
+                name: 'Electronic',
+                slug: 'electronic'
+            });
+        });
+
+        afterAll(async () => {
+            await categoryModel.deleteMany({});
+        });
+
+        test('Successfully fetch a single category by slug', async () => {
+            const res = await request(app).get('/api/v1/category/single-category/electronic');
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.message).toBe('Get single category successfully');
+            expect(res.body.category.name).toBe('Electronic');
+            expect(res.body.category.slug).toBe('electronic');
+        });
+
+        test('Return 404 when category with slug cannot be found', async () => {
+            const res = await request(app).get('/api/v1/category/single-category/shoes');
+
+            expect(res.status).toBe(404);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe('No category found');
         });
     });
 });
