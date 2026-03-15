@@ -2,7 +2,7 @@ import { beforeAll, afterAll, beforeEach, describe, test, expect, jest } from "@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import { createCategoryController } from '../../../controllers/categoryController.js';
+import { createCategoryController, updateCategoryController } from '../../../controllers/categoryController.js';
 import categoryModel from '../../../models/categoryModel.js';
 
 // Written by Nicholas Cheng, A0269648H
@@ -42,7 +42,7 @@ describe('Integration tests for Category Controller + Database', () => {
         let req, res;
 
         beforeEach(() => {
-            // Mock Express req and res objects since req and res are handle by the router.
+            // Mock Express req and res objects since req and res are handled by the router.
             req = {
                 body: {}
             };
@@ -52,7 +52,7 @@ describe('Integration tests for Category Controller + Database', () => {
             };
         });
 
-        test('Create a new category successfully with a unique category name', async () => {
+        test('Create a new category successfully with a unique category name in the database', async () => {
             req.body.name = 'Toys';
 
             await createCategoryController(req, res);
@@ -125,6 +125,132 @@ describe('Integration tests for Category Controller + Database', () => {
             // Assert Database State
             const count = await categoryModel.countDocuments();
             expect(count).toBe(1); // Because we only have 1 category inside the database
+        });
+    });
+
+    describe('Update category', () => {
+        let req, res;
+
+        beforeEach(() => {
+            // Mock Express req and res objects since req and res are handled by the router.
+            req = {
+                params: {},
+                body: {}
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn()
+            };
+        });
+
+        test('Update a category successfully and reflect changes in the database', async () => {
+            // Retrieve the predefined category from our in memory database
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+
+            req.params.id = initialCategory._id.toString();
+            req.body.name = 'Electronics';
+
+            await updateCategoryController(req, res);
+
+            // Assert Response
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
+                success: true,
+                message: 'Category updated successfully',
+                category: expect.objectContaining({
+                    name: 'Electronics',
+                    slug: 'electronics'
+                })
+            }));
+
+            // Assert Database State
+            const categoryInDb = await categoryModel.findById(initialCategory._id);
+            expect(categoryInDb).toBeTruthy();
+            expect(categoryInDb.name).toBe('Electronics');
+            expect(categoryInDb.slug).toBe('electronics');
+            // Ensure that not a new category object gets created
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(1);
+        });
+
+        test('Return 422 if new category name is empty string and category is not updated', async () => {
+            // Retrieve the predefined category from our in memory database
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+
+            req.params.id = initialCategory._id.toString();
+            req.body.name = '';
+
+            await updateCategoryController(req, res);
+
+            // Assert Response
+            expect(res.status).toHaveBeenCalledWith(422);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'New category name cannot be empty'
+            });
+
+            // Assert Database State
+            const categoryInDb = await categoryModel.findById(initialCategory._id);
+            expect(categoryInDb.name).toBe('Electronic'); // Ensure that the existing category is not updated
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(1);
+        });
+
+        test('Return 422 if new category name is whitespace and category is not updated', async () => {
+            // Retrieve the predefined category from our in memory database
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+
+            req.params.id = initialCategory._id.toString();
+            req.body.name = '    ';
+
+            await updateCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(422);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'New category name cannot be empty'
+            });
+
+            // Assert Database State
+            const categoryInDb = await categoryModel.findById(initialCategory._id);
+            expect(categoryInDb.name).toBe('Electronic'); // Ensure that the existing category is not updated
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(1);
+        });
+
+        test('Return 422 if category id is empty or missing and database state remains unchanged', async () => {
+            req.params.id = null;
+            req.body.name = 'Toys';
+
+            await updateCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(422);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'Category id cannot be empty'
+            });
+
+            // Assert Database State
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(1);
+        });
+
+        test('Return 404 if category to update is not found and database state remains unchanged', async () => {
+            // Provide a valid but non-existent mongoose ID
+            req.params.id = new mongoose.Types.ObjectId().toString();
+            req.body.name = 'Toys';
+
+            await updateCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'Category not found'
+            });
+
+            // Assert Database State
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(1);
         });
     });
 
