@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, test, expect } from "@jest/globals";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import Category from "../../../models/categoryModel.js";
+import Category from "./categoryModel.js";
 
 // Written by Nicholas Cheng, A0269648H
 
