@@ -4,7 +4,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import {
     createCategoryController,
     updateCategoryController,
-    categoryController
+    categoryController,
+    singleCategoryController
 } from '../../../controllers/categoryController.js';
 import categoryModel from '../../../models/categoryModel.js';
 
@@ -301,14 +302,14 @@ describe('Integration tests for Category Controller + Database', () => {
             await categoryController(req, res);
 
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
+            expect(res.send).toHaveBeenCalledWith({
                 success: true,
                 message: 'All categories fetched',
-                category: expect.arrayContaining([
+                category: [
                     expect.objectContaining({ name: 'Electronic', slug: 'electronic' }),
                     expect.objectContaining({ name: 'Clothes', slug: 'clothes' })
-                ])
-            }));
+                ]
+            });
 
             // Should have 2 items in the body array
             const callArgs = res.send.mock.calls[0][0];
@@ -326,6 +327,58 @@ describe('Integration tests for Category Controller + Database', () => {
                 success: true,
                 message: 'All categories fetched',
                 category: []
+            });
+        });
+    });
+
+    describe('Get single category', () => {
+        let req, res;
+
+        beforeEach(() => {
+            req = { params: {} };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn()
+            };
+        });
+
+        test('Successfully fetch a single category by slug', async () => {
+            req.params.slug = 'electronic';
+
+            await singleCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith({
+                success: true,
+                message: 'Get single category successfully',
+                category: expect.objectContaining({
+                    name: 'Electronic',
+                    slug: 'electronic'
+                })
+            });
+        });
+
+        test('Return 404 when category with slug cannot be found', async () => {
+            req.params.slug = 'medicine';
+
+            await singleCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'No category found'
+            });
+        });
+
+        test('Return 422 when slug value is null or missing', async () => {
+            req.params.slug = null;
+
+            await singleCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(422);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'Category slug cannot be empty'
             });
         });
     });
