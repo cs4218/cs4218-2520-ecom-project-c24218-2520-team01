@@ -5,11 +5,15 @@ import {
     createCategoryController,
     updateCategoryController,
     categoryController,
-    singleCategoryController
+    singleCategoryController,
+    deleteCategoryController
 } from '../../../controllers/categoryController.js';
 import categoryModel from '../../../models/categoryModel.js';
 
 // Written by Nicholas Cheng, A0269648H
+
+// Mock console.log to prevent it from printing to the terminal
+jest.spyOn(console, "log").mockImplementation(() => { });
 
 /**
  * I will follow a bottom up approach starting with the database and the controller.
@@ -380,6 +384,84 @@ describe('Integration tests for Category Controller + Database', () => {
                 success: false,
                 message: 'Category slug cannot be empty'
             });
+        });
+    });
+
+    describe('Delete category', () => {
+        let req, res;
+
+        beforeEach(() => {
+            req = { params: {} };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn()
+            };
+        });
+
+        test('Successfully delete a category from the database', async () => {
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+            req.params.id = initialCategory._id.toString();
+
+            await deleteCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith({
+                success: true,
+                message: 'Category deleted successfully'
+            });
+
+            // Assert database state
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(1);
+        });
+
+        test('Return 404 when category id value cannot be found and database state remains unchanged', async () => {
+            req.params.id = new mongoose.Types.ObjectId().toString();
+
+            await deleteCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'Failed to delete because no category is found'
+            });
+
+            // Assert database state
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(2);
+        });
+
+        test('Return 422 when category id is null or missing and database state remains unchanged', async () => {
+            req.params.id = null;
+
+            await deleteCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(422);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'Category id cannot be empty'
+            });
+
+            // Assert database state
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(2);
+        });
+
+        test('Return 500 when category id is invalid and database state remains unchanged', async () => {
+            req.params.id = "invalid id";
+
+            await deleteCategoryController(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.send).toHaveBeenCalledWith({
+                success: false,
+                message: 'Error while deleting category',
+                error: expect.any(Object)
+            });
+
+            // Assert database state
+            const count = await categoryModel.countDocuments();
+            expect(count).toBe(2);
         });
     });
 });
