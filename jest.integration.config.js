@@ -8,6 +8,7 @@ export default {
 	// which test to run
 	testMatch: [
 		"<rootDir>/tests/integration/models/*.test.js",
+		"<rootDir>/tests/integration/controllers/*.test.js",
 	],
 
 	// transform files with babel
