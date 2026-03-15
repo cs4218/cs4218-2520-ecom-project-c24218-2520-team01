@@ -514,15 +514,6 @@ describe('Integration tests for Category Controller with the Database, Express R
     });
 
     beforeEach(async () => {
-        // Clean up the database before each test
-        await categoryModel.deleteMany({});
-        await userModel.deleteMany({});
-
-        // Add some categories for testing
-        await categoryModel.create({
-            name: 'Electronic',
-            slug: 'electronic'
-        });
 
         // Create an admin user to generate a valid token
         const adminUser = await new userModel({
@@ -554,6 +545,17 @@ describe('Integration tests for Category Controller with the Database, Express R
     });
 
     describe('Create category via API requests', () => {
+
+        beforeEach(async () => {
+            // Clean up the database before each test
+            await categoryModel.deleteMany({});
+
+            // Add some categories for testing
+            await categoryModel.create({
+                name: 'Electronic',
+                slug: 'electronic'
+            });
+        });
 
         test('Create a new category successfully with a valid admin token and unique category name', async () => {
             const res = await request(app)
@@ -646,6 +648,134 @@ describe('Integration tests for Category Controller with the Database, Express R
 
             const count = await categoryModel.countDocuments();
             expect(count).toBe(1);
+        });
+    });
+
+    describe('Update category via API requests', () => {
+
+        beforeEach(async () => {
+            // Clean up the database before each test
+            await categoryModel.deleteMany({});
+
+            // Add some categories for testing
+            await categoryModel.create({
+                name: 'Electronic',
+                slug: 'electronic'
+            });
+        });
+
+        test('Update a category successfully with a valid admin token', async () => {
+            // This is to get the id for the category
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+
+            const res = await request(app)
+                .put(`/api/v1/category/update-category/${initialCategory._id}`)
+                .set('Authorization', adminToken)
+                .send({ name: 'Computers' });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.message).toBe('Category updated successfully');
+            expect(res.body.category.name).toBe('Computers');
+            expect(res.body.category.slug).toBe('computers');
+
+            const categoryInDb = await categoryModel.findById(initialCategory._id);
+            expect(categoryInDb.name).toBe('Computers');
+        });
+
+        test('Return 401 Unauthorized if no token is provided', async () => {
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+
+            const res = await request(app)
+                .put(`/api/v1/category/update-category/${initialCategory._id}`)
+                .send({ name: 'Computers' });
+
+            expect(res.status).toBe(401);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe('Unauthorized');
+        });
+
+        test('Return 401 Unauthorized Access if user is not an admin', async () => {
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+
+            const res = await request(app)
+                .put(`/api/v1/category/update-category/${initialCategory._id}`)
+                .set('Authorization', regularToken)
+                .send({ name: 'Computers' });
+
+            expect(res.status).toBe(401);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe('Unauthorized Access');
+
+            // Assert database state remains unchanged
+            const categoryInDb = await categoryModel.findById(initialCategory._id);
+            expect(categoryInDb.name).toBe('Electronic');
+        });
+
+        test('Return 422 if new category name is empty string', async () => {
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+
+            const res = await request(app)
+                .put(`/api/v1/category/update-category/${initialCategory._id}`)
+                .set('Authorization', adminToken)
+                .send({ name: '' });
+
+            expect(res.status).toBe(422);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe('New category name cannot be empty');
+
+            // Assert database state remains unchanged
+            const categoryInDb = await categoryModel.findById(initialCategory._id);
+            expect(categoryInDb.name).toBe('Electronic');
+        });
+
+        test('Return 422 if new category name is null or missing', async () => {
+            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+
+            const res = await request(app)
+                .put(`/api/v1/category/update-category/${initialCategory._id}`)
+                .set('Authorization', adminToken)
+                .send({ name: null });
+
+            expect(res.status).toBe(422);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe('New category name cannot be empty');
+
+            // Assert database state remains unchanged
+            const categoryInDb = await categoryModel.findById(initialCategory._id);
+            expect(categoryInDb.name).toBe('Electronic');
+        });
+
+        test('Return 404 if category to update is not found', async () => {
+            const fakeId = new mongoose.Types.ObjectId();
+
+            const res = await request(app)
+                .put(`/api/v1/category/update-category/${fakeId}`)
+                .set('Authorization', adminToken)
+                .send({ name: 'Computers' });
+
+            expect(res.status).toBe(404);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe('Category not found');
+
+            // Assert database state remains unchanged
+            const categoryInDb = await categoryModel.findOne({ name: 'Electronic' });
+            expect(categoryInDb.name).toBe('Electronic');
+        });
+
+        test('Return 500 when category id is invalid', async () => {
+            const res = await request(app)
+                .put(`/api/v1/category/update-category/invalid-id`)
+                .set('Authorization', adminToken)
+                .send({ name: 'Computers' });
+
+            expect(res.status).toBe(500);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe('Error while updating category');
+
+            // Assert database state remains unchanged
+            const categoryInDb = await categoryModel.findOne({ name: 'Electronic' });
+            expect(categoryInDb.name).toBe('Electronic');
         });
     });
 });
