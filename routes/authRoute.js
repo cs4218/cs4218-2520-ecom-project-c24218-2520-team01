@@ -45,9 +45,6 @@ router.get("/orders", requireSignIn, getOrdersController);
 //all orders
 router.get("/all-orders", requireSignIn, isAdmin, getAllOrdersController);
 
-//all users
-router.get("/all-users", requireSignIn, isAdmin, getAllUsersController);
-
 // order status update
 router.put(
   "/order-status/:orderId",
