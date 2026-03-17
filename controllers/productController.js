@@ -306,7 +306,9 @@ export const productCountController = async (req, res) => {
 export const productListController = async (req, res) => {
     try {
         const perPage = 6;
-        const page = req.params.page ? req.params.page : 1;
+        const page = parseInt(req.params.page);
+        if (!page || page < 1) throw new Error("Invalid page number");
+
         const products = await productModel
             .find({})
             .select("-photo")
