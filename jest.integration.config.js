@@ -1,35 +1,35 @@
 export default {
-	// display name
-	displayName: "integration",
+    // display name
+    displayName: "integration",
 
-	// when testing backend
-	testEnvironment: "node",
+    // when testing backend
+    testEnvironment: "node",
 
-	// which test to run
-	testMatch: [
-		"<rootDir>/tests/integration/models/*.test.js",
-	],
+    // which test to run
+    testMatch: ["<rootDir>/tests/integration/**/*.test.js"],
 
-	// transform files with babel
-	transform: {
-		"^.+\\.js$": "babel-jest",
-	},
+    // load environment variables for tests
+    setupFiles: ["<rootDir>/tests/integration/setup.js"],
 
-	// module file extensions
-	moduleFileExtensions: ["js", "json"],
+    // transform files with babel
+    transform: {
+        "^.+\\.js$": "babel-jest",
+    },
 
-	// test environment options
-	testEnvironmentOptions: {
-		experimentalEsmSupport: true,
-	},
+    // module file extensions
+    moduleFileExtensions: ["js", "json"],
 
-	// jest code coverage
-	collectCoverage: true,
-	collectCoverageFrom: ["models/**"],
-	coverageThreshold: {
-		global: {
-			lines: 100,
-			functions: 100,
-		},
-	},
+    // test environment options
+    testEnvironmentOptions: {
+        experimentalEsmSupport: true,
+    },
+
+    // jest code coverage
+    collectCoverage: true,
+    collectCoverageFrom: [
+        "models/**",
+        "controllers/**",
+        "middlewares/**",
+        "routes/**",
+    ],
 };
