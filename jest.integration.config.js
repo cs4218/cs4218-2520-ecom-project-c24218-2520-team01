@@ -8,6 +8,7 @@ export default {
 	// which test to run
 	testMatch: [
 		"<rootDir>/tests/integration/models/*.test.js",
+		"<rootDir>/tests/integration/controllers/*.test.js",
 	],
 
 	// transform files with babel
@@ -25,7 +26,7 @@ export default {
 
 	// jest code coverage
 	collectCoverage: true,
-	collectCoverageFrom: ["models/**"],
+	collectCoverageFrom: ["models/**", "controllers/**"],
 	coverageThreshold: {
 		global: {
 			lines: 100,
