@@ -34,15 +34,7 @@ const CartProvider = ({ children }) => {
 
   // Implementation added from CartPage to CartProvider
   const removeCartItem = (pid) => {
-    try {
-      let myCart = [...cart];
-      let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
-      localStorage.setItem("cart", JSON.stringify(myCart));
-    } catch (error) {
-      console.log(error);
-    }
+    setCart((currentItems) => currentItems.filter((item) => item._id !== pid));
   };
 
   const value = {

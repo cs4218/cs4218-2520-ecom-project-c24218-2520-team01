@@ -9,13 +9,23 @@ import slugify from "slugify";
 
 dotenv.config();
 
+const isTestEnv = process.env.NODE_ENV === "test";
+
+const hasBraintreeConfig =
+    isTestEnv ||
+    process.env.BRAINTREE_MERCHANT_ID &&
+    process.env.BRAINTREE_PUBLIC_KEY &&
+    process.env.BRAINTREE_PRIVATE_KEY;
+
 //payment gateway
-var gateway = new braintree.BraintreeGateway({
-    environment: braintree.Environment.Sandbox,
-    merchantId: process.env.BRAINTREE_MERCHANT_ID,
-    publicKey: process.env.BRAINTREE_PUBLIC_KEY,
-    privateKey: process.env.BRAINTREE_PRIVATE_KEY,
-});
+const gateway = hasBraintreeConfig
+    ? new braintree.BraintreeGateway({
+        environment: braintree.Environment.Sandbox,
+        merchantId: process.env.BRAINTREE_MERCHANT_ID || "test-merchant-id",
+        publicKey: process.env.BRAINTREE_PUBLIC_KEY || "test-public-key",
+        privateKey: process.env.BRAINTREE_PRIVATE_KEY || "test-private-key",
+    })
+    : null;
 
 export const createProductController = async (req, res) => {
     try {

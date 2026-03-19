@@ -190,13 +190,12 @@ describe('unit tests for cart context', () => {
         });
 
 
-        test('log error when removing cart item', () => {
+        test('removeCartItem still updates cart even if localStorage throws', () => {
             // Arrange
             mockLocalStorage.getItem.mockReturnValue(JSON.stringify(MOCK_CART_WITH_TWO_ITEMS));
             mockLocalStorage.setItem.mockImplementation(() => {
                 throw new Error("Error removing cart item");
             });
-            const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
             const { getContext } = renderCart();
 
             // Act
@@ -204,15 +203,10 @@ describe('unit tests for cart context', () => {
                 getContext().removeCartItem(MOCK_PRODUCT_A._id);
             });
 
-            // Assert
-            expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
-
-            // Cart still updated (setCart occurs before try-catch)
+            // Assert: cart state update should not depend on localStorage success
             expect(getContext().cart).toEqual([
                 { ...MOCK_PRODUCT_B, quantity: 1 }
             ]);
-
-            consoleSpy.mockRestore();
         });
     });
 });
