@@ -458,7 +458,7 @@ export const brainTreePaymentController = async (req, res) => {
             total += i.price;
         });
         // If total is 0 skip calling sale function
-        if (total === 0) {
+        if (total == 0) {
             const order = await new orderModel({
                 products: cart,
                 payment: { success: true }, // Here we just indicate that payment was done
@@ -476,6 +476,7 @@ export const brainTreePaymentController = async (req, res) => {
                 },
                 function (error, result) {
                     if (result.success) {
+                        console.log("Hello")
                         const order = new orderModel({
                             products: cart,
                             payment: result,
