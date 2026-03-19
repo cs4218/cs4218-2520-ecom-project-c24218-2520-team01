@@ -1,11 +1,25 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from "@jest/globals";
+import React from "react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import axios from "axios";
 import JWT from "jsonwebtoken";
 import { updateProfileController } from "../../controllers/authController.js";
-import { hashPassword } from "../../helpers/authHelper.js";
+import { hashPassword, comparePassword } from "../../helpers/authHelper.js";
 import userModel from "../../models/userModel.js";
+import Profile from "../../client/src/pages/user/Profile.js";
+import { AuthProvider, useAuth } from "../../client/src/context/auth.js";
 import app from "./setup/testServer.js";
 import { connectTestDatabase, disconnectTestDatabase, clearTestData, createTestUser } from "./setup/testDatabase.js";
+
+// mock Layout and UserMenu to isolate Profile component under test
+jest.mock("../../client/src/components/Layout", () => ({ children }) => <div>{children}</div>);
+jest.mock("../../client/src/components/UserMenu", () => () => <div>User Menu</div>);
+
+// renders auth context state for assertion in Level 4 UI test
+const AuthProbe = () => {
+    const [auth] = useAuth();
+    return <div data-testid="auth-probe">{`${auth?.user?.name || ""}|${auth?.token || ""}`}</div>;
+};
 
 // Rachel Tai Ke Jia, A0258603A
 const initialProfile = { 
@@ -14,6 +28,9 @@ const initialProfile = {
     phone: "91234587",
     address: "NUS Residence"
 };
+
+// Extend timeout for combined DB + UI operations (30s needed for full integration chain)
+jest.setTimeout(30000);
 
 const updatedProfile = {
     name: "John Doe",
@@ -29,6 +46,21 @@ describe("integration tests for user profile management (bottom-up approach)", (
     let authToken;
     let userId;
     const TEST_PORT = 3002;
+    let consoleErrorSpy;
+
+    beforeAll(() => {
+        const originalError = console.error;
+        consoleErrorSpy = jest.spyOn(console, "error").mockImplementation((...args) => {
+            const joinedMessage = args
+                .map((item) => (typeof item === "string" ? item : String(item)))
+                .join(" ");
+
+            if (/ReactDOMTestUtils\.act.*deprecated/.test(joinedMessage)) return;
+            if (/not wrapped in act/.test(joinedMessage)) return;
+
+            originalError(...args);
+        });
+    });
 
     beforeAll(async () => {
         // connect to test database
@@ -53,6 +85,9 @@ describe("integration tests for user profile management (bottom-up approach)", (
         });    
         await clearTestData();
         await disconnectTestDatabase();
+        if (consoleErrorSpy) {
+            consoleErrorSpy.mockRestore();
+        }
     });
 
     beforeEach(async () => {
@@ -77,7 +112,15 @@ describe("integration tests for user profile management (bottom-up approach)", (
     });
 
 
-    describe("1st level (bottom-most): integrate database and controller", () => {
+    // Components involved:
+    // A: requireSignIn middleware
+    // B: updateProfileController
+    // C: userModel (database)
+    // D: authHelper (hash/compare)
+    // Variety of integrations: A-B, A-C, B-C, B-D
+
+    // Integration test using bottom-up approach
+    describe("Level 1 (bottom-most): controller-core integration (B-C, B-D)", () => {
         test("update user profile data in real database (test database)", async () => {
             // Arrange 
             const req = {
@@ -136,6 +179,28 @@ describe("integration tests for user profile management (bottom-up approach)", (
             const updatedUser = await userModel.findById(userId);
             expect(updatedUser.password).not.toBe(originalPassword);
             expect(updatedUser.password).not.toBe("new-password"); // password should be hashed
+        });
+
+        test("updateProfileController integrates with authHelper hashing", async () => {
+            // Arrange
+            const req = {
+                user: { _id: userId },
+                body: {
+                    password: "new-password",
+                }
+            };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn()
+            };
+
+            // Act
+            await updateProfileController(req, res);
+
+            // Assert: stored value is a hash generated through authHelper path
+            const updatedUser = await userModel.findById(userId);
+            const isPasswordValid = await comparePassword("new-password", updatedUser.password);
+            expect(isPasswordValid).toBe(true);
         });
 
         test("password <6 chars is rejected", async () => {
@@ -212,7 +277,7 @@ describe("integration tests for user profile management (bottom-up approach)", (
     });
 
 
-    describe("2nd level: integrate database, controller, and requireSignIn middleware", () => {
+    describe("Level 2: middleware-controller integration (A-B)", () => {
         test("authenticate valid JWT token, allow profile update", async () => {
             // Arrange 
             const newData = {
@@ -329,7 +394,36 @@ describe("integration tests for user profile management (bottom-up approach)", (
     });
 
 
-    describe("3rd level: integrate database, controller, requireSignIn middleware, and routes", () => {
+    describe("Level 2: middleware-model safety integration (A-C)", () => {
+        test("reject invalid JWT and preserve persisted user record", async () => {
+            // Arrange
+            const invalidToken = "invalid-jwt-token";
+
+            // Act
+            try {
+                await axios.put(
+                    `${baseURL}/api/v1/auth/profile`,
+                    { name: "Invalid Update" },
+                    {
+                        headers: {
+                            'Authorization': invalidToken
+                        }
+                    }
+                );
+                expect(true).toBe(false);
+            } catch (error) {
+                // Assert
+                expect(error.response.status).toBe(401);
+                const user = await userModel.findById(userId);
+                expect(user.name).toBe(testUser.name);
+                expect(user.phone).toBe(testUser.phone);
+                expect(user.address).toBe(testUser.address);
+            }
+        });
+    });
+
+
+    describe("Level 3: route-middleware-controller-model HTTP integration", () => {
         test("complete flow for updating profile", async () => {
             // Arrange 
             const profileUpdate = {
@@ -362,7 +456,7 @@ describe("integration tests for user profile management (bottom-up approach)", (
                     email: testUser.email
                 },
             });
-            // Assert: verify response does not include password
+            // Assert: current implementation returns hashed password, never plaintext
             expect(response.data.updatedUser.password).toBeDefined();
             expect(response.data.updatedUser.password).not.toBe("newPassword");
         });
@@ -417,14 +511,14 @@ describe("integration tests for user profile management (bottom-up approach)", (
             // Assert
             expect(response1.status).toBe(200);
             expect(response2.status).toBe(200);
-            // verify database is updated with last write
+            // verify database reflects one of the concurrent writes
             const finalUser = await userModel.findById(userId);
-            expect(finalUser.name).toBe(secondUpdate.name);
+            expect([firstUpdate.name, secondUpdate.name]).toContain(finalUser.name);
         });
     });
 
 
-    describe("4th level: integrate api responses, auth context, and local storage", () => {
+    describe("Level 3: response-contract integration for context/localStorage consumers", () => {
         test("updating profile also updates auth context and localStorage", async () => {
             // Arrange
             const profileData = {
@@ -546,6 +640,76 @@ describe("integration tests for user profile management (bottom-up approach)", (
             expect(retrievedAuth.token).toBe(authToken);
 
             // Assert: verify database matches
+            const user = await userModel.findById(userId);
+            expect(user.name).toBe(updatedProfile.name);
+            expect(user.phone).toBe(updatedProfile.phone);
+            expect(user.address).toBe(updatedProfile.address);
+        });
+    });
+
+
+    describe("Level 4 (top-most): full profile-management integration flow", () => {
+        test("submitting Profile UI updates backend, auth context, and localStorage", async () => {
+            // Arrange
+            axios.defaults.baseURL = baseURL;
+            axios.defaults.headers.common["Authorization"] = "";
+            localStorage.clear();
+            localStorage.setItem(
+                "auth",
+                JSON.stringify({
+                    user: {
+                        _id: testUser._id,
+                        name: testUser.name,
+                        email: testUser.email,
+                        phone: testUser.phone,
+                        address: testUser.address,
+                        role: testUser.role,
+                    },
+                    token: authToken,
+                })
+            );
+
+            const { getByPlaceholderText, getByText, getByTestId } = render(
+                <AuthProvider>
+                    <Profile />
+                    <AuthProbe />
+                </AuthProvider>
+            );
+
+            await waitFor(() => {
+                expect(axios.defaults.headers.common["Authorization"]).toBe(authToken);
+            });
+
+            await waitFor(() => {
+                expect(getByPlaceholderText("Enter Your Name").value).toBe(testUser.name);
+            });
+
+            fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+                target: { value: updatedProfile.name },
+            });
+            fireEvent.change(getByPlaceholderText("Enter Your Phone"), {
+                target: { value: updatedProfile.phone },
+            });
+            fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+                target: { value: updatedProfile.address },
+            });
+
+            // Act
+            fireEvent.click(getByText("UPDATE"));
+
+            // Assert: context updated through real Profile + AuthProvider path
+            await waitFor(() => {
+                expect(getByTestId("auth-probe").textContent).toBe(`${updatedProfile.name}|${authToken}`);
+            });
+
+            // Assert: localStorage sync updated by Profile handler
+            const storedAuth = JSON.parse(localStorage.getItem("auth"));
+            expect(storedAuth.user.name).toBe(updatedProfile.name);
+            expect(storedAuth.user.phone).toBe(updatedProfile.phone);
+            expect(storedAuth.user.address).toBe(updatedProfile.address);
+            expect(storedAuth.token).toBe(authToken);
+
+            // Assert: backend persistence proves middleware + controller + model chain executed
             const user = await userModel.findById(userId);
             expect(user.name).toBe(updatedProfile.name);
             expect(user.phone).toBe(updatedProfile.phone);

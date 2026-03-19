@@ -2,8 +2,8 @@ export default {
 	// display name
 	displayName: "integration",
 
-	// when testing backend
-	testEnvironment: "node",
+	// use jsdom to support both Node backend tests and browser-like tests (with @jest-environment jsdom pragma)
+	testEnvironment: "jsdom",
 
 	// Run tests serially to avoid database conflicts
 	maxWorkers: 1,
@@ -19,6 +19,14 @@ export default {
 	// transform files with babel
 	transform: {
 		"^.+\\.js$": "babel-jest",
+	},
+
+	// ensure a single React instance when integration tests import client components
+	moduleNameMapper: {
+		"^react$": "<rootDir>/node_modules/react",
+		"^react-dom$": "<rootDir>/node_modules/react-dom",
+		"^react/jsx-runtime$": "<rootDir>/node_modules/react/jsx-runtime.js",
+		"^axios$": "<rootDir>/node_modules/axios/dist/node/axios.cjs",
 	},
 
 	// module file extensions
