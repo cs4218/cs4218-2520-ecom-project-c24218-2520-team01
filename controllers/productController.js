@@ -5,6 +5,7 @@ import productModel from "../models/productModel.js";
 import braintree from "braintree";
 import dotenv from "dotenv";
 import fs from "fs";
+import mongoose from "mongoose";
 import slugify from "slugify";
 
 dotenv.config();
@@ -453,6 +454,17 @@ export const brainTreePaymentController = async (req, res) => {
                 message: "No transaction is made because cart is empty",
             });
         }
+
+        // We need this because sending a payment and creating an order is done subsequently
+        // If we send a payment and the database is not connected, the order will not be created
+        // and the payment will still happen but there is no order.
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(500).send({
+                success: false,
+                message: "Cannot connect to the database",
+            });
+        }
+
         let total = 0;
         cart.map((i) => {
             total += i.price;
@@ -476,7 +488,6 @@ export const brainTreePaymentController = async (req, res) => {
                 },
                 function (error, result) {
                     if (result.success) {
-                        console.log("Hello")
                         const order = new orderModel({
                             products: cart,
                             payment: result,
