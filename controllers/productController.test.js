@@ -1252,7 +1252,7 @@ describe("Payment functions", () => {
                 expect(res.status).toHaveBeenCalledWith(200);
                 expect(res.send).toHaveBeenCalledWith({
                     success: true,
-                    data: mockTokenGenerateResponse
+                    clientToken: mockTokenGenerateResponse.clientToken
                 });
             });
         });

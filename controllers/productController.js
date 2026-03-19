@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import slugify from "slugify";
 
-dotenv.config();
+dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local' });
 
 const isTestEnv = process.env.NODE_ENV === "test";
 
@@ -425,7 +425,7 @@ export const braintreeTokenController = async (req, res) => {
             } else {
                 res.status(200).send({
                     success: true,
-                    data: response,
+                    clientToken: response.clientToken,
                 });
             }
         });
