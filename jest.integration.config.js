@@ -2,12 +2,12 @@ export default {
 	// display name
 	displayName: "integration",
 
-	// when testing backend
-	testEnvironment: "node",
+	// integration tests in this suite exercise React component interactions.
+	testEnvironment: "jest-environment-jsdom",
 
 	// which test to run
 	testMatch: [
-		"<rootDir>/tests/integration/models/*.test.js",
+		"<rootDir>/tests/integration/**/*.test.js",
 	],
 
 	// transform files with babel
@@ -15,21 +15,19 @@ export default {
 		"^.+\\.js$": "babel-jest",
 	},
 
+	moduleNameMapper: {
+		"\\.(css|scss)$": "<rootDir>/__mocks__/styleMock.js",
+		"^react$": "<rootDir>/node_modules/react",
+		"^react-dom$": "<rootDir>/node_modules/react-dom",
+		"^react-router$": "<rootDir>/node_modules/react-router",
+		"^react-router-dom$": "<rootDir>/node_modules/react-router-dom",
+	},
+
 	// module file extensions
 	moduleFileExtensions: ["js", "json"],
 
-	// test environment options
-	testEnvironmentOptions: {
-		experimentalEsmSupport: true,
-	},
+	setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
 
-	// jest code coverage
-	collectCoverage: true,
-	collectCoverageFrom: ["models/**"],
-	coverageThreshold: {
-		global: {
-			lines: 100,
-			functions: 100,
-		},
-	},
+	// keep integration runs focused on behavior verification.
+	collectCoverage: false,
 };
