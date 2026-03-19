@@ -52,515 +52,455 @@ describe("Braintree token controller integration tests with BrainTree & Database
 
                 // Assertions
                 expect(response.statusCode).toBe(200);
-                expect(response.data.data).toBeDefined();
+                expect(response.data).toBeDefined();
 
                 // The braintree response should contain a clientToken
-                expect(response.data.data.clientToken).toBeDefined();
-                expect(response.data.data.clientToken.length).toBeGreaterThan(0);
+                expect(response.data.clientToken).toBeDefined();
+                expect(response.data.clientToken.length).toBeGreaterThan(0);
             }, 15000); // 15 seconds timeout for external API call
         });
     });
+});
+/**
+ * NOTE: Braintree has a failsafe for duplicate transaction request sent to their server.
+ * This interval is within 30 seconds, so if the integration test were to be repeated in quick succession,
+ * some of the integration test will fail because it is sending the exact same transaction request within this timeframe.
+ */
+describe("Making payment", () => {
 
-    /**
-     * NOTE: Braintree has a failsafe for duplicate transaction request sent to their server.
-     * This interval is within 30 seconds, so if the integration test were to be repeated in quick succession,
-     * some of the integration test will fail because it is sending the exact same transaction request within this timeframe.
-     */
-    describe("Making payment", () => {
+    // Store this to inject the data into the request
+    let mongoServer, user, category, product1, product2, product3;
 
-        // Store this to inject the data into the request
-        let mongoServer, user, category, product1, product2, product3;
+    beforeAll(async () => {
+        mongoServer = await MongoMemoryServer.create();
+        const uri = mongoServer.getUri();
+        await mongoose.connect(uri);
 
-        beforeAll(async () => {
-            mongoServer = await MongoMemoryServer.create();
-            const uri = mongoServer.getUri();
-            await mongoose.connect(uri);
+        // Create a user
+        user = await new userModel({
+            name: "Jane Doe",
+            email: "jane@example.com",
+            password: "password123",
+            phone: "123456789",
+            address: "123 Main St",
+            answer: "yes"
+        }).save();
 
-            // Create a user
-            user = await new userModel({
-                name: "Jane Doe",
-                email: "jane@example.com",
-                password: "password123",
-                phone: "123456789",
-                address: "123 Main St",
-                answer: "yes"
-            }).save();
+        // Create a category
+        category = await new categoryModel({
+            name: "Electronics",
+            slug: "electronics"
+        }).save();
 
-            // Create a category
-            category = await new categoryModel({
-                name: "Electronics",
-                slug: "electronics"
-            }).save();
+        // Create some products
+        product1 = await new productModel({
+            name: "Laptop",
+            slug: "laptop",
+            description: "A fast laptop",
+            price: 3000, // This price will trigger a Braintree no response according to their testing documentation
+            category: category._id,
+            quantity: 5,
+            photo: {
+                data: fs.readFileSync(FIXTURE_IMAGE),
+                contentType: FIXTURE_IMAGE.type
+            }
+        }).save();
 
-            // Create some products
-            product1 = await new productModel({
-                name: "Laptop",
-                slug: "laptop",
-                description: "A fast laptop",
-                price: 3000, // This price will trigger a Braintree no response according to their testing documentation
-                category: category._id,
-                quantity: 5,
-                photo: {
-                    data: fs.readFileSync(FIXTURE_IMAGE),
-                    contentType: FIXTURE_IMAGE.type
+        product2 = await new productModel({
+            name: "Keyboard",
+            slug: "keyboard",
+            description: "A super mechanical keyboard",
+            price: 2000, // This price will trigger a bank transaction declined error
+            category: category._id,
+            quantity: 10,
+            photo: {
+                data: fs.readFileSync(FIXTURE_IMAGE),
+                contentType: FIXTURE_IMAGE.type
+            }
+        }).save();
+
+        product3 = await new productModel({
+            name: "Mouse",
+            slug: "mouse",
+            description: "A FREE mouse",
+            price: 0,
+            category: category._id,
+            quantity: 0,
+            photo: {
+                data: fs.readFileSync(FIXTURE_IMAGE),
+                contentType: FIXTURE_IMAGE.type
+            }
+        }).save();
+    });
+
+    afterAll(async () => {
+        await mongoose.disconnect();
+        await mongoServer.stop();
+    });
+
+    describe("Successfully places a payment", () => {
+
+        afterEach(async () => {
+            // Just clear any orders we have created
+            await orderModel.deleteMany({});
+        });
+
+        test("Successfully make a payment and save order to database", async () => {
+            const req = {
+                body: {
+                    nonce: "fake-valid-nonce",
+                    cart: [
+                        product1,
+                        product2
+                    ]
+                },
+                user: {
+                    _id: user._id
                 }
-            }).save();
+            };
 
-            product2 = await new productModel({
-                name: "Keyboard",
-                slug: "keyboard",
-                description: "A super mechanical keyboard",
-                price: 2000, // This price will trigger a bank transaction declined error
-                category: category._id,
-                quantity: 10,
-                photo: {
-                    data: fs.readFileSync(FIXTURE_IMAGE),
-                    contentType: FIXTURE_IMAGE.type
+            const response = await new Promise((resolve, reject) => {
+                const res = {
+                    status: jest.fn().mockReturnThis(),
+                    json: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    }),
+                    send: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    })
+                };
+
+                try {
+                    brainTreePaymentController(req, res);
+                } catch (error) {
+                    reject(error);
                 }
-            }).save();
+            });
+            expect(response.statusCode).toBe(200);
+            expect(response.data.ok).toBe(true);
 
-            product3 = await new productModel({
-                name: "Mouse",
-                slug: "mouse",
-                description: "A FREE mouse",
-                price: 0,
-                category: category._id,
-                quantity: 0,
-                photo: {
-                    data: fs.readFileSync(FIXTURE_IMAGE),
-                    contentType: FIXTURE_IMAGE.type
+            // Verify order was saved in DB
+            const orders = await orderModel.find({});
+            expect(orders.length).toBe(1);
+            expect(orders[0].buyer.toString()).toBe(req.user._id.toString());
+            expect(orders[0].products.length).toBe(2);
+            expect(orders[0].payment).toBeDefined();
+        }, 15000);
+
+        // Bug found : Value cannot be 0
+        test("Successfully make a payment and save order to database with a total cost of 0", async () => {
+            const req = {
+                body: {
+                    nonce: "fake-valid-nonce",
+                    cart: [
+                        product3
+                    ]
+                },
+                user: {
+                    _id: user._id
                 }
-            }).save();
+            };
+
+            const response = await new Promise((resolve, reject) => {
+                const res = {
+                    status: jest.fn().mockReturnThis(),
+                    json: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    }),
+                    send: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    })
+                };
+
+                try {
+                    brainTreePaymentController(req, res);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+
+            expect(response.statusCode).toBe(200);
+            expect(response.data.ok).toBe(true);
+
+            // Verify order was saved in DB
+            const orders = await orderModel.find({});
+            expect(orders.length).toBe(1);
+            expect(orders[0].buyer.toString()).toBe(req.user._id.toString());
+            expect(orders[0].products.length).toBe(1);
+            expect(orders[0].payment).toBeDefined();
+        }, 15000);
+    });
+
+    describe("Missing fields or validation errors", () => {
+        test("No order is created when no nonce is provided", async () => {
+            const req = {
+                body: {
+                    cart: [
+                        product1,
+                        product2
+                    ]
+                },
+                user: {
+                    _id: user._id
+                }
+            };
+
+            const response = await new Promise((resolve, reject) => {
+                const res = {
+                    status: jest.fn().mockReturnThis(),
+                    send: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    })
+                };
+
+                try {
+                    brainTreePaymentController(req, res);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+
+            expect(response.statusCode).toBe(400);
+            expect(response.data.success).toBe(false);
+            expect(response.data.message).toBe("Payment method nonce is not provided");
+
+            // Check database state
+            const orders = await orderModel.find({});
+            expect(orders.length).toBe(0);
         });
 
-        afterAll(async () => {
-            await mongoose.disconnect();
-            await mongoServer.stop();
+        test("No order is created when cart is empty", async () => {
+            const req = {
+                body: {
+                    nonce: "fake-valid-nonce",
+                    cart: []
+                },
+                user: {
+                    _id: user._id
+                }
+            };
+
+            const response = await new Promise((resolve, reject) => {
+                const res = {
+                    status: jest.fn().mockReturnThis(),
+                    send: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    })
+                };
+
+                try {
+                    brainTreePaymentController(req, res);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+
+            expect(response.statusCode).toBe(400);
+            expect(response.data.success).toBe(false);
+            expect(response.data.message).toBe("No transaction is made because cart is empty");
+
+            // Check database state
+            const orders = await orderModel.find({});
+            expect(orders.length).toBe(0);
         });
 
-        describe("Successfully places a payment", () => {
+        test("No order is created when user id is not provided", async () => {
+            const req = {
+                body: {
+                    nonce: "fake-valid-nonce",
+                    cart: [
+                        product1,
+                        product2
+                    ]
+                },
+            };
 
-            afterEach(async () => {
-                // Just clear any orders we have created
-                await orderModel.deleteMany({});
+            const response = await new Promise((resolve, reject) => {
+                const res = {
+                    status: jest.fn().mockReturnThis(),
+                    send: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    })
+                };
+
+                try {
+                    brainTreePaymentController(req, res);
+                } catch (error) {
+                    reject(error);
+                }
             });
 
-            test("Successfully make a payment and save order to database", async () => {
-                const req = {
-                    body: {
-                        nonce: "fake-valid-nonce",
-                        cart: [
-                            product1,
-                            product2
-                        ]
-                    },
-                    user: {
-                        _id: user._id
-                    }
-                };
+            expect(response.statusCode).toBe(400);
+            expect(response.data.success).toBe(false);
+            expect(response.data.message).toBe("User id is not provided");
 
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        json: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        }),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-                expect(response.statusCode).toBe(200);
-                expect(response.data.ok).toBe(true);
-
-                // Verify order was saved in DB
-                const orders = await orderModel.find({});
-                expect(orders.length).toBe(1);
-                expect(orders[0].buyer.toString()).toBe(req.user._id.toString());
-                expect(orders[0].products.length).toBe(2);
-                expect(orders[0].payment).toBeDefined();
-            }, 15000);
-
-            // Bug found : Value cannot be 0
-            test("Successfully make a payment and save order to database with a total cost of 0", async () => {
-                const req = {
-                    body: {
-                        nonce: "fake-valid-nonce",
-                        cart: [
-                            product3
-                        ]
-                    },
-                    user: {
-                        _id: user._id
-                    }
-                };
-
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        json: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        }),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                expect(response.statusCode).toBe(200);
-                expect(response.data.ok).toBe(true);
-
-                // Verify order was saved in DB
-                const orders = await orderModel.find({});
-                expect(orders.length).toBe(1);
-                expect(orders[0].buyer.toString()).toBe(req.user._id.toString());
-                expect(orders[0].products.length).toBe(1);
-                expect(orders[0].payment).toBeDefined();
-            }, 15000);
+            // Check database state
+            const orders = await orderModel.find({});
+            expect(orders.length).toBe(0);
         });
 
-        describe("Missing fields or validation errors", () => {
-            test("No order is created when no nonce is provided", async () => {
-                const req = {
-                    body: {
-                        cart: [
-                            product1,
-                            product2
-                        ]
-                    },
-                    user: {
-                        _id: user._id
-                    }
+        // Bug found : Needs to be result.success not just result
+        test("No order is created when nonce is invalid", async () => {
+            const req = {
+                body: {
+                    nonce: "fake-consumed-nonce", // This is just one of the many invalid nonce values which Braintree provides
+                    cart: [
+                        product1,
+                        product2
+                    ]
+                },
+                user: {
+                    _id: user._id
+                }
+            };
+
+            const response = await new Promise((resolve, reject) => {
+                const res = {
+                    status: jest.fn().mockReturnThis(),
+                    send: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    }),
+                    json: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    })
                 };
 
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                expect(response.statusCode).toBe(400);
-                expect(response.data.success).toBe(false);
-                expect(response.data.message).toBe("Payment method nonce is not provided");
-
-                // Check database state
-                const orders = await orderModel.find({});
-                expect(orders.length).toBe(0);
+                try {
+                    brainTreePaymentController(req, res);
+                } catch (error) {
+                    reject(error);
+                }
             });
 
-            test("No order is created when cart is empty", async () => {
-                const req = {
-                    body: {
-                        nonce: "fake-valid-nonce",
-                        cart: []
-                    },
-                    user: {
-                        _id: user._id
-                    }
+            expect(response.statusCode).toBe(500);
+            expect(response.data.success).toBe(false);
+            expect(response.data.message).toBe("Error while making transaction");
+
+            // Check database state
+            const orders = await orderModel.find({});
+            expect(orders.length).toBe(0);
+        }, 15000);
+    });
+
+    describe("Braintree errors", () => {
+        test("No order is created when Braintree is not responding", async () => {
+            const req = {
+                body: {
+                    nonce: "fake-valid-nonce",
+                    cart: [
+                        product1 // Sending a 3000 as amount will return a Braintree error 3000 which is when the server is unresponsive
+                    ]
+                },
+                user: {
+                    _id: user._id
+                }
+            };
+
+            const response = await new Promise((resolve, reject) => {
+                const res = {
+                    status: jest.fn().mockReturnThis(),
+                    send: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    }),
+                    json: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    })
                 };
 
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                expect(response.statusCode).toBe(400);
-                expect(response.data.success).toBe(false);
-                expect(response.data.message).toBe("No transaction is made because cart is empty");
-
-                // Check database state
-                const orders = await orderModel.find({});
-                expect(orders.length).toBe(0);
+                try {
+                    brainTreePaymentController(req, res);
+                } catch (error) {
+                    reject(error);
+                }
             });
 
-            test("No order is created when user id is not provided", async () => {
-                const req = {
-                    body: {
-                        nonce: "fake-valid-nonce",
-                        cart: [
-                            product1,
-                            product2
-                        ]
-                    },
+            expect(response.statusCode).toBe(500);
+            expect(response.data.success).toBe(false);
+            expect(response.data.message).toBe("Error while making transaction");
+
+            // Check database state
+            const orders = await orderModel.find({});
+            expect(orders.length).toBe(0);
+        }, 15000);
+
+        test("No order is created when the bank rejects a transaction", async () => {
+            const req = {
+                body: {
+                    nonce: "fake-valid-nonce",
+                    cart: [
+                        product2 // Sending 2000 as amount will return a Braintree error 2038 which is when the bank rejects a transaction
+                    ]
+                },
+                user: {
+                    _id: user._id
+                }
+            };
+
+            const response = await new Promise((resolve, reject) => {
+                const res = {
+                    status: jest.fn().mockReturnThis(),
+                    send: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    }),
+                    json: jest.fn((data) => {
+                        resolve({
+                            statusCode: res.status.mock.calls[0][0],
+                            data: data
+                        });
+                    })
                 };
 
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                expect(response.statusCode).toBe(400);
-                expect(response.data.success).toBe(false);
-                expect(response.data.message).toBe("User id is not provided");
-
-                // Check database state
-                const orders = await orderModel.find({});
-                expect(orders.length).toBe(0);
+                try {
+                    brainTreePaymentController(req, res);
+                } catch (error) {
+                    reject(error);
+                }
             });
 
-            // Bug found : Needs to be result.success not just result
-            test("No order is created when nonce is invalid", async () => {
-                const req = {
-                    body: {
-                        nonce: "fake-consumed-nonce", // This is just one of the many invalid nonce values which Braintree provides
-                        cart: [
-                            product1,
-                            product2
-                        ]
-                    },
-                    user: {
-                        _id: user._id
-                    }
-                };
+            expect(response.statusCode).toBe(500);
+            expect(response.data.success).toBe(false);
+            expect(response.data.message).toBe("Error while making transaction");
 
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        }),
-                        json: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                expect(response.statusCode).toBe(500);
-                expect(response.data.success).toBe(false);
-                expect(response.data.message).toBe("Error while making transaction");
-
-                // Check database state
-                const orders = await orderModel.find({});
-                expect(orders.length).toBe(0);
-            }, 15000);
-        });
-
-        describe("Braintree errors", () => {
-            test("No order is created when Braintree is not responding", async () => {
-                const req = {
-                    body: {
-                        nonce: "fake-valid-nonce",
-                        cart: [
-                            product1 // Sending a 3000 as amount will return a Braintree error 3000 which is when the server is unresponsive
-                        ]
-                    },
-                    user: {
-                        _id: user._id
-                    }
-                };
-
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        }),
-                        json: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                expect(response.statusCode).toBe(500);
-                expect(response.data.success).toBe(false);
-                expect(response.data.message).toBe("Error while making transaction");
-
-                // Check database state
-                const orders = await orderModel.find({});
-                expect(orders.length).toBe(0);
-            }, 15000);
-
-            test("No order is created when the bank rejects a transaction", async () => {
-                const req = {
-                    body: {
-                        nonce: "fake-valid-nonce",
-                        cart: [
-                            product2 // Sending 2000 as amount will return a Braintree error 2038 which is when the bank rejects a transaction
-                        ]
-                    },
-                    user: {
-                        _id: user._id
-                    }
-                };
-
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        }),
-                        json: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                expect(response.statusCode).toBe(500);
-                expect(response.data.success).toBe(false);
-                expect(response.data.message).toBe("Error while making transaction");
-
-                // Check database state
-                const orders = await orderModel.find({});
-                expect(orders.length).toBe(0);
-            }, 15000);
-        });
-
-        describe("Database errors", () => {
-
-            // Tempoarely close the database connection
-            beforeAll(async () => {
-                await mongoose.connection.close();
-            });
-
-            // Reconnect to the database after all tests are done
-            afterAll(async () => {
-                const uri = mongoServer.getUri();
-                await mongoose.connect(uri);
-            });
-
-            test("No order is created when the database is not connected", async () => {
-
-                const req = {
-                    body: {
-                        nonce: "fake-valid-nonce",
-                        cart: [
-                            product1,
-                            product2
-                        ]
-                    },
-                    user: {
-                        _id: user._id
-                    }
-                };
-
-                const response = await new Promise((resolve, reject) => {
-                    const res = {
-                        status: jest.fn().mockReturnThis(),
-                        send: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        }),
-                        json: jest.fn((data) => {
-                            resolve({
-                                statusCode: res.status.mock.calls[0][0],
-                                data: data
-                            });
-                        })
-                    };
-
-                    try {
-                        brainTreePaymentController(req, res);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                // No need to check the database state because the database is disconnected
-                expect(response.statusCode).toBe(500);
-                expect(response.data.success).toBe(false);
-                expect(response.data.message).toBe("Cannot connect to the database");
-            });
-        });
+            // Check database state
+            const orders = await orderModel.find({});
+            expect(orders.length).toBe(0);
+        }, 15000);
     });
 });
 
@@ -655,8 +595,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
         test("Generate and retrieve a braintree client token", async () => {
             const response = await request(app).get("/api/v1/product/braintree/token");
             expect(response.status).toBe(200);
-            expect(response.body.data).toBeDefined();
-            expect(response.body.data.clientToken).toBeDefined();
+            expect(response.body.clientToken).toBeDefined();
         }, 15000);
     });
 
@@ -804,30 +743,6 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                 // Verify NO order in database
                 const orders = await orderModel.find({});
                 expect(orders.length).toBe(0);
-            }, 15000);
-        });
-
-        describe("Sending a payment request when the database is down", () => {
-            beforeEach(async () => {
-                await mongoose.disconnect();
-            });
-
-            afterEach(async () => {
-                const uri = mongoServer.getUri();
-                await mongoose.connect(uri);
-            });
-
-            test("Fails to make payment if database is not connected", async () => {
-                const response = await request(app)
-                    .post("/api/v1/product/braintree/payment")
-                    .set("Authorization", token)
-                    .send({
-                        nonce: "fake-valid-nonce",
-                        cart: [product1, product2]
-                    });
-
-                expect(response.status).toBe(500);
-                expect(response.body.success).toBe(false);
             }, 15000);
         });
     });

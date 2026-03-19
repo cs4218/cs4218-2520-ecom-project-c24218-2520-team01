@@ -8,25 +8,15 @@ import fs from "fs";
 import mongoose from "mongoose";
 import slugify from "slugify";
 
-dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local' });
-
-const isTestEnv = process.env.NODE_ENV === "test";
-
-const hasBraintreeConfig =
-    isTestEnv ||
-    process.env.BRAINTREE_MERCHANT_ID &&
-    process.env.BRAINTREE_PUBLIC_KEY &&
-    process.env.BRAINTREE_PRIVATE_KEY;
+dotenv.config();
 
 //payment gateway
-const gateway = hasBraintreeConfig
-    ? new braintree.BraintreeGateway({
-        environment: braintree.Environment.Sandbox,
-        merchantId: process.env.BRAINTREE_MERCHANT_ID || "test-merchant-id",
-        publicKey: process.env.BRAINTREE_PUBLIC_KEY || "test-public-key",
-        privateKey: process.env.BRAINTREE_PRIVATE_KEY || "test-private-key",
-    })
-    : null;
+var gateway = new braintree.BraintreeGateway({
+    environment: braintree.Environment.Sandbox,
+    merchantId: process.env.BRAINTREE_MERCHANT_ID,
+    publicKey: process.env.BRAINTREE_PUBLIC_KEY,
+    privateKey: process.env.BRAINTREE_PRIVATE_KEY,
+});
 
 export const createProductController = async (req, res) => {
     try {
@@ -417,6 +407,7 @@ export const productCategoryController = async (req, res) => {
 export const braintreeTokenController = async (req, res) => {
     try {
         gateway.clientToken.generate({}, function (error, response) {
+            console.log(error);
             if (error) {
                 res.status(500).send({
                     success: false,
@@ -465,16 +456,6 @@ export const brainTreePaymentController = async (req, res) => {
             });
         }
 
-        // We need this because sending a payment and creating an order is done subsequently
-        // If we send a payment and the database is not connected, the order will not be created
-        // and the payment will still happen but there is no order.
-        if (mongoose.connection.readyState !== 1) {
-            return res.status(500).send({
-                success: false,
-                message: "Cannot connect to the database",
-            });
-        }
-
         let total = 0;
         cart.map((i) => {
             total += i.price;
@@ -488,7 +469,7 @@ export const brainTreePaymentController = async (req, res) => {
             }).save();
             return res.status(200).json({ ok: true });
         } else {
-            let newTransaction = gateway.transaction.sale(
+            let newTransaction = await gateway.transaction.sale(
                 {
                     amount: total,
                     paymentMethodNonce: nonce,
