@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, beforeEach, describe, test, expect, jest } from "@jest/globals";
+import { beforeAll, afterAll, beforeEach, afterEach, describe, test, expect, jest } from "@jest/globals";
 import {
     braintreeTokenController,
     brainTreePaymentController
@@ -8,7 +8,6 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import request from "supertest";
 import express from "express";
 import productRoutes from "../../../routes/productRoutes.js";
-import dotenv from "dotenv";
 import JWT from "jsonwebtoken";
 import orderModel from "../../../models/orderModel.js";
 import userModel from "../../../models/userModel.js";
@@ -62,6 +61,11 @@ describe("Braintree token controller integration tests with BrainTree & Database
         });
     });
 
+    /**
+     * NOTE: Braintree has a failsafe for duplicate transaction request sent to their server.
+     * This interval is within 30 seconds, so if the integration test were to be repeated in quick succession,
+     * some of the integration test will fail because it is sending the exact same transaction request within this timeframe.
+     */
     describe("Making payment", () => {
 
         // Store this to inject the data into the request
@@ -178,7 +182,6 @@ describe("Braintree token controller integration tests with BrainTree & Database
                         reject(error);
                     }
                 });
-
                 expect(response.statusCode).toBe(200);
                 expect(response.data.ok).toBe(true);
 
@@ -655,5 +658,177 @@ describe("Braintree token controller integration tests with BrainTree, Database,
             expect(response.body.data).toBeDefined();
             expect(response.body.data.clientToken).toBeDefined();
         }, 15000);
+    });
+
+    describe("Send payment request through the API endpoint", () => {
+        describe("Successfully make a payment with valid inputs", () => {
+            test("Successfully make a payment with valid token and save order to database", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", token)
+                    .send({
+                        nonce: "fake-valid-commercial-nonce",
+                        cart: [product1, product2]
+                    });
+                expect(response.status).toBe(200);
+                expect(response.body.ok).toBe(true);
+
+                // Verify order in database
+                const orders = await orderModel.find({});
+                expect(orders.length).toBe(1);
+                expect(orders[0].buyer.toString()).toBe(user._id.toString());
+                expect(orders[0].products.length).toBe(2);
+            }, 15000);
+
+            test("Successfully make a payment with a total cost of 0 and save order to database", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", token)
+                    .send({
+                        nonce: "fake-valid-commercial-nonce",
+                        cart: [product3]
+                    });
+                expect(response.status).toBe(200);
+                expect(response.body.ok).toBe(true);
+
+                // Verify order in database
+                const orders = await orderModel.find({});
+                expect(orders.length).toBe(1);
+                expect(orders[0].buyer.toString()).toBe(user._id.toString());
+                expect(orders[0].products.length).toBe(1);
+            }, 15000);
+        });
+
+        describe("Sending a payment request with invalid inputs", () => {
+            test("Sending a payment request with no nonce", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", token)
+                    .send({
+                        cart: [product1, product2]
+                    });
+                expect(response.status).toBe(400);
+                expect(response.body.success).toBe(false);
+            }, 15000);
+
+            test("Sending a payment request with invalid nonce", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", token)
+                    .send({
+                        nonce: "fake-luhn-invalid-nonce",
+                        cart: [product1, product2]
+                    });
+                expect(response.status).toBe(500);
+                expect(response.body.success).toBe(false);
+            }, 15000);
+
+            test("Sending a payment request with empty cart", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", token)
+                    .send({
+                        nonce: "fake-valid-nonce",
+                        cart: []
+                    });
+                expect(response.status).toBe(400);
+                expect(response.body.success).toBe(false);
+            }, 15000);
+        });
+
+        describe("Sending a payment request when braintree server is down", () => {
+            test("Fails to make payment if braintree server is down", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", token)
+                    .send({
+                        nonce: "fake-valid-nonce",
+                        cart: [product1]
+                    });
+
+                expect(response.status).toBe(500);
+                expect(response.body.success).toBe(false);
+
+                // Verify NO order in database
+                const orders = await orderModel.find({});
+                expect(orders.length).toBe(0);
+            }, 15000);
+
+            test("Fails to make payment if the bank rejects the transaction", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", token)
+                    .send({
+                        nonce: "fake-valid-nonce",
+                        cart: [product2]
+                    });
+
+                expect(response.status).toBe(500);
+                expect(response.body.success).toBe(false);
+
+                // Verify NO order in database
+                const orders = await orderModel.find({});
+                expect(orders.length).toBe(0);
+            }, 15000);
+        });
+
+        describe("Sending a payment request when the user is not authenticated", () => {
+            test("Fails to make payment if no token is provided", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .send({
+                        nonce: "fake-valid-nonce",
+                        cart: [product1, product2]
+                    });
+
+                expect(response.status).toBe(401);
+                expect(response.body.success).toBe(false);
+
+                // Verify NO order in database
+                const orders = await orderModel.find({});
+                expect(orders.length).toBe(0);
+            }, 15000);
+
+            test("Fails to make payment if no token is invalid", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", "invalid-token")
+                    .send({
+                        nonce: "fake-valid-nonce",
+                        cart: [product1, product2]
+                    });
+
+                expect(response.status).toBe(401);
+                expect(response.body.success).toBe(false);
+
+                // Verify NO order in database
+                const orders = await orderModel.find({});
+                expect(orders.length).toBe(0);
+            }, 15000);
+        });
+
+        describe("Sending a payment request when the database is down", () => {
+            beforeEach(async () => {
+                await mongoose.disconnect();
+            });
+
+            afterEach(async () => {
+                const uri = mongoServer.getUri();
+                await mongoose.connect(uri);
+            });
+
+            test("Fails to make payment if database is not connected", async () => {
+                const response = await request(app)
+                    .post("/api/v1/product/braintree/payment")
+                    .set("Authorization", token)
+                    .send({
+                        nonce: "fake-valid-nonce",
+                        cart: [product1, product2]
+                    });
+
+                expect(response.status).toBe(500);
+                expect(response.body.success).toBe(false);
+            }, 15000);
+        });
     });
 });
