@@ -11,6 +11,8 @@ import { CartProvider } from "../../client/src/context/cart";
 // Homepage add-to-cart → CartContext → localStorage persistence 
 // → CartPage totals → remove → badge updates
 
+// Rachel Tai Ke Jia, A0258603A
+
 jest.mock("axios");
 
 // stub auth to keep tests focused on cart flow integration 
@@ -37,7 +39,6 @@ jest.mock("react-hot-toast", () => ({
 jest.mock("braintree-web-drop-in-react", () => () => (
 		<div data-testid="dropin" />
 ), { virtual: true });
-
 
 const MOCK_PRODUCTS = [
 		{
@@ -75,7 +76,6 @@ const mockAxiosForHomePage = () => {
     axios.post.mockResolvedValue({ data: { products: [] } });
 };
 
-// Rachel Tai Ke Jia, A0258603A
 
 describe("shopping cart full flow integration", () => {
     let consoleErrorSpy;

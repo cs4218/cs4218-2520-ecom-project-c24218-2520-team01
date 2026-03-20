@@ -22,6 +22,7 @@ import {
 // Header SearchInput → SearchContext → GET /product/search/:keyword 
 // → store results → navigate /search → render results
 
+// Rachel Tai Ke Jia, A0258603A
 
 // mocks to isolate each test level 
 jest.mock("../../client/src/context/auth", () => ({
@@ -100,7 +101,6 @@ const seedSearchData = async () => {
     );
 };
 
-// Rachel Tai Ke Jia, A0258603A
 
 describe("search flow integration test", () => {
     let server;

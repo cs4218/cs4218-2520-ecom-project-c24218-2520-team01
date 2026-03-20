@@ -12,6 +12,8 @@ import { AuthProvider, useAuth } from "../../client/src/context/auth.js";
 import app from "./setup/testServer.js";
 import { connectTestDatabase, disconnectTestDatabase, clearTestData, createTestUser } from "./setup/testDatabase.js";
 
+// Rachel Tai Ke Jia, A0258603A
+
 // mock Layout and UserMenu to isolate Profile component under test
 jest.mock("../../client/src/components/Layout", () => ({ children }) => <div>{children}</div>);
 jest.mock("../../client/src/components/UserMenu", () => () => <div>User Menu</div>);
@@ -22,7 +24,6 @@ const AuthProbe = () => {
     return <div data-testid="auth-probe">{`${auth?.user?.name || ""}|${auth?.token || ""}`}</div>;
 };
 
-// Rachel Tai Ke Jia, A0258603A
 const initialProfile = { 
     name: "John",
     email: "john@example.com",
