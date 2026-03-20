@@ -44,6 +44,14 @@ export const createProductController = async (req, res) => {
                 return res.status(500).send({
                     error: "Photo Should Be Smaller Than 1MB",
                 });
+            case price < 0:
+                return res.status(500).send({
+                    error: "Price must be a non-negative number",
+                });
+            case quantity < 0:
+                return res.status(500).send({
+                    error: "Quantity must be a non-negative number",
+                });
         }
 
         const products = new productModel({

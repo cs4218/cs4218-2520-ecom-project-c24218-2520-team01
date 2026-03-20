@@ -140,7 +140,12 @@ const CreateProduct = () => {
                   value={price}
                   placeholder="write a price"
                   className="form-control"
-                  onChange={(e) => setPrice(e.target.value)}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    if (newValue === "" || Number(newValue) >= 0) {
+                      setPrice(newValue);
+                    }
+                  }}
                 />
               </div>
               <div className="mb-3">
@@ -149,7 +154,12 @@ const CreateProduct = () => {
                   value={quantity}
                   placeholder="write a quantity"
                   className="form-control"
-                  onChange={(e) => setQuantity(e.target.value)}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    if (newValue === "" || Number(newValue) >= 0) {
+                      setQuantity(newValue);
+                    }
+                  }}
                 />
               </div>
               <div className="mb-3">
