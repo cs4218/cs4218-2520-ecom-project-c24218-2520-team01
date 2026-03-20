@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
-import { hashPassword } from '../../helpers/authHelper';
-import categoryModel from '../../models/categoryModel';
-import userModel from '../../models/userModel';
-import productModel from '../../models/productModel';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+import { test, expect } from "@playwright/test";
+import { hashPassword } from "../../helpers/authHelper";
+import categoryModel from "../../models/categoryModel";
+import userModel from "../../models/userModel";
+import productModel from "../../models/productModel";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -24,7 +24,7 @@ const DUMMY_PRODUCT_COUNT = 4;
 let user, category;
 let products = [];
 
-test.describe.configure({ mode: 'parallel' });
+test.describe.configure({ mode: "parallel" });
 
 test.beforeAll(async ({ }) => {
 
@@ -41,14 +41,14 @@ test.beforeAll(async ({ }) => {
     }).save();
 
     category = await new categoryModel({
-        name: 'Test',
-        slug: 'test',
+        name: "Test",
+        slug: "test",
     }).save();
 });
 
 test.beforeEach(async ({ page }) => {
 
-    await page.goto('http://localhost:3000/');
+    await page.goto("http://localhost:3000/");
 });
 
 
@@ -82,7 +82,7 @@ test.describe("Category Browsing Flow", () => {
             }
 
             // Refresh the page to get updates on the products
-            await page.goto('http://localhost:3000/');
+            await page.goto("http://localhost:3000/");
         });
 
         test.afterAll(async ({ }) => {
@@ -92,16 +92,17 @@ test.describe("Category Browsing Flow", () => {
             }
         });
 
-        test('Users should be able to load more produts on the main page when clicking on the load more button', async ({ page }) => {
+        test("Users should be able to load more produts on the main page when clicking on the load more button", async ({ page }) => {
 
+            // No need to simulate login as the Main page is accessible to all users and you can view products
             // Since we injected some number of dummy products, we should be able to load more products
-            await expect(page.getByRole('button', { name: 'Loadmore' })).toBeVisible();
+            await expect(page.getByRole("button", { name: "Loadmore" })).toBeVisible();
 
             // Just ensure that the additional products are loaded (Just check for one of them)
-            await page.getByRole('button', { name: 'Loadmore' }).click();
-            await expect(page.getByRole('button', { name: 'Loading' })).toBeHidden();
+            await page.getByRole("button", { name: "Loadmore" }).click();
+            await expect(page.getByRole("button", { name: "Loading" })).toBeHidden();
 
-            await expect(page.locator('div').filter({ hasText: 'Laptop$1,499.99A powerful' }).nth(5)).toBeVisible();
+            await expect(page.locator("div").filter({ hasText: "Laptop$1,499.99A powerful" }).nth(5)).toBeVisible();
         });
     });
 });
