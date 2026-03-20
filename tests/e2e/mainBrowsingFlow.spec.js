@@ -19,8 +19,10 @@ const __dirname = path.dirname(__filename);
 const FIXTURE_IMAGE = path.resolve(__dirname, "../fixtures/test-image.jpg");
 const USER_EMAIL = "jane@test.com";
 const USER_PASSWORD = "Password";
+const DUMMY_PRODUCT_COUNT = 4;
 
-let user, category, product;
+let user, category;
+let products = [];
 
 test.describe.configure({ mode: 'parallel' });
 
@@ -46,19 +48,6 @@ test.beforeAll(async ({ }) => {
 
 test.beforeEach(async ({ page }) => {
 
-    product = await new productModel({
-        name: "Ball",
-        slug: "ball",
-        description: "A round GOLDEN ball",
-        price: 3000,
-        category: category._id,
-        quantity: 5,
-        photo: {
-            data: fs.readFileSync(FIXTURE_IMAGE),
-            contentType: FIXTURE_IMAGE.type
-        }
-    }).save();
-
     await page.goto('http://localhost:3000/');
 });
 
@@ -67,8 +56,52 @@ test.afterAll(async ({ }) => {
     // Clean up the dummy data
     await userModel.findByIdAndDelete(user._id);
     await categoryModel.findByIdAndDelete(category._id);
-    await productModel.findByIdAndDelete(product._id);
 
     await mongoose.disconnect();
 });
 
+test.describe("Category Browsing Flow", () => {
+    test.describe("Pagination", () => {
+
+        test.beforeEach(async ({ page }) => {
+            // Inject some extra products for pagination testing
+            for (let i = 0; i < DUMMY_PRODUCT_COUNT; i++) {
+                const product = await new productModel({
+                    name: "Product " + i,
+                    slug: "product-" + i,
+                    description: "Dummy" + i,
+                    price: i * 100,
+                    category: category._id,
+                    quantity: 5,
+                    photo: {
+                        data: fs.readFileSync(FIXTURE_IMAGE),
+                        contentType: FIXTURE_IMAGE.type
+                    }
+                }).save();
+                products.push(product);
+            }
+
+            // Refresh the page to get updates on the products
+            await page.goto('http://localhost:3000/');
+        });
+
+        test.afterAll(async ({ }) => {
+            // Clean up the dummy data
+            for (let i = 0; i < products.length; i++) {
+                await productModel.findByIdAndDelete(products[i]._id);
+            }
+        });
+
+        test('Users should be able to load more produts on the main page when clicking on the load more button', async ({ page }) => {
+
+            // Since we injected some number of dummy products, we should be able to load more products
+            await expect(page.getByRole('button', { name: 'Loadmore' })).toBeVisible();
+
+            // Just ensure that the additional products are loaded (Just check for one of them)
+            await page.getByRole('button', { name: 'Loadmore' }).click();
+            await expect(page.getByRole('button', { name: 'Loading' })).toBeHidden();
+
+            await expect(page.locator('div').filter({ hasText: 'Laptop$1,499.99A powerful' }).nth(5)).toBeVisible();
+        });
+    });
+});
