@@ -163,7 +163,8 @@ describe("shopping cart full flow integration", () => {
 
             // Assert
             await waitFor(() => {
-                expect(screen.getByTestId("cart-count")).toHaveTextContent("1");
+                expect(screen.getByText("Cart")).toBeInTheDocument();
+                expect(screen.getByTitle("1")).toBeInTheDocument();
             });
         });
 
@@ -200,7 +201,8 @@ describe("shopping cart full flow integration", () => {
             await waitFor(() => {
                 const storedCart = JSON.parse(localStorage.getItem("cart"));
                 expect(storedCart).toHaveLength(1);
-                expect(screen.getByTestId("cart-count")).toHaveTextContent("1");
+                expect(screen.getByText("Cart")).toBeInTheDocument();
+                expect(screen.getByTitle("1")).toBeInTheDocument();
             });
         });
     });
@@ -276,7 +278,8 @@ describe("shopping cart full flow integration", () => {
                 const storedCart = JSON.parse(localStorage.getItem("cart"));
                 expect(storedCart).toHaveLength(1);
                 expect(screen.getByText(/Total : \$45\.00/)).toBeInTheDocument();
-                expect(screen.getByTestId("cart-count")).toHaveTextContent("1");
+                expect(screen.getByText("Cart")).toBeInTheDocument();
+                expect(screen.getByTitle("1")).toBeInTheDocument();
             });
         });
 
@@ -360,7 +363,8 @@ describe("shopping cart full flow integration", () => {
                 expect(storedCart).toHaveLength(1);
                 expect(storedCart[0]).toEqual(expect.objectContaining({ _id: MOCK_PRODUCTS[0]._id, price: MOCK_PRODUCTS[0].price, quantity: 1 }));
                 expect(screen.getByText(/Total : \$100\.00/)).toBeInTheDocument();
-                expect(screen.getByTestId("cart-count")).toHaveTextContent("1");
+                expect(screen.getByText("Cart")).toBeInTheDocument();
+                expect(screen.getByTitle("1")).toBeInTheDocument();
             });
         });
     });
