@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, beforeEach, describe, test, expect } from "@jest/globals";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import Category from "../../../models/categoryModel.js";
-import Order from "../../../models/orderModel.js";
-import Product from "../../../models/productModel.js";
-import User from "../../../models/userModel.js";
+import Category from "./categoryModel.js";
+import Order from "./orderModel.js";
+import Product from "./productModel.js";
+import User from "./userModel.js";
 
 
 // Written by Nicholas Cheng, A0269648H
@@ -14,7 +14,7 @@ import User from "../../../models/userModel.js";
  * protection to ensure what we add to the database is valid.
  */
 describe("Order Schema on MongoDB", () => {
-    describe("Integration test for order model", () => {
+    describe("Unit test for order model", () => {
         // For our in memory MongoDB
         let mongoDb, dummyUserId, dummyProductId, dummyCategoryId, paymentObject;
 
