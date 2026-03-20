@@ -280,6 +280,9 @@ describe("Order Schema on MongoDB", () => {
                 await expect(orderObject.save()).rejects.toThrow();
             });
 
+            /**
+             * This test is to check if our schema does any validation checks during updating.
+             */
             test("Should update status to another valid status", async () => {
                 // It will accept one of the 5 values: "Not Process", "Processing", "Shipped", "Delivered", "Cancel"
                 // Arrange
@@ -299,6 +302,9 @@ describe("Order Schema on MongoDB", () => {
                 expect(updatedOrder.status).toBe("Delivered")
             });
 
+            /**
+             * This test is to check if our schema does any validation checks during updating.
+             */
             test("Should throw an error when updating status to an invalid status", async () => {
                 // It will accept one of the 5 values: "Not Process", "Processing", "Shipped", "Delivered", "Cancel"
                 // Arrange
