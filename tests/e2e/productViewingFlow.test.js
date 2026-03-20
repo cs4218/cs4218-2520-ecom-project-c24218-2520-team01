@@ -9,7 +9,18 @@ describe("Product viewing flow", () => {
         await page.goto("/");
         await page.getByRole("button", { name: "More Details" }).nth(1).click();
 
-        const categoryText = await page
+        let categoryText = await page
+            .locator("h6", { hasText: "Category:" })
+            .first()
+            .textContent();
+
+        await page
+            .getByRole("button", { name: "More Details" })
+            .first()
+            .click();
+        await expect(page.getByRole("main")).toContainText(categoryText);
+
+        categoryText = await page
             .locator("h6", { hasText: "Category:" })
             .first()
             .textContent();

@@ -169,6 +169,8 @@ For **milestone 1**, I unit tested all files specified above with the exception 
 
 I am responsible for testing the following components:
 
+**Unit Tests**
+
 - Product CRUD
     - `controllers/productController`
         - `createProductController`
@@ -185,8 +187,19 @@ I am responsible for testing the following components:
         - `searchProductController`
         - `relatedProductsController`
         - `productCategoryController`
-- Product model
-    - `models/productModel`
+- Product model - `models/productModel`
+  **Integration tests**
+- Product integrations
+    - Integration with Model and DB
+    - Integration with Auth middleware, Formidable etc.
+- Order integration
+    - Integration with Model and DB
+    - Integration with Auth middleware
+      **E2E tests**
+- Product creation with admin
+- Category > Product creation with admin
+- Related product viewing
+- Authentication flow tests
 
 #### Milestone 1 Unit Test
 
