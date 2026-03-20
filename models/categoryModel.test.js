@@ -10,7 +10,7 @@ import Category from "./categoryModel.js";
  * protection to ensure what we add to the database is valid.
  */
 describe("Category Schema on MongoDB", () => {
-    describe("Integration test for category model", () => {
+    describe("Unit test for category model", () => {
         // For our in memory MongoDB
         let mongoDb;
 
