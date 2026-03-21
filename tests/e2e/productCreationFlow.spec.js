@@ -379,7 +379,6 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
-        // Bug Found: Can be negative value for price
         test("Product cannot be created if there is a missing shipping option", async ({ page }) => {
 
             // Login to an admin account
@@ -433,7 +432,6 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
-        // Bug Found: Can be negative value for price
         test("Product cannot be created if a negative price is given", async ({ page }) => {
 
             // Login to an admin account
@@ -491,7 +489,6 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
-        // Bug Found: Can be negative value for price
         test("Product cannot be created if a negative quantity is given", async ({ page }) => {
 
             // Login to an admin account
