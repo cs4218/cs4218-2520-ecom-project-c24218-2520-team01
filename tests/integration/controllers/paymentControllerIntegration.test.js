@@ -18,6 +18,8 @@ import fs from "fs";
 
 const FIXTURE_IMAGE = path.resolve(__dirname, "../../../fixtures/test-image.jpg");
 
+// Written by Nicholas Cheng, A0269648H
+
 // Mock console.log to prevent it from printing to the terminal
 jest.spyOn(console, "log").mockImplementation(() => { });
 
