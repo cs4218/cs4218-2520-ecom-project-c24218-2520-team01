@@ -24,8 +24,6 @@ const ADMIN_PASSWORD = "Password";
 
 let user, admin, category, product;
 
-test.describe.configure({ mode: "parallel" });
-
 test.beforeAll(async ({ }) => {
 
     await mongoose.connect(process.env.MONGO_URL);
@@ -133,7 +131,7 @@ test.describe("Product View Flow", () => {
         await page.getByRole("link", { name: "Ball Ball A round GOLDEN ball" }).click();
 
         // Wait for the page to render before clicking
-        await expect(page.locator("div").filter({ hasText: /^DELETE PRODUCT$/ })).toBeVisible();
+        await expect(page.getByRole("button", { name: "DELETE PRODUCT" })).toBeVisible();
         page.once("dialog", dialog => {
             dialog.accept("confirm delete");
         });
@@ -154,7 +152,7 @@ test.describe("Product View Flow", () => {
 
         // Now the product should not exist
         await expect(page.getByRole("heading", { name: "Product not found" })).toBeVisible();
-        await expect(page.locator("h3")).toContainText("Product not found");
+        await expect(page.getByText("Product not found")).toBeVisible();
 
         // If we go back to the home page we should not see a Ball product
         await page.getByRole("link", { name: "Home" }).click();

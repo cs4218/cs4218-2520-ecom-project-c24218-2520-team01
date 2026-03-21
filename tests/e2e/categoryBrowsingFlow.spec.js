@@ -22,8 +22,6 @@ const USER_PASSWORD = "Password";
 
 let user, category, product;
 
-test.describe.configure({ mode: "parallel" });
-
 test.beforeAll(async ({ }) => {
 
     await mongoose.connect(process.env.MONGO_URL);
@@ -94,7 +92,14 @@ test.describe("Category Browsing Flow", () => {
         await page.getByRole("link", { name: "Test" }).click();
 
         await expect(page.getByRole("main")).toContainText("Category - Test");
-        await expect(page.locator("h6")).toContainText("1 result found");
-        await expect(page.locator("div").filter({ hasText: /^Ball\$3,000\.00A round GOLDEN ball\.\.\.More DetailsADD TO CART$/ }).nth(3)).toBeVisible();
+        await expect(page.getByRole("heading", { name: "1 result found" })).toBeVisible();
+
+        // Expect the product to be visible
+        await expect(page.getByRole('heading', { name: 'Ball' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: '$3,000.00' })).toBeVisible();
+        await expect(page.getByText('A round GOLDEN ball')).toBeVisible();
+        await expect(page.getByRole('img', { name: 'Ball' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'More Details' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'ADD TO CART' })).toBeVisible();
     });
 });

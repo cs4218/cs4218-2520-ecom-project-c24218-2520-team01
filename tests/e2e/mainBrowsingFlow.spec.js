@@ -19,12 +19,10 @@ const __dirname = path.dirname(__filename);
 const FIXTURE_IMAGE = path.resolve(__dirname, "../fixtures/test-image.jpg");
 const USER_EMAIL = "jane@test.com";
 const USER_PASSWORD = "Password";
-const DUMMY_PRODUCT_COUNT = 4;
+const DUMMY_PRODUCT_COUNT = 10;
 
 let user, category;
 let products = [];
-
-test.describe.configure({ mode: "parallel" });
 
 test.beforeAll(async ({ }) => {
 
@@ -67,10 +65,10 @@ test.describe("Category Browsing Flow", () => {
             // Inject some extra products for pagination testing
             for (let i = 0; i < DUMMY_PRODUCT_COUNT; i++) {
                 const product = await new productModel({
-                    name: "Product " + i,
-                    slug: "product-" + i,
-                    description: "Dummy" + i,
-                    price: i * 100,
+                    name: "Product",
+                    slug: "product",
+                    description: "Dummy",
+                    price: 100,
                     category: category._id,
                     quantity: 5,
                     photo: {
@@ -96,13 +94,24 @@ test.describe("Category Browsing Flow", () => {
 
             // No need to simulate login as the Main page is accessible to all users and you can view products
             // Since we injected some number of dummy products, we should be able to load more products
-            await expect(page.getByRole("button", { name: "Loadmore" })).toBeVisible();
+            const productCards = page.getByTestId('product-card');
+
+            await expect(productCards.first()).toBeVisible();
+
+            const currentCount = await productCards.count();
 
             // Just ensure that the additional products are loaded (Just check for one of them)
             await page.getByRole("button", { name: "Loadmore" }).click();
-            await expect(page.getByRole("button", { name: "Loading" })).toBeHidden();
 
-            await expect(page.locator("div").filter({ hasText: "Laptop$1,499.99A powerful" }).nth(5)).toBeVisible();
+            // Ensure that the loading text is gone and the next item box which is the previous count + 1 is loaded in
+            await expect(page.getByRole('button', { name: 'Loadmore' })).toBeHidden();
+            await expect(page.getByTestId('product-card').nth(currentCount + 1)).toBeVisible();
+
+            const newProductCards = page.getByTestId('product-card');
+            const newCount = await newProductCards.count();
+
+            // This shows that pagination after clicking on load more products will work
+            expect(newCount).toBeGreaterThan(currentCount);
         });
     });
 });

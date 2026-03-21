@@ -20,8 +20,6 @@ const ADMIN_PASSWORD = "Password";
 
 let admin;
 
-test.describe.configure({ mode: "parallel" });
-
 test.beforeAll(async ({ }) => {
 
     await mongoose.connect(process.env.MONGO_URL);
@@ -136,7 +134,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Products" }).click();
             await page.getByRole("link", { name: "Create Product" }).click();
 
-            // Fill up the product form, but leave out the image
+            // Fill up the product form
 
             // Indicate category
             await page.locator("#rc_select_0").click();
@@ -187,7 +185,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Products" }).click();
             await page.getByRole("link", { name: "Create Product" }).click();
 
-            // Fill up the product form, but leave out the image
+            // Fill up the product form
 
             // Indicate category
             await page.locator("#rc_select_0").click();
@@ -240,7 +238,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Products" }).click();
             await page.getByRole("link", { name: "Create Product" }).click();
 
-            // Fill up the product form, but leave out the image
+            // Fill up the product form
 
             // Indicate category
             await page.locator("#rc_select_0").click();
@@ -293,7 +291,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Products" }).click();
             await page.getByRole("link", { name: "Create Product" }).click();
 
-            // Fill up the product form, but leave out the image
+            // Fill up the product form
 
             // Indicate category
             await page.locator("#rc_select_0").click();
@@ -346,7 +344,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Products" }).click();
             await page.getByRole("link", { name: "Create Product" }).click();
 
-            // Fill up the product form, but leave out the image
+            // Fill up the product form
 
             // Indicate category
             await page.locator("#rc_select_0").click();
@@ -400,7 +398,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Products" }).click();
             await page.getByRole("link", { name: "Create Product" }).click();
 
-            // Fill up the product form, but leave out the image
+            // Fill up the product form
 
             // Indicate category
             await page.locator("#rc_select_0").click();
@@ -454,7 +452,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Products" }).click();
             await page.getByRole("link", { name: "Create Product" }).click();
 
-            // Fill up the product form, but leave out the image
+            // Fill up the product form
 
             // Indicate category
             await page.locator("#rc_select_0").click();
@@ -512,7 +510,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Products" }).click();
             await page.getByRole("link", { name: "Create Product" }).click();
 
-            // Fill up the product form, but leave out the image
+            // Fill up the product form
 
             // Indicate category
             await page.locator("#rc_select_0").click();
@@ -548,7 +546,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("button", { name: "CREATE PRODUCT" }).click();
 
             // Expect an error message to appear
-            await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
+            await expect(page.getByText("Something went wrong")).toBeVisible();
         });
     });
 });
