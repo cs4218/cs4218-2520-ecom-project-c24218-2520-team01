@@ -64,15 +64,15 @@ jest.mock("antd", () => {
     };
 
     /**
- * AI Usage Declaration
- *
- * Tool Used: Gemini 3.1 Pro
- *
- * Prompt: What flows should I test for Products list → CreateProduct → UpdateProduct → Delete → list refresh; photo + category dropdown using a bottom up approach?
- *
- * How the AI Output Was Used:
- * - Used the AI output as a reference to determine which flows to test (including error flows)
-*/
+     * AI Usage Declaration
+     *
+     * Tool Used: Gemini 3.1 Pro
+     *
+     * Prompt: What flows should I test for Products list → CreateProduct → UpdateProduct → Delete → list refresh; photo + category dropdown using a bottom up approach?
+     *
+     * How the AI Output Was Used:
+     * - Used the AI output as a reference to determine which flows to test (including error flows)
+    */
 
 });
 
