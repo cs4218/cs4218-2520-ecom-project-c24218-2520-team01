@@ -70,79 +70,120 @@ describe('Integration tests for Category Controller with just the Database', () 
             };
         });
 
-        test('Create a new category successfully with a unique category name in the database', async () => {
-            req.body.name = 'Toys';
+        describe("Successfully create category", () => {
+            test('Create a new category successfully with a unique category name in the database', async () => {
+                req.body.name = 'Toys';
 
-            await createCategoryController(req, res);
+                await createCategoryController(req, res);
 
-            // Assert response
-            expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
-                success: true,
-                message: 'New category created',
-                category: expect.objectContaining({
-                    name: 'Toys',
-                    slug: 'toys'
-                })
-            }));
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(201);
+                expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
+                    success: true,
+                    message: 'New category created',
+                    category: expect.objectContaining({
+                        name: 'Toys',
+                        slug: 'toys'
+                    })
+                }));
 
-            // Assert database state
-            const categoryInDb = await categoryModel.findOne({ name: 'Toys' });
-            expect(categoryInDb).toBeTruthy();
-            expect(categoryInDb.name).toBe('Toys');
-            expect(categoryInDb.slug).toBe('toys');
+                // Assert database state
+                const categoryInDb = await categoryModel.findOne({ name: 'Toys' });
+                expect(categoryInDb).toBeTruthy();
+                expect(categoryInDb.name).toBe('Toys');
+                expect(categoryInDb.slug).toBe('toys');
+            });
         });
 
-        test('Return 422 if category name is empty and database state remains unchanged', async () => {
-            req.body.name = '';
 
-            await createCategoryController(req, res);
+        describe("Failure cases where fields are invalid or missing", () => {
+            test('Return 422 if category name is empty and database state remains unchanged', async () => {
+                req.body.name = '';
 
-            // Assert response
-            expect(res.status).toHaveBeenCalledWith(422);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Category name cannot be empty'
+                await createCategoryController(req, res);
+
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category name cannot be empty'
+                });
+
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2); // Because we only have 1 category inside the database
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2); // Because we only have 1 category inside the database
-        });
+            test('Return 422 if category name is just white spaces and database state remains unchanged', async () => {
+                req.body.name = '    ';
 
-        test('Return 422 if category name is null and database state remains unchanged', async () => {
-            req.body.name = null;
+                await createCategoryController(req, res);
 
-            await createCategoryController(req, res);
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category name cannot be empty'
+                });
 
-            // Assert response
-            expect(res.status).toHaveBeenCalledWith(422);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Category name cannot be empty'
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2); // Because we only have 1 category inside the database
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2); // Because we only have 1 category inside the database
-        });
+            test('Return 422 if category name is null and database state remains unchanged', async () => {
+                req.body.name = null;
 
-        test('Return 409 if category already exists and database stae remains unchanged', async () => {
-            // Seed database
-            req.body.name = 'Electronic';
+                await createCategoryController(req, res);
 
-            await createCategoryController(req, res);
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category name cannot be empty'
+                });
 
-            // Assert response
-            expect(res.status).toHaveBeenCalledWith(409);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Category already exists'
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2); // Because we only have 2 categories inside the database
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2); // Because we only have 1 category inside the database
+            test('Return 409 if category already exists and database state remains unchanged', async () => {
+                // Seed database
+                req.body.name = 'Electronic';
+
+                await createCategoryController(req, res);
+
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(409);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category already exists'
+                });
+
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2); // Because we only have 2 category inside the database
+            });
+
+            test('Return 500 if category name does not exist but the slug does, and database state remains unchanged', async () => {
+                // Seed database
+                req.body.name = 'electronic';
+
+                await createCategoryController(req, res);
+
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(500);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    error: expect.any(Error),
+                    message: 'Error while creating category'
+                });
+
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2); // Because we only have 2 category inside the database
+            });
         });
     });
 
@@ -161,155 +202,175 @@ describe('Integration tests for Category Controller with just the Database', () 
             };
         });
 
-        test('Update a category successfully and reflect changes in the database', async () => {
-            // Retrieve the predefined category from our in memory database
-            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+        describe("Successfully update category", () => {
+            test('Update a category successfully and reflect changes in the database', async () => {
+                // Retrieve the predefined category from our in memory database
+                const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
 
-            req.params.id = initialCategory._id.toString();
-            req.body.name = 'Electronics';
+                req.params.id = initialCategory._id.toString();
+                req.body.name = 'Electronics';
 
-            await updateCategoryController(req, res);
+                await updateCategoryController(req, res);
 
-            // Assert response
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
-                success: true,
-                message: 'Category updated successfully',
-                category: expect.objectContaining({
-                    name: 'Electronics',
-                    slug: 'electronics'
-                })
-            }));
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(200);
+                expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
+                    success: true,
+                    message: 'Category updated successfully',
+                    category: expect.objectContaining({
+                        name: 'Electronics',
+                        slug: 'electronics'
+                    })
+                }));
 
-            // Assert database state
-            const categoryInDb = await categoryModel.findById(initialCategory._id);
-            expect(categoryInDb).toBeTruthy();
-            expect(categoryInDb.name).toBe('Electronics');
-            expect(categoryInDb.slug).toBe('electronics');
-            // Ensure that not a new category object gets created
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
+                // Assert database state
+                const categoryInDb = await categoryModel.findById(initialCategory._id);
+                expect(categoryInDb).toBeTruthy();
+                expect(categoryInDb.name).toBe('Electronics');
+                expect(categoryInDb.slug).toBe('electronics');
+                // Ensure that not a new category object gets created
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
+            });
         });
 
-        test('Return 422 if new category name is empty string and category is not updated', async () => {
-            // Retrieve the predefined category from our in memory database
-            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+        describe("Failure cases where fields are invalid or missing", () => {
+            test('Return 422 if new category name is empty string and category is not updated', async () => {
+                // Retrieve the predefined category from our in memory database
+                const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
 
-            req.params.id = initialCategory._id.toString();
-            req.body.name = '';
+                req.params.id = initialCategory._id.toString();
+                req.body.name = '';
 
-            await updateCategoryController(req, res);
+                await updateCategoryController(req, res);
 
-            // Assert response
-            expect(res.status).toHaveBeenCalledWith(422);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'New category name cannot be empty'
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'New category name cannot be empty'
+                });
+
+                // Assert database state
+                const categoryInDb = await categoryModel.findById(initialCategory._id);
+                expect(categoryInDb.name).toBe('Electronic'); // Ensure that the existing category is not updated
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const categoryInDb = await categoryModel.findById(initialCategory._id);
-            expect(categoryInDb.name).toBe('Electronic'); // Ensure that the existing category is not updated
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
-        });
+            test('Return 422 if new category name is null and category is not updated', async () => {
+                // Retrieve the predefined category from our in memory database
+                const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
 
-        test('Return 422 if new category name is null and category is not updated', async () => {
-            // Retrieve the predefined category from our in memory database
-            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+                req.params.id = initialCategory._id.toString();
+                req.body.name = null;
 
-            req.params.id = initialCategory._id.toString();
-            req.body.name = null;
+                await updateCategoryController(req, res);
 
-            await updateCategoryController(req, res);
+                // Assert response
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'New category name cannot be empty'
+                });
 
-            // Assert response
-            expect(res.status).toHaveBeenCalledWith(422);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'New category name cannot be empty'
+                // Assert database state
+                const categoryInDb = await categoryModel.findById(initialCategory._id);
+                expect(categoryInDb.name).toBe('Electronic'); // Ensure that the existing category is not updated
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const categoryInDb = await categoryModel.findById(initialCategory._id);
-            expect(categoryInDb.name).toBe('Electronic'); // Ensure that the existing category is not updated
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
-        });
+            test('Return 422 if new category name is whitespace and category is not updated', async () => {
+                // Retrieve the predefined category from our in memory database
+                const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
 
-        test('Return 422 if new category name is whitespace and category is not updated', async () => {
-            // Retrieve the predefined category from our in memory database
-            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+                req.params.id = initialCategory._id.toString();
+                req.body.name = '    ';
 
-            req.params.id = initialCategory._id.toString();
-            req.body.name = '    ';
+                await updateCategoryController(req, res);
 
-            await updateCategoryController(req, res);
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'New category name cannot be empty'
+                });
 
-            expect(res.status).toHaveBeenCalledWith(422);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'New category name cannot be empty'
+                // Assert database state
+                const categoryInDb = await categoryModel.findById(initialCategory._id);
+                expect(categoryInDb.name).toBe('Electronic'); // Ensure that the existing category is not updated
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const categoryInDb = await categoryModel.findById(initialCategory._id);
-            expect(categoryInDb.name).toBe('Electronic'); // Ensure that the existing category is not updated
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
-        });
+            test('Return 422 if category id is empty or missing and database state remains unchanged', async () => {
+                req.body.name = 'Toys';
 
-        test('Return 422 if category id is empty or missing and database state remains unchanged', async () => {
-            req.params.id = null;
-            req.body.name = 'Toys';
+                await updateCategoryController(req, res);
 
-            await updateCategoryController(req, res);
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category id cannot be empty'
+                });
 
-            expect(res.status).toHaveBeenCalledWith(422);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Category id cannot be empty'
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
-        });
+            test('Return 422 if category id is null and database state remains unchanged', async () => {
+                req.params.id = null;
+                req.body.name = 'Toys';
 
-        test('Return 404 if category to update is not found and database state remains unchanged', async () => {
-            // Provide a valid but non-existent mongoose ID
-            req.params.id = new mongoose.Types.ObjectId().toString();
-            req.body.name = 'Toys';
+                await updateCategoryController(req, res);
 
-            await updateCategoryController(req, res);
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category id cannot be empty'
+                });
 
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Category not found'
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
-        });
+            test('Return 404 if category to update is not found and database state remains unchanged', async () => {
+                // Provide a valid but non-existent mongoose ID
+                req.params.id = new mongoose.Types.ObjectId().toString();
+                req.body.name = 'Toys';
 
-        test('Return 500 when category id is invalid and database state remains unchanged', async () => {
-            req.params.id = "invalid id";
-            req.body.name = 'Toys';
+                await updateCategoryController(req, res);
 
-            await updateCategoryController(req, res);
+                expect(res.status).toHaveBeenCalledWith(404);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category not found'
+                });
 
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Error while updating category',
-                error: expect.any(Object)
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
+            test('Return 500 when category id is invalid and database state remains unchanged', async () => {
+                req.params.id = "invalid id";
+                req.body.name = 'Toys';
+
+                await updateCategoryController(req, res);
+
+                expect(res.status).toHaveBeenCalledWith(500);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Error while updating category',
+                    error: expect.any(Object)
+                });
+
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
+            });
         });
     });
 
@@ -325,31 +386,33 @@ describe('Integration tests for Category Controller with just the Database', () 
             };
         });
 
-        test('Successfully fetch all categories from the database', async () => {
-            await categoryController(req, res);
+        describe("Success cases", () => {
+            test('Successfully fetch all categories from the database', async () => {
+                await categoryController(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({
-                success: true,
-                message: 'All categories fetched',
-                category: [
-                    expect.objectContaining({ name: 'Electronic', slug: 'electronic' }),
-                    expect.objectContaining({ name: 'Clothes', slug: 'clothes' })
-                ]
+                expect(res.status).toHaveBeenCalledWith(200);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: true,
+                    message: 'All categories fetched',
+                    category: [
+                        expect.objectContaining({ name: 'Electronic', slug: 'electronic' }),
+                        expect.objectContaining({ name: 'Clothes', slug: 'clothes' })
+                    ]
+                });
             });
-        });
 
-        test('Successfully fetch empty list when there are no categories', async () => {
-            // Clear the database (remove the predefined categories)
-            await categoryModel.deleteMany({});
+            test('Successfully fetch empty list when there are no categories', async () => {
+                // Clear the database (remove the predefined categories)
+                await categoryModel.deleteMany({});
 
-            await categoryController(req, res);
+                await categoryController(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({
-                success: true,
-                message: 'All categories fetched',
-                category: []
+                expect(res.status).toHaveBeenCalledWith(200);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: true,
+                    message: 'All categories fetched',
+                    category: []
+                });
             });
         });
     });
@@ -365,43 +428,58 @@ describe('Integration tests for Category Controller with just the Database', () 
             };
         });
 
-        test('Successfully fetch a single category by slug', async () => {
-            req.params.slug = 'electronic';
+        describe("Successfully retrieve the category", () => {
+            test('Successfully fetch a single category by slug', async () => {
+                req.params.slug = 'electronic';
 
-            await singleCategoryController(req, res);
+                await singleCategoryController(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({
-                success: true,
-                message: 'Get single category successfully',
-                category: expect.objectContaining({
-                    name: 'Electronic',
-                    slug: 'electronic'
-                })
+                expect(res.status).toHaveBeenCalledWith(200);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: true,
+                    message: 'Get single category successfully',
+                    category: expect.objectContaining({
+                        name: 'Electronic',
+                        slug: 'electronic'
+                    })
+                });
             });
         });
 
-        test('Return 404 when category with slug cannot be found', async () => {
-            req.params.slug = 'medicine';
+        describe("Failure cases where fields are invalid or missing", () => {
+            test('Return 404 when category with slug cannot be found', async () => {
+                req.params.slug = 'medicine';
 
-            await singleCategoryController(req, res);
+                await singleCategoryController(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'No category found'
+                expect(res.status).toHaveBeenCalledWith(404);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'No category found'
+                });
             });
-        });
 
-        test('Return 422 when slug value is null or missing', async () => {
-            req.params.slug = null;
+            test('Return 422 when slug value is empty or missing', async () => {
 
-            await singleCategoryController(req, res);
+                await singleCategoryController(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(422);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Category slug cannot be empty'
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category slug cannot be empty'
+                });
+            });
+
+            test('Return 422 when slug value is null', async () => {
+                req.params.slug = null;
+
+                await singleCategoryController(req, res);
+
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category slug cannot be empty'
+                });
             });
         });
     });
@@ -417,70 +495,89 @@ describe('Integration tests for Category Controller with just the Database', () 
             };
         });
 
-        test('Successfully delete a category from the database', async () => {
-            const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
-            req.params.id = initialCategory._id.toString();
+        describe("Successfully delete category", () => {
+            test('Successfully delete a category from the database', async () => {
+                const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
+                req.params.id = initialCategory._id.toString();
 
-            await deleteCategoryController(req, res);
+                await deleteCategoryController(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({
-                success: true,
-                message: 'Category deleted successfully'
+                expect(res.status).toHaveBeenCalledWith(200);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: true,
+                    message: 'Category deleted successfully'
+                });
+
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
             });
-
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
         });
 
-        test('Return 404 when category id value cannot be found and database state remains unchanged', async () => {
-            req.params.id = new mongoose.Types.ObjectId().toString();
+        describe("Failure cases where fields are missing or invalid", () => {
+            test('Return 404 when category id value cannot be found and database state remains unchanged', async () => {
+                req.params.id = new mongoose.Types.ObjectId().toString();
 
-            await deleteCategoryController(req, res);
+                await deleteCategoryController(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Failed to delete because no category is found'
+                expect(res.status).toHaveBeenCalledWith(404);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Failed to delete because no category is found'
+                });
+
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
-        });
+            test('Return 422 when category id is empty or missing and database state remains unchanged', async () => {
 
-        test('Return 422 when category id is null or missing and database state remains unchanged', async () => {
-            req.params.id = null;
+                await deleteCategoryController(req, res);
 
-            await deleteCategoryController(req, res);
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category id cannot be empty'
+                });
 
-            expect(res.status).toHaveBeenCalledWith(422);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Category id cannot be empty'
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
-        });
+            test('Return 422 when category id is null and database state remains unchanged', async () => {
+                req.params.id = null;
 
-        test('Return 500 when category id is invalid and database state remains unchanged', async () => {
-            req.params.id = "invalid id";
+                await deleteCategoryController(req, res);
 
-            await deleteCategoryController(req, res);
+                expect(res.status).toHaveBeenCalledWith(422);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Category id cannot be empty'
+                });
 
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.send).toHaveBeenCalledWith({
-                success: false,
-                message: 'Error while deleting category',
-                error: expect.any(Object)
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
             });
 
-            // Assert database state
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
+            test('Return 500 when category id is invalid and database state remains unchanged', async () => {
+                req.params.id = "invalid id";
+
+                await deleteCategoryController(req, res);
+
+                expect(res.status).toHaveBeenCalledWith(500);
+                expect(res.send).toHaveBeenCalledWith({
+                    success: false,
+                    message: 'Error while deleting category',
+                    error: expect.any(Object)
+                });
+
+                // Assert database state
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
+            });
         });
     });
 });
@@ -558,97 +655,101 @@ describe('Integration tests for Category Controller with the Database, Express R
             }).save();
         });
 
-        test('Create a new category successfully with a valid admin token and unique category name', async () => {
-            const res = await request(app)
-                .post('/api/v1/category/create-category')
-                .set('Authorization', adminToken)
-                .send({ name: 'Toys' });
+        describe("Successfully create category", () => {
+            test('Create a new category successfully with a valid admin token and unique category name', async () => {
+                const res = await request(app)
+                    .post('/api/v1/category/create-category')
+                    .set('Authorization', adminToken)
+                    .send({ name: 'Toys' });
 
-            // Assert response
-            expect(res.status).toBe(201);
-            expect(res.body.success).toBe(true);
-            expect(res.body.message).toBe('New category created');
-            expect(res.body.category.name).toBe('Toys');
+                // Assert response
+                expect(res.status).toBe(201);
+                expect(res.body.success).toBe(true);
+                expect(res.body.message).toBe('New category created');
+                expect(res.body.category.name).toBe('Toys');
 
-            // Assert database state
-            const categoryInDb = await categoryModel.findOne({ name: 'Toys' });
-            expect(categoryInDb).toBeTruthy();
-            expect(categoryInDb.name).toBe('Toys');
-            expect(categoryInDb.slug).toBe('toys');
+                // Assert database state
+                const categoryInDb = await categoryModel.findOne({ name: 'Toys' });
+                expect(categoryInDb).toBeTruthy();
+                expect(categoryInDb.name).toBe('Toys');
+                expect(categoryInDb.slug).toBe('toys');
 
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(2);
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(2);
+            });
         });
 
-        test('Return 401 Unauthorized if no token is provided', async () => {
-            const res = await request(app)
-                .post('/api/v1/category/create-category')
-                .send({ name: 'Toys' });
+        describe("Failure cases where fields are missing or invalid", () => {
+            test('Return 401 Unauthorized if no token is provided', async () => {
+                const res = await request(app)
+                    .post('/api/v1/category/create-category')
+                    .send({ name: 'Toys' });
 
-            expect(res.status).toBe(401);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Unauthorized');
+                expect(res.status).toBe(401);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Unauthorized');
 
-            // Assert database state remains unchanged
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
-        });
+                // Assert database state remains unchanged
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
 
-        test('Return 401 Unauthorized Access if user is not an admin', async () => {
-            const res = await request(app)
-                .post('/api/v1/category/create-category')
-                .set('Authorization', regularToken)
-                .send({ name: 'Toys' });
+            test('Return 401 Unauthorized Access if user is not an admin', async () => {
+                const res = await request(app)
+                    .post('/api/v1/category/create-category')
+                    .set('Authorization', regularToken)
+                    .send({ name: 'Toys' });
 
-            expect(res.status).toBe(401);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Unauthorized Access');
+                expect(res.status).toBe(401);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Unauthorized Access');
 
-            // Assert database state remains unchanged
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
-        });
+                // Assert database state remains unchanged
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
 
-        test('Return 422 if category name is empty string', async () => {
-            const res = await request(app)
-                .post('/api/v1/category/create-category')
-                .set('Authorization', adminToken)
-                .send({ name: '' });
+            test('Return 422 if category name is empty string', async () => {
+                const res = await request(app)
+                    .post('/api/v1/category/create-category')
+                    .set('Authorization', adminToken)
+                    .send({ name: '' });
 
-            expect(res.status).toBe(422);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Category name cannot be empty');
+                expect(res.status).toBe(422);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Category name cannot be empty');
 
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
-        });
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
 
-        test('Return 422 if category name is null or missing', async () => {
-            const res = await request(app)
-                .post('/api/v1/category/create-category')
-                .set('Authorization', adminToken)
-                .send({ name: null });
+            test('Return 422 if category name is null or missing', async () => {
+                const res = await request(app)
+                    .post('/api/v1/category/create-category')
+                    .set('Authorization', adminToken)
+                    .send({ name: null });
 
-            expect(res.status).toBe(422);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Category name cannot be empty');
+                expect(res.status).toBe(422);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Category name cannot be empty');
 
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
-        });
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
 
-        test('Return 409 if category already exists', async () => {
-            const res = await request(app)
-                .post('/api/v1/category/create-category')
-                .set('Authorization', adminToken)
-                .send({ name: 'Electronic' });
+            test('Return 409 if category already exists', async () => {
+                const res = await request(app)
+                    .post('/api/v1/category/create-category')
+                    .set('Authorization', adminToken)
+                    .send({ name: 'Electronic' });
 
-            expect(res.status).toBe(409);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Category already exists');
+                expect(res.status).toBe(409);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Category already exists');
 
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
         });
     });
 
@@ -671,118 +772,122 @@ describe('Integration tests for Category Controller with the Database, Express R
             await categoryModel.deleteMany({});
         });
 
-        test('Update a category successfully with a valid admin token', async () => {
-            // This is to get the id for the category
-            const id = categoryToUpdate._id;
+        describe("Successfully update category", () => {
+            test('Update a category successfully with a valid admin token', async () => {
+                // This is to get the id for the category
+                const id = categoryToUpdate._id;
 
-            const res = await request(app)
-                .put(`/api/v1/category/update-category/${id}`)
-                .set('Authorization', adminToken)
-                .send({ name: 'Computers' });
+                const res = await request(app)
+                    .put(`/api/v1/category/update-category/${id}`)
+                    .set('Authorization', adminToken)
+                    .send({ name: 'Computers' });
 
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBe(true);
-            expect(res.body.message).toBe('Category updated successfully');
-            expect(res.body.category.name).toBe('Computers');
-            expect(res.body.category.slug).toBe('computers');
+                expect(res.status).toBe(200);
+                expect(res.body.success).toBe(true);
+                expect(res.body.message).toBe('Category updated successfully');
+                expect(res.body.category.name).toBe('Computers');
+                expect(res.body.category.slug).toBe('computers');
 
-            const categoryInDb = await categoryModel.findById(id);
-            expect(categoryInDb.name).toBe('Computers');
+                const categoryInDb = await categoryModel.findById(id);
+                expect(categoryInDb.name).toBe('Computers');
+            });
         });
 
-        test('Return 401 Unauthorized if no token is provided', async () => {
-            const id = categoryToUpdate._id;
+        describe("Failure cases where fields are missing or invalid", () => {
+            test('Return 401 Unauthorized if no token is provided', async () => {
+                const id = categoryToUpdate._id;
 
-            const res = await request(app)
-                .put(`/api/v1/category/update-category/${id}`)
-                .send({ name: 'Computers' });
+                const res = await request(app)
+                    .put(`/api/v1/category/update-category/${id}`)
+                    .send({ name: 'Computers' });
 
-            expect(res.status).toBe(401);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Unauthorized');
-        });
+                expect(res.status).toBe(401);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Unauthorized');
+            });
 
-        test('Return 401 Unauthorized Access if user is not an admin', async () => {
-            const id = categoryToUpdate._id;
+            test('Return 401 Unauthorized Access if user is not an admin', async () => {
+                const id = categoryToUpdate._id;
 
-            const res = await request(app)
-                .put(`/api/v1/category/update-category/${id}`)
-                .set('Authorization', regularToken)
-                .send({ name: 'Computers' });
+                const res = await request(app)
+                    .put(`/api/v1/category/update-category/${id}`)
+                    .set('Authorization', regularToken)
+                    .send({ name: 'Computers' });
 
-            expect(res.status).toBe(401);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Unauthorized Access');
+                expect(res.status).toBe(401);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Unauthorized Access');
 
-            // Assert database state remains unchanged
-            const categoryInDb = await categoryModel.findById(id);
-            expect(categoryInDb.name).toBe('Electronic');
-        });
+                // Assert database state remains unchanged
+                const categoryInDb = await categoryModel.findById(id);
+                expect(categoryInDb.name).toBe('Electronic');
+            });
 
-        test('Return 422 if new category name is empty string', async () => {
-            const id = categoryToUpdate._id;
+            test('Return 422 if new category name is empty string', async () => {
+                const id = categoryToUpdate._id;
 
-            const res = await request(app)
-                .put(`/api/v1/category/update-category/${id}`)
-                .set('Authorization', adminToken)
-                .send({ name: '' });
+                const res = await request(app)
+                    .put(`/api/v1/category/update-category/${id}`)
+                    .set('Authorization', adminToken)
+                    .send({ name: '' });
 
-            expect(res.status).toBe(422);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('New category name cannot be empty');
+                expect(res.status).toBe(422);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('New category name cannot be empty');
 
-            // Assert database state remains unchanged
-            const categoryInDb = await categoryModel.findById(id);
-            expect(categoryInDb.name).toBe('Electronic');
-        });
+                // Assert database state remains unchanged
+                const categoryInDb = await categoryModel.findById(id);
+                expect(categoryInDb.name).toBe('Electronic');
+            });
 
-        test('Return 422 if new category name is null or missing', async () => {
-            const id = categoryToUpdate._id;
+            test('Return 422 if new category name is null or missing', async () => {
+                const id = categoryToUpdate._id;
 
-            const res = await request(app)
-                .put(`/api/v1/category/update-category/${id}`)
-                .set('Authorization', adminToken)
-                .send({ name: null });
+                const res = await request(app)
+                    .put(`/api/v1/category/update-category/${id}`)
+                    .set('Authorization', adminToken)
+                    .send({ name: null });
 
-            expect(res.status).toBe(422);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('New category name cannot be empty');
+                expect(res.status).toBe(422);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('New category name cannot be empty');
 
-            // Assert database state remains unchanged
-            const categoryInDb = await categoryModel.findById(id);
-            expect(categoryInDb.name).toBe('Electronic');
-        });
+                // Assert database state remains unchanged
+                const categoryInDb = await categoryModel.findById(id);
+                expect(categoryInDb.name).toBe('Electronic');
+            });
 
-        test('Return 404 if category to update is not found', async () => {
-            const fakeId = new mongoose.Types.ObjectId();
+            test('Return 404 if category to update is not found', async () => {
+                const fakeId = new mongoose.Types.ObjectId();
 
-            const res = await request(app)
-                .put(`/api/v1/category/update-category/${fakeId}`)
-                .set('Authorization', adminToken)
-                .send({ name: 'Computers' });
+                const res = await request(app)
+                    .put(`/api/v1/category/update-category/${fakeId}`)
+                    .set('Authorization', adminToken)
+                    .send({ name: 'Computers' });
 
-            expect(res.status).toBe(404);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Category not found');
+                expect(res.status).toBe(404);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Category not found');
 
-            // Assert database state remains unchanged
-            const categoryInDb = await categoryModel.findById(categoryToUpdate._id);
-            expect(categoryInDb.name).toBe('Electronic');
-        });
+                // Assert database state remains unchanged
+                const categoryInDb = await categoryModel.findById(categoryToUpdate._id);
+                expect(categoryInDb.name).toBe('Electronic');
+            });
 
-        test('Return 500 when category id is invalid', async () => {
-            const res = await request(app)
-                .put(`/api/v1/category/update-category/invalid-id`)
-                .set('Authorization', adminToken)
-                .send({ name: 'Computers' });
+            test('Return 500 when category id is invalid', async () => {
+                const res = await request(app)
+                    .put(`/api/v1/category/update-category/invalid-id`)
+                    .set('Authorization', adminToken)
+                    .send({ name: 'Computers' });
 
-            expect(res.status).toBe(500);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Error while updating category');
+                expect(res.status).toBe(500);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Error while updating category');
 
-            // Assert database state remains unchanged
-            const categoryInDb = await categoryModel.findById(categoryToUpdate._id);
-            expect(categoryInDb.name).toBe('Electronic');
+                // Assert database state remains unchanged
+                const categoryInDb = await categoryModel.findById(categoryToUpdate._id);
+                expect(categoryInDb.name).toBe('Electronic');
+            });
         });
     });
 
@@ -804,31 +909,35 @@ describe('Integration tests for Category Controller with the Database, Express R
             await categoryModel.deleteMany({});
         });
 
+
         /**
          * We do not need to test if the api request returns an empty list because 
          * it still returns something but it is just empty.
          */
-        test('Successfully fetch all categories', async () => {
+        describe("Successfully fetch all categories", () => {
+            test('Successfully fetch all categories', async () => {
 
-            const res = await request(app).get('/api/v1/category/get-category');
+                const res = await request(app).get('/api/v1/category/get-category');
 
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBe(true);
-            expect(res.body.message).toBe('All categories fetched');
-            expect(res.body.category).toBeInstanceOf(Array);
-            expect(res.body.category.length).toBe(2);
-            expect(res.body.category).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({ name: 'Electronic', slug: 'electronic' }),
-                    expect.objectContaining({ name: 'Toys', slug: 'toys' })
-                ])
-            );
+                expect(res.status).toBe(200);
+                expect(res.body.success).toBe(true);
+                expect(res.body.message).toBe('All categories fetched');
+                expect(res.body.category).toBeInstanceOf(Array);
+                expect(res.body.category.length).toBe(2);
+                expect(res.body.category).toEqual(
+                    expect.arrayContaining([
+                        expect.objectContaining({ name: 'Electronic', slug: 'electronic' }),
+                        expect.objectContaining({ name: 'Toys', slug: 'toys' })
+                    ])
+                );
+            });
         });
     });
 
     describe('Get single category via API requests', () => {
 
         beforeAll(async () => {
+
             // Add some categories for testing
             await new categoryModel({
                 name: 'Electronic',
@@ -840,22 +949,26 @@ describe('Integration tests for Category Controller with the Database, Express R
             await categoryModel.deleteMany({});
         });
 
-        test('Successfully fetch a single category by slug', async () => {
-            const res = await request(app).get('/api/v1/category/single-category/electronic');
+        describe("Successfully fetch a single category", () => {
+            test('Successfully fetch a single category by slug', async () => {
+                const res = await request(app).get('/api/v1/category/single-category/electronic');
 
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBe(true);
-            expect(res.body.message).toBe('Get single category successfully');
-            expect(res.body.category.name).toBe('Electronic');
-            expect(res.body.category.slug).toBe('electronic');
+                expect(res.status).toBe(200);
+                expect(res.body.success).toBe(true);
+                expect(res.body.message).toBe('Get single category successfully');
+                expect(res.body.category.name).toBe('Electronic');
+                expect(res.body.category.slug).toBe('electronic');
+            });
         });
 
-        test('Return 404 when category with slug cannot be found', async () => {
-            const res = await request(app).get('/api/v1/category/single-category/shoes');
+        describe("Failed to fetch a single category", () => {
+            test('Return 404 when category with slug cannot be found', async () => {
+                const res = await request(app).get('/api/v1/category/single-category/shoes');
 
-            expect(res.status).toBe(404);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('No category found');
+                expect(res.status).toBe(404);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('No category found');
+            });
         });
     });
 
@@ -874,81 +987,85 @@ describe('Integration tests for Category Controller with the Database, Express R
             await categoryModel.deleteMany({});
         });
 
-        test('Successfully delete a category with a valid admin token', async () => {
-            const id = categoryToDelete._id;
+        describe("Successfully delete a category", () => {
+            test('Successfully delete a category with a valid admin token', async () => {
+                const id = categoryToDelete._id;
 
-            const res = await request(app)
-                .delete(`/api/v1/category/delete-category/${id}`)
-                .set('Authorization', adminToken);
+                const res = await request(app)
+                    .delete(`/api/v1/category/delete-category/${id}`)
+                    .set('Authorization', adminToken);
 
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBe(true);
-            expect(res.body.message).toBe('Category deleted successfully');
+                expect(res.status).toBe(200);
+                expect(res.body.success).toBe(true);
+                expect(res.body.message).toBe('Category deleted successfully');
 
-            // Assert database state is empty
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(0);
+                // Assert database state is empty
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(0);
+            });
         });
 
-        test('Return 401 Unauthorized if no token is provided', async () => {
-            const id = categoryToDelete._id;
+        describe("Failed to delete a category", () => {
+            test('Return 401 Unauthorized if no token is provided', async () => {
+                const id = categoryToDelete._id;
 
-            const res = await request(app)
-                .delete(`/api/v1/category/delete-category/${id}`);
+                const res = await request(app)
+                    .delete(`/api/v1/category/delete-category/${id}`);
 
-            expect(res.status).toBe(401);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Unauthorized');
+                expect(res.status).toBe(401);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Unauthorized');
 
-            // Assert database state remains unchanged
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
-        });
+                // Assert database state remains unchanged
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
 
-        test('Return 401 Unauthorized Access if user is not an admin', async () => {
-            const id = categoryToDelete._id;
+            test('Return 401 Unauthorized Access if user is not an admin', async () => {
+                const id = categoryToDelete._id;
 
-            const res = await request(app)
-                .delete(`/api/v1/category/delete-category/${id}`)
-                .set('Authorization', regularToken);
+                const res = await request(app)
+                    .delete(`/api/v1/category/delete-category/${id}`)
+                    .set('Authorization', regularToken);
 
-            expect(res.status).toBe(401);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Unauthorized Access');
+                expect(res.status).toBe(401);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Unauthorized Access');
 
-            // Assert database state remains unchanged
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
-        });
+                // Assert database state remains unchanged
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
 
-        test('Return 404 if category to delete is not found', async () => {
-            const fakeId = new mongoose.Types.ObjectId();
+            test('Return 404 if category to delete is not found', async () => {
+                const fakeId = new mongoose.Types.ObjectId();
 
-            const res = await request(app)
-                .delete(`/api/v1/category/delete-category/${fakeId}`)
-                .set('Authorization', adminToken);
+                const res = await request(app)
+                    .delete(`/api/v1/category/delete-category/${fakeId}`)
+                    .set('Authorization', adminToken);
 
-            expect(res.status).toBe(404);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Failed to delete because no category is found');
+                expect(res.status).toBe(404);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Failed to delete because no category is found');
 
-            // Assert database state remains unchanged
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
-        });
+                // Assert database state remains unchanged
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
 
-        test('Return 500 when category id is invalid', async () => {
-            const res = await request(app)
-                .delete(`/api/v1/category/delete-category/invalid-id`)
-                .set('Authorization', adminToken);
+            test('Return 500 when category id is invalid', async () => {
+                const res = await request(app)
+                    .delete(`/api/v1/category/delete-category/invalid-id`)
+                    .set('Authorization', adminToken);
 
-            expect(res.status).toBe(500);
-            expect(res.body.success).toBe(false);
-            expect(res.body.message).toBe('Error while deleting category');
+                expect(res.status).toBe(500);
+                expect(res.body.success).toBe(false);
+                expect(res.body.message).toBe('Error while deleting category');
 
-            // Assert database state remains unchanged
-            const count = await categoryModel.countDocuments();
-            expect(count).toBe(1);
+                // Assert database state remains unchanged
+                const count = await categoryModel.countDocuments();
+                expect(count).toBe(1);
+            });
         });
     });
 });
