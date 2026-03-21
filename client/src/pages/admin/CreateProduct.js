@@ -140,6 +140,7 @@ const CreateProduct = () => {
                   value={price}
                   placeholder="write a price"
                   className="form-control"
+                  // Bugs fixed by Nicholas Cheng, A0269648H
                   onChange={(e) => {
                     const newValue = e.target.value;
                     if (newValue === "" || Number(newValue) >= 0) {
@@ -154,6 +155,7 @@ const CreateProduct = () => {
                   value={quantity}
                   placeholder="write a quantity"
                   className="form-control"
+                  // Bugs fixed by Nicholas Cheng, A0269648H
                   onChange={(e) => {
                     const newValue = e.target.value;
                     if (newValue === "" || Number(newValue) >= 0) {

@@ -161,6 +161,7 @@ const HomePage = () => {
           <h1 className="text-center">All Products</h1>
           <div className="d-flex flex-wrap">
             {products?.map((p) => (
+              // This line below to add the data-testid is edited by Nicholas Cheng, A0269648H
               <div className="card m-2" data-testid={"product-card"} key={p._id}>
                 <img
                   src={`/api/v1/product/product-photo/${p._id}`}
