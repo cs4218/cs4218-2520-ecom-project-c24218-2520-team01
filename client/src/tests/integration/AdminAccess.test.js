@@ -14,9 +14,10 @@ import { setMockAuth, mockAdminAuthAPI, mockLoginAPI } from "./testUtils";
 
 // Lim Jia Wei, A0277381W
 
-// Mock required dependencies (but not all dependencies)
+// Mock required dependencies (but not tested dependencies)
 jest.mock("axios");
 jest.mock("react-hot-toast");
+
 jest.mock("../../components/Header", () => () => <div data-testid="header">Header</div>);
 jest.mock("../../components/Spinner", () => () => <div data-testid="spinner">Spinner</div>);
 jest.mock("../../components/Layout", () => ({ children }) => <div data-testid="layout">{children}</div>);
@@ -56,6 +57,7 @@ describe("Admin Access Flow Integration Tests", () => {
         jest.clearAllMocks();
         jest.spyOn(console, "log").mockImplementation(() => { });
         jest.spyOn(console, "error").mockImplementation(() => { });
+
     });
 
     afterEach(() => {
@@ -292,7 +294,6 @@ describe("Admin Access Flow Integration Tests", () => {
 
             // Assert the AdminMenu is not rendered
             expect(screen.queryByText("Admin Panel")).not.toBeInTheDocument();
-            //expect(screen.getByTestId("spinner")).toBeInTheDocument();
         });
 
         it("should not call the login API when required fields are left empty", async () => {
