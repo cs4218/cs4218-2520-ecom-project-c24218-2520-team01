@@ -64,5 +64,7 @@ jobs:
               run: npm ci
             - name: Install frontend dependencies
               run: npm ci --prefix ./client
+            - name: Install Playwright browsers
+              run: npx playwright install --with-deps chromium
             - name: Run UI tests
               run: npm run test:ui
