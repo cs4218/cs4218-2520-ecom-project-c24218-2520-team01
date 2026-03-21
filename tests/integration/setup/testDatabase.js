@@ -18,33 +18,72 @@ export const connectTestDatabase = async () => {
 		throw new Error("Missing MONGO_URL/MONGO_URL_TEST for integration tests");
 	}
 
+	// check if connection already exists and is ready
 	if (mongoose.connection.readyState === 1) {
-		return;
+		try {
+			await mongoose.connection.db.admin().ping();
+			return;
+		} catch (error) {
+			// connection is stale: disconnect and reconnect
+			await mongoose.disconnect();
+		}
 	}
 
-	await mongoose.connect(mongoUrl);
+	// connect with timeout settings
+	await mongoose.connect(mongoUrl, {
+		serverSelectionTimeoutMS: 15000,
+		socketTimeoutMS: 45000,
+		connectTimeoutMS: 15000
+	});
+
+	// Additional safety check
+	await new Promise((resolve, reject) => {
+		const timeout = setTimeout(() => {
+			reject(new Error("Database connection verification timeout"));
+		}, 10000);
+
+		mongoose.connection.on("connected", () => {
+			clearTimeout(timeout);
+			resolve();
+		});
+
+		if (mongoose.connection.readyState === 1) {
+			clearTimeout(timeout);
+			resolve();
+		}
+	});
 };
 
 export const clearTestData = async () => {
+	// ensure connection is ready before clearing
+	if (mongoose.connection.readyState !== 1) {
+		throw new Error("Database connection not ready for clearTestData");
+	}
+
 	const collections = [productModel, categoryModel, orderModel, userModel];
 
-	await Promise.all(
-		collections.map(async (model) => {
-			try {
-				await model.deleteMany({});
-			} catch (error) {
-				if (error?.codeName !== "NamespaceNotFound") {
-					throw error;
-				}
+	// clear collections sequentially to avoid connection pool exhaustion
+	for (const model of collections) {
+		try {
+			await model.deleteMany({});
+		} catch (error) {
+			// NamespaceNotFound means collection doesn't exist yet
+			if (error?.codeName !== "NamespaceNotFound") {
+				throw error;
 			}
-		}),
-	);
+		}
+	}
 };
 
 export const createTestUser = async (userData) => userModel.create(userData);
 
 export const disconnectTestDatabase = async () => {
 	if (mongoose.connection.readyState !== 0) {
-		await mongoose.disconnect();
+		try {
+			await mongoose.disconnect();
+		} catch (error) {
+			console.error("Error disconnecting test database:", error);
+			// continue with cleanup even if disconnect fails
+		}
 	}
 };

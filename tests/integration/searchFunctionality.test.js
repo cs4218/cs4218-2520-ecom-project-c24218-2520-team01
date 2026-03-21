@@ -24,6 +24,9 @@ import {
 
 // Rachel Tai Ke Jia, A0258603A
 
+// extend timeout for database + server + component operations
+jest.setTimeout(60000);
+
 // mocks to isolate each test level 
 jest.mock("../../client/src/context/auth", () => ({
     useAuth: () => [{ user: null, token: "" }, jest.fn()],
@@ -71,7 +74,7 @@ const SEARCH_PRODUCTS_FIXTURE = [
         description: "Razer mouse",
         price: 25,
         quantity: 50,
-        shipping: true,
+        shipping: true
     },
     {
         name: "USB Cable",
@@ -79,7 +82,7 @@ const SEARCH_PRODUCTS_FIXTURE = [
         description: "Apple USB-C cable",
         price: 15,
         quantity: 120,
-        shipping: true,
+        shipping: true
     },
 ];
 
@@ -90,7 +93,7 @@ const WIRELESS_KEYWORD = WIRELESS_MOUSE_PRODUCT.slug.split("-")[0];
 const seedSearchData = async () => {
     const testCategory = await categoryModel.create({
         name: "Electronics",
-        slug: "electronics",
+        slug: "electronics"
     });
 
     await productModel.insertMany(
@@ -116,7 +119,7 @@ describe("search flow integration test", () => {
                 resolve();
             });
         });
-    });
+    }, 60000);
 
     beforeEach(async () => {
         await clearTestData();
@@ -139,7 +142,7 @@ describe("search flow integration test", () => {
 
         await clearTestData();
         await disconnectTestDatabase();
-    });
+    }, 60000);
 
     describe("top-down incremental approach", () => {
         test("level 1: SearchInput + SearchContext with API stub", async () => {

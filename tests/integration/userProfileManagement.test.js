@@ -85,7 +85,7 @@ describe("integration tests for user profile management (bottom-up approach)", (
                 resolve();
             });
         });
-    });
+    }, 60000);
 
     afterAll(async () => {
         await new Promise((resolve) => {
@@ -100,7 +100,7 @@ describe("integration tests for user profile management (bottom-up approach)", (
         if (consoleErrorSpy) {
             consoleErrorSpy.mockRestore();
         }
-    });
+    }, 60000);
 
     beforeEach(async () => {
         bridgeAxiosToNodeClient();
