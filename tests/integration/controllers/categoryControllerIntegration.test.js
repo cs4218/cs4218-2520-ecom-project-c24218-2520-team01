@@ -72,8 +72,10 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Successfully create category", () => {
             test('Create a new category successfully with a unique category name in the database', async () => {
+                // Arrange
                 req.body.name = 'Toys';
 
+                // Act
                 await createCategoryController(req, res);
 
                 // Assert response
@@ -98,8 +100,10 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Failure cases where fields are invalid or missing", () => {
             test('Return 422 if category name is empty and database state remains unchanged', async () => {
+                // Arrange
                 req.body.name = '';
 
+                // Act
                 await createCategoryController(req, res);
 
                 // Assert response
@@ -115,8 +119,10 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 if category name is just white spaces and database state remains unchanged', async () => {
+                // Arrange
                 req.body.name = '    ';
 
+                // Act
                 await createCategoryController(req, res);
 
                 // Assert response
@@ -132,8 +138,10 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 if category name is null and database state remains unchanged', async () => {
+                // Arrange
                 req.body.name = null;
 
+                // Act
                 await createCategoryController(req, res);
 
                 // Assert response
@@ -149,9 +157,10 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 409 if category already exists and database state remains unchanged', async () => {
-                // Seed database
+                // Arrange
                 req.body.name = 'Electronic';
 
+                // Act
                 await createCategoryController(req, res);
 
                 // Assert response
@@ -167,9 +176,10 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 500 if category name does not exist but the slug does, and database state remains unchanged', async () => {
-                // Seed database
+                // Arrange
                 req.body.name = 'electronic';
 
+                // Act
                 await createCategoryController(req, res);
 
                 // Assert response
@@ -204,12 +214,14 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Successfully update category", () => {
             test('Update a category successfully and reflect changes in the database', async () => {
+                // Arrange
                 // Retrieve the predefined category from our in memory database
                 const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
 
                 req.params.id = initialCategory._id.toString();
                 req.body.name = 'Electronics';
 
+                // Act
                 await updateCategoryController(req, res);
 
                 // Assert response
@@ -236,12 +248,14 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Failure cases where fields are invalid or missing", () => {
             test('Return 422 if new category name is empty string and category is not updated', async () => {
+                // Arrange
                 // Retrieve the predefined category from our in memory database
                 const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
 
                 req.params.id = initialCategory._id.toString();
                 req.body.name = '';
 
+                // Act
                 await updateCategoryController(req, res);
 
                 // Assert response
@@ -259,12 +273,14 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 if new category name is null and category is not updated', async () => {
+                // Arrange
                 // Retrieve the predefined category from our in memory database
                 const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
 
                 req.params.id = initialCategory._id.toString();
                 req.body.name = null;
 
+                // Act
                 await updateCategoryController(req, res);
 
                 // Assert response
@@ -282,14 +298,17 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 if new category name is whitespace and category is not updated', async () => {
+                // Arrange
                 // Retrieve the predefined category from our in memory database
                 const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
 
                 req.params.id = initialCategory._id.toString();
                 req.body.name = '    ';
 
+                // Act
                 await updateCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(422);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -304,10 +323,13 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 if category id is empty or missing and database state remains unchanged', async () => {
+                // Arrange
                 req.body.name = 'Toys';
 
+                // Act
                 await updateCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(422);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -320,11 +342,14 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 if category id is null and database state remains unchanged', async () => {
+                // Arrange
                 req.params.id = null;
                 req.body.name = 'Toys';
 
+                // Act
                 await updateCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(422);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -337,10 +362,12 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 404 if category to update is not found and database state remains unchanged', async () => {
+                // Arrange
                 // Provide a valid but non-existent mongoose ID
                 req.params.id = new mongoose.Types.ObjectId().toString();
                 req.body.name = 'Toys';
 
+                // Act
                 await updateCategoryController(req, res);
 
                 expect(res.status).toHaveBeenCalledWith(404);
@@ -355,11 +382,14 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 500 when category id is invalid and database state remains unchanged', async () => {
+                // Arrange
                 req.params.id = "invalid id";
                 req.body.name = 'Toys';
 
+                // Act
                 await updateCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(500);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -388,8 +418,10 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Success cases", () => {
             test('Successfully fetch all categories from the database', async () => {
+                // Act
                 await categoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(200);
                 expect(res.send).toHaveBeenCalledWith({
                     success: true,
@@ -402,11 +434,14 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Successfully fetch empty list when there are no categories', async () => {
+                // Arrange
                 // Clear the database (remove the predefined categories)
                 await categoryModel.deleteMany({});
 
+                // Act
                 await categoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(200);
                 expect(res.send).toHaveBeenCalledWith({
                     success: true,
@@ -430,10 +465,13 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Successfully retrieve the category", () => {
             test('Successfully fetch a single category by slug', async () => {
+                // Arrange
                 req.params.slug = 'electronic';
 
+                // Act
                 await singleCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(200);
                 expect(res.send).toHaveBeenCalledWith({
                     success: true,
@@ -448,10 +486,13 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Failure cases where fields are invalid or missing", () => {
             test('Return 404 when category with slug cannot be found', async () => {
+                // Arrange
                 req.params.slug = 'medicine';
 
+                // Act
                 await singleCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(404);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -460,9 +501,13 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 when slug value is empty or missing', async () => {
+                // Arrange
+                req.params.slug = '';
 
+                // Act
                 await singleCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(422);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -471,10 +516,13 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 when slug value is null', async () => {
+                // Arrange
                 req.params.slug = null;
 
+                // Act
                 await singleCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(422);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -497,11 +545,14 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Successfully delete category", () => {
             test('Successfully delete a category from the database', async () => {
+                // Arrange
                 const initialCategory = await categoryModel.findOne({ name: 'Electronic' });
                 req.params.id = initialCategory._id.toString();
 
+                // Act
                 await deleteCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(200);
                 expect(res.send).toHaveBeenCalledWith({
                     success: true,
@@ -516,10 +567,13 @@ describe('Integration tests for Category Controller with just the Database', () 
 
         describe("Failure cases where fields are missing or invalid", () => {
             test('Return 404 when category id value cannot be found and database state remains unchanged', async () => {
+                // Arrange
                 req.params.id = new mongoose.Types.ObjectId().toString();
 
+                // Act
                 await deleteCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(404);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -532,9 +586,10 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 when category id is empty or missing and database state remains unchanged', async () => {
-
+                // Act
                 await deleteCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(422);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -547,10 +602,13 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 422 when category id is null and database state remains unchanged', async () => {
+                // Arrange
                 req.params.id = null;
 
+                // Act
                 await deleteCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(422);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -563,10 +621,13 @@ describe('Integration tests for Category Controller with just the Database', () 
             });
 
             test('Return 500 when category id is invalid and database state remains unchanged', async () => {
+                // Arrange
                 req.params.id = "invalid id";
 
+                // Act
                 await deleteCategoryController(req, res);
 
+                // Assert response
                 expect(res.status).toHaveBeenCalledWith(500);
                 expect(res.send).toHaveBeenCalledWith({
                     success: false,
@@ -657,6 +718,7 @@ describe('Integration tests for Category Controller with the Database, Express R
 
         describe("Successfully create category", () => {
             test('Create a new category successfully with a valid admin token and unique category name', async () => {
+                // Arrange & Act
                 const res = await request(app)
                     .post('/api/v1/category/create-category')
                     .set('Authorization', adminToken)
@@ -681,10 +743,12 @@ describe('Integration tests for Category Controller with the Database, Express R
 
         describe("Failure cases where fields are missing or invalid", () => {
             test('Return 401 Unauthorized if no token is provided', async () => {
+                // Arrange & Act
                 const res = await request(app)
                     .post('/api/v1/category/create-category')
                     .send({ name: 'Toys' });
 
+                // Assert response
                 expect(res.status).toBe(401);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Unauthorized');
@@ -695,11 +759,13 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 401 Unauthorized Access if user is not an admin', async () => {
+                // Arrange & Act
                 const res = await request(app)
                     .post('/api/v1/category/create-category')
                     .set('Authorization', regularToken)
                     .send({ name: 'Toys' });
 
+                // Assert response
                 expect(res.status).toBe(401);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Unauthorized Access');
@@ -710,11 +776,13 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 422 if category name is empty string', async () => {
+                // Arrange & Act
                 const res = await request(app)
                     .post('/api/v1/category/create-category')
                     .set('Authorization', adminToken)
                     .send({ name: '' });
 
+                // Assert response
                 expect(res.status).toBe(422);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Category name cannot be empty');
@@ -724,11 +792,13 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 422 if category name is null or missing', async () => {
+                // Arrange & Act
                 const res = await request(app)
                     .post('/api/v1/category/create-category')
                     .set('Authorization', adminToken)
                     .send({ name: null });
 
+                // Assert response
                 expect(res.status).toBe(422);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Category name cannot be empty');
@@ -738,11 +808,13 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 409 if category already exists', async () => {
+                // Arrange & Act
                 const res = await request(app)
                     .post('/api/v1/category/create-category')
                     .set('Authorization', adminToken)
                     .send({ name: 'Electronic' });
 
+                // Assert response
                 expect(res.status).toBe(409);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Category already exists');
@@ -774,20 +846,24 @@ describe('Integration tests for Category Controller with the Database, Express R
 
         describe("Successfully update category", () => {
             test('Update a category successfully with a valid admin token', async () => {
+                // Arrange
                 // This is to get the id for the category
                 const id = categoryToUpdate._id;
 
+                // Act
                 const res = await request(app)
                     .put(`/api/v1/category/update-category/${id}`)
                     .set('Authorization', adminToken)
                     .send({ name: 'Computers' });
 
+                // Assert response
                 expect(res.status).toBe(200);
                 expect(res.body.success).toBe(true);
                 expect(res.body.message).toBe('Category updated successfully');
                 expect(res.body.category.name).toBe('Computers');
                 expect(res.body.category.slug).toBe('computers');
 
+                // Assert database state
                 const categoryInDb = await categoryModel.findById(id);
                 expect(categoryInDb.name).toBe('Computers');
             });
@@ -795,25 +871,31 @@ describe('Integration tests for Category Controller with the Database, Express R
 
         describe("Failure cases where fields are missing or invalid", () => {
             test('Return 401 Unauthorized if no token is provided', async () => {
+                // Arrange
                 const id = categoryToUpdate._id;
 
+                // Act
                 const res = await request(app)
                     .put(`/api/v1/category/update-category/${id}`)
                     .send({ name: 'Computers' });
 
+                // Assert response
                 expect(res.status).toBe(401);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Unauthorized');
             });
 
             test('Return 401 Unauthorized Access if user is not an admin', async () => {
+                // Arrange
                 const id = categoryToUpdate._id;
 
+                // Act
                 const res = await request(app)
                     .put(`/api/v1/category/update-category/${id}`)
                     .set('Authorization', regularToken)
                     .send({ name: 'Computers' });
 
+                // Assert response
                 expect(res.status).toBe(401);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Unauthorized Access');
@@ -824,13 +906,16 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 422 if new category name is empty string', async () => {
+                // Arrange
                 const id = categoryToUpdate._id;
 
+                // Act
                 const res = await request(app)
                     .put(`/api/v1/category/update-category/${id}`)
                     .set('Authorization', adminToken)
                     .send({ name: '' });
 
+                // Assert response
                 expect(res.status).toBe(422);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('New category name cannot be empty');
@@ -841,13 +926,16 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 422 if new category name is null or missing', async () => {
+                // Arrange
                 const id = categoryToUpdate._id;
 
+                // Act
                 const res = await request(app)
                     .put(`/api/v1/category/update-category/${id}`)
                     .set('Authorization', adminToken)
                     .send({ name: null });
 
+                // Assert response
                 expect(res.status).toBe(422);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('New category name cannot be empty');
@@ -858,8 +946,10 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 404 if category to update is not found', async () => {
+                // Arrange
                 const fakeId = new mongoose.Types.ObjectId();
 
+                // Act
                 const res = await request(app)
                     .put(`/api/v1/category/update-category/${fakeId}`)
                     .set('Authorization', adminToken)
@@ -875,11 +965,13 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 500 when category id is invalid', async () => {
+                // Arrange & Act
                 const res = await request(app)
                     .put(`/api/v1/category/update-category/invalid-id`)
                     .set('Authorization', adminToken)
                     .send({ name: 'Computers' });
 
+                // Assert response
                 expect(res.status).toBe(500);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Error while updating category');
@@ -917,8 +1009,10 @@ describe('Integration tests for Category Controller with the Database, Express R
         describe("Successfully fetch all categories", () => {
             test('Successfully fetch all categories', async () => {
 
+                // Act
                 const res = await request(app).get('/api/v1/category/get-category');
 
+                // Assert response
                 expect(res.status).toBe(200);
                 expect(res.body.success).toBe(true);
                 expect(res.body.message).toBe('All categories fetched');
@@ -951,8 +1045,10 @@ describe('Integration tests for Category Controller with the Database, Express R
 
         describe("Successfully fetch a single category", () => {
             test('Successfully fetch a single category by slug', async () => {
+                // Act
                 const res = await request(app).get('/api/v1/category/single-category/electronic');
 
+                // Assert response
                 expect(res.status).toBe(200);
                 expect(res.body.success).toBe(true);
                 expect(res.body.message).toBe('Get single category successfully');
@@ -963,8 +1059,10 @@ describe('Integration tests for Category Controller with the Database, Express R
 
         describe("Failed to fetch a single category", () => {
             test('Return 404 when category with slug cannot be found', async () => {
+                // Act
                 const res = await request(app).get('/api/v1/category/single-category/shoes');
 
+                // Assert Response
                 expect(res.status).toBe(404);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('No category found');
@@ -989,12 +1087,15 @@ describe('Integration tests for Category Controller with the Database, Express R
 
         describe("Successfully delete a category", () => {
             test('Successfully delete a category with a valid admin token', async () => {
+                // Arrange
                 const id = categoryToDelete._id;
 
+                // Act
                 const res = await request(app)
                     .delete(`/api/v1/category/delete-category/${id}`)
                     .set('Authorization', adminToken);
 
+                // Assert response
                 expect(res.status).toBe(200);
                 expect(res.body.success).toBe(true);
                 expect(res.body.message).toBe('Category deleted successfully');
@@ -1007,11 +1108,14 @@ describe('Integration tests for Category Controller with the Database, Express R
 
         describe("Failed to delete a category", () => {
             test('Return 401 Unauthorized if no token is provided', async () => {
+                // Arrange
                 const id = categoryToDelete._id;
 
+                // Act
                 const res = await request(app)
                     .delete(`/api/v1/category/delete-category/${id}`);
 
+                // Assert response
                 expect(res.status).toBe(401);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Unauthorized');
@@ -1022,12 +1126,15 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 401 Unauthorized Access if user is not an admin', async () => {
+                // Arrange
                 const id = categoryToDelete._id;
 
+                // Act
                 const res = await request(app)
                     .delete(`/api/v1/category/delete-category/${id}`)
                     .set('Authorization', regularToken);
 
+                // Assert response
                 expect(res.status).toBe(401);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Unauthorized Access');
@@ -1038,12 +1145,15 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 404 if category to delete is not found', async () => {
+                // Arrange
                 const fakeId = new mongoose.Types.ObjectId();
 
+                // Act
                 const res = await request(app)
                     .delete(`/api/v1/category/delete-category/${fakeId}`)
                     .set('Authorization', adminToken);
 
+                // Assert response
                 expect(res.status).toBe(404);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Failed to delete because no category is found');
@@ -1054,10 +1164,12 @@ describe('Integration tests for Category Controller with the Database, Express R
             });
 
             test('Return 500 when category id is invalid', async () => {
+                // Arrange & Act
                 const res = await request(app)
                     .delete(`/api/v1/category/delete-category/invalid-id`)
                     .set('Authorization', adminToken);
 
+                // Assert response
                 expect(res.status).toBe(500);
                 expect(res.body.success).toBe(false);
                 expect(res.body.message).toBe('Error while deleting category');
