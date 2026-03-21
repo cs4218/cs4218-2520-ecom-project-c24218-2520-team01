@@ -14,7 +14,7 @@ describe("Tests for connectDB function", () => {
         jest.spyOn(console, "log").mockImplementation(() => { });
     });
 
-    test("Connects with MONGO_URL and logs the host", async () => {
+    test("Connects with MONGO_URL", async () => {
 
         // Arrange
         const mockConn = { connection: { host: "test-host" } };
