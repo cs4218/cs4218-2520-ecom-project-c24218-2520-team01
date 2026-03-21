@@ -53,6 +53,21 @@ jobs:
 
     test-ui:
         runs-on: ubuntu-latest
+        services:
+            mongodb:
+                image: mongo:7.0
+                ports:
+                    - 27017:27017
+                options: >-
+                    --health-cmd "mongosh --quiet --eval \"db.adminCommand('ping').ok\""
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 10
+        env:
+            MONGO_URL: mongodb://127.0.0.1:27017/ecommerce
+            JWT_SECRET: test-jwt-secret
+            DEV_MODE: test
+            PORT: 6060
         steps:
             - uses: actions/checkout@v4
             - name: Setup Node.js
