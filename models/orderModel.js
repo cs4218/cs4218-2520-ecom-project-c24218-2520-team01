@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+// Bugs fixed by Nicholas Cheng, A0269648H
+
 const orderSchema = new mongoose.Schema(
   {
     products: {

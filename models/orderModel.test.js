@@ -6,7 +6,6 @@ import Order from "./orderModel.js";
 import Product from "./productModel.js";
 import User from "./userModel.js";
 
-
 // Written by Nicholas Cheng, A0269648H
 
 /**
