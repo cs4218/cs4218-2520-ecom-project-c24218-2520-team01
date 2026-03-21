@@ -77,6 +77,34 @@ jobs:
                   cache: "npm"
             - name: Install dependencies
               run: npm ci
+            - name: Wait for MongoDB to be ready
+              run: |
+                  node -e "
+                  const { MongoClient } = require('mongodb');
+                  const mongoUrl = process.env.MONGO_URL;
+
+                  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+                  (async () => {
+                    for (let attempt = 1; attempt <= 30; attempt++) {
+                      const client = new MongoClient(mongoUrl, { serverSelectionTimeoutMS: 2000 });
+                      try {
+                        await client.connect();
+                        await client.db('admin').command({ ping: 1 });
+                        await client.close();
+                        console.log('MongoDB is ready');
+                        return;
+                      } catch (error) {
+                        await client.close().catch(() => {});
+                        console.log(`MongoDB not ready yet (attempt ${attempt}/30)`);
+                        await sleep(2000);
+                      }
+                    }
+
+                    console.error('MongoDB did not become ready in time');
+                    process.exit(1);
+                  })();
+                  "
             - name: Install frontend dependencies
               run: npm ci --prefix ./client
             - name: Install Playwright browsers
