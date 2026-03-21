@@ -107,6 +107,7 @@ describe("Integration test with Braintree & Generate Token Controller", () => {
 
             req = {};
 
+            // Arrange & Act
             const response = await new Promise((resolve, reject) => {
                 res = {
                     status: jest.fn().mockReturnThis(),
@@ -150,6 +151,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
     describe("Successfully places a payment", () => {
 
         test("Successfully make a payment and save order to database", async () => {
+            // Arrange
             const req = {
                 body: {
                     nonce: "fake-valid-nonce",
@@ -163,6 +165,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             };
 
+            // Act
             const response = await new Promise((resolve, reject) => {
                 const res = {
                     status: jest.fn().mockReturnThis(),
@@ -186,6 +189,8 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                     reject(error);
                 }
             });
+
+            // Assert
             expect(response.statusCode).toBe(200);
             expect(response.data.ok).toBe(true);
 
@@ -198,6 +203,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
         }, 15000);
 
         test("Successfully make a payment and save order to database with a total cost of 0", async () => {
+            // Arrange
             const req = {
                 body: {
                     nonce: "fake-valid-nonce",
@@ -210,6 +216,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             };
 
+            // Act
             const response = await new Promise((resolve, reject) => {
                 const res = {
                     status: jest.fn().mockReturnThis(),
@@ -234,6 +241,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             });
 
+            // Assert
             expect(response.statusCode).toBe(200);
             expect(response.data.ok).toBe(true);
 
@@ -248,6 +256,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
 
     describe("Missing fields or validation errors", () => {
         test("No order is created when no nonce is provided", async () => {
+            // Arrange
             const req = {
                 body: {
                     cart: [
@@ -260,6 +269,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             };
 
+            // Act
             const response = await new Promise((resolve, reject) => {
                 const res = {
                     status: jest.fn().mockReturnThis(),
@@ -278,6 +288,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             });
 
+            // Assert
             expect(response.statusCode).toBe(400);
             expect(response.data.success).toBe(false);
             expect(response.data.message).toBe("Payment method nonce is not provided");
@@ -288,6 +299,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
         });
 
         test("No order is created when cart is empty", async () => {
+            // Arrange
             const req = {
                 body: {
                     nonce: "fake-valid-nonce",
@@ -298,6 +310,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             };
 
+            // Act
             const response = await new Promise((resolve, reject) => {
                 const res = {
                     status: jest.fn().mockReturnThis(),
@@ -316,6 +329,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             });
 
+            // Assert
             expect(response.statusCode).toBe(400);
             expect(response.data.success).toBe(false);
             expect(response.data.message).toBe("No transaction is made because cart is empty");
@@ -326,6 +340,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
         });
 
         test("No order is created when user id is not provided", async () => {
+            // Arrange
             const req = {
                 body: {
                     nonce: "fake-valid-nonce",
@@ -336,6 +351,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 },
             };
 
+            // Act
             const response = await new Promise((resolve, reject) => {
                 const res = {
                     status: jest.fn().mockReturnThis(),
@@ -354,6 +370,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             });
 
+            // Assert
             expect(response.statusCode).toBe(400);
             expect(response.data.success).toBe(false);
             expect(response.data.message).toBe("User id is not provided");
@@ -364,6 +381,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
         });
 
         test("No order is created when nonce is invalid", async () => {
+            // Arrange
             const req = {
                 body: {
                     nonce: "fake-consumed-nonce", // This is just one of the many invalid nonce values which Braintree provides
@@ -377,6 +395,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             };
 
+            // Act
             const response = await new Promise((resolve, reject) => {
                 const res = {
                     status: jest.fn().mockReturnThis(),
@@ -401,6 +420,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             });
 
+            // Assert
             expect(response.statusCode).toBe(500);
             expect(response.data.success).toBe(false);
             expect(response.data.message).toBe("Error while making transaction");
@@ -413,6 +433,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
 
     describe("Braintree errors", () => {
         test("No order is created when Braintree is not responding", async () => {
+            // Arrange
             const req = {
                 body: {
                     nonce: "fake-valid-nonce",
@@ -425,6 +446,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             };
 
+            // Act
             const response = await new Promise((resolve, reject) => {
                 const res = {
                     status: jest.fn().mockReturnThis(),
@@ -449,6 +471,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             });
 
+            // Assert
             expect(response.statusCode).toBe(500);
             expect(response.data.success).toBe(false);
             expect(response.data.message).toBe("Error while making transaction");
@@ -459,6 +482,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
         }, 15000);
 
         test("No order is created when the bank rejects a transaction", async () => {
+            // Arrange
             const req = {
                 body: {
                     nonce: "fake-valid-nonce",
@@ -471,6 +495,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             };
 
+            // Act
             const response = await new Promise((resolve, reject) => {
                 const res = {
                     status: jest.fn().mockReturnThis(),
@@ -495,6 +520,7 @@ describe("Integration test with Braintree & Payment Controller & Database", () =
                 }
             });
 
+            // Assert
             expect(response.statusCode).toBe(500);
             expect(response.data.success).toBe(false);
             expect(response.data.message).toBe("Error while making transaction");
@@ -524,7 +550,10 @@ describe("Braintree token controller integration tests with BrainTree, Database,
 
     describe("Fetch braintree token API request", () => {
         test("Generate and retrieve a braintree client token", async () => {
+            // Act
             const response = await request(app).get("/api/v1/product/braintree/token");
+
+            // Assert
             expect(response.status).toBe(200);
             expect(response.body.clientToken).toBeDefined();
         }, 15000);
@@ -533,6 +562,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
     describe("Send payment request through the API endpoint", () => {
         describe("Successfully make a payment with valid inputs", () => {
             test("Successfully make a payment with valid token and save order to database", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .set("Authorization", token)
@@ -540,6 +570,8 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                         nonce: "fake-valid-commercial-nonce",
                         cart: [product1, product2]
                     });
+
+                // Assert
                 expect(response.status).toBe(200);
                 expect(response.body.ok).toBe(true);
 
@@ -551,6 +583,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
             }, 15000);
 
             test("Successfully make a payment with a total cost of 0 and save order to database", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .set("Authorization", token)
@@ -558,6 +591,8 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                         nonce: "fake-valid-commercial-nonce",
                         cart: [product3]
                     });
+
+                // Assert
                 expect(response.status).toBe(200);
                 expect(response.body.ok).toBe(true);
 
@@ -571,17 +606,21 @@ describe("Braintree token controller integration tests with BrainTree, Database,
 
         describe("Sending a payment request with invalid inputs", () => {
             test("Sending a payment request with no nonce", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .set("Authorization", token)
                     .send({
                         cart: [product1, product2]
                     });
+
+                // Assert
                 expect(response.status).toBe(400);
                 expect(response.body.success).toBe(false);
             }, 15000);
 
             test("Sending a payment request with invalid nonce", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .set("Authorization", token)
@@ -589,11 +628,14 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                         nonce: "fake-luhn-invalid-nonce",
                         cart: [product1, product2]
                     });
+
+                // Assert
                 expect(response.status).toBe(500);
                 expect(response.body.success).toBe(false);
             }, 15000);
 
             test("Sending a payment request with empty cart", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .set("Authorization", token)
@@ -601,6 +643,8 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                         nonce: "fake-valid-nonce",
                         cart: []
                     });
+
+                // Assert
                 expect(response.status).toBe(400);
                 expect(response.body.success).toBe(false);
             }, 15000);
@@ -608,6 +652,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
 
         describe("Sending a payment request when braintree server is down", () => {
             test("Fails to make payment if braintree server is down", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .set("Authorization", token)
@@ -616,6 +661,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                         cart: [product1]
                     });
 
+                // Assert
                 expect(response.status).toBe(500);
                 expect(response.body.success).toBe(false);
 
@@ -625,6 +671,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
             }, 15000);
 
             test("Fails to make payment if the bank rejects the transaction", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .set("Authorization", token)
@@ -633,6 +680,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                         cart: [product2]
                     });
 
+                // Assert
                 expect(response.status).toBe(500);
                 expect(response.body.success).toBe(false);
 
@@ -644,6 +692,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
 
         describe("Sending a payment request when the user is not authenticated", () => {
             test("Fails to make payment if no token is provided", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .send({
@@ -651,6 +700,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                         cart: [product1, product2]
                     });
 
+                // Assert
                 expect(response.status).toBe(401);
                 expect(response.body.success).toBe(false);
 
@@ -660,6 +710,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
             }, 15000);
 
             test("Fails to make payment if token is invalid", async () => {
+                // Arrange & Act
                 const response = await request(app)
                     .post("/api/v1/product/braintree/payment")
                     .set("Authorization", "invalid-token")
@@ -668,6 +719,7 @@ describe("Braintree token controller integration tests with BrainTree, Database,
                         cart: [product1, product2]
                     });
 
+                // Assert
                 expect(response.status).toBe(401);
                 expect(response.body.success).toBe(false);
 
