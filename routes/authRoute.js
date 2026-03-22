@@ -1,14 +1,14 @@
 import express from "express";
 import {
-  registerController,
-  loginController,
-  testController,
-  forgotPasswordController,
-  updateProfileController,
-  getOrdersController,
-  getAllOrdersController,
-  orderStatusController,
-  getUsersController,
+    forgotPasswordController,
+    getAllOrdersController,
+    getOrdersController,
+    getUsersController,
+    loginController,
+    orderStatusController,
+    registerController,
+    testController,
+    updateProfileController,
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -30,11 +30,11 @@ router.get("/test", requireSignIn, isAdmin, testController);
 
 //protected User route auth
 router.get("/user-auth", requireSignIn, (req, res) => {
-	res.status(200).send({ ok: true });
+    res.status(200).send({ ok: true });
 });
 //protected Admin route auth
 router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
-	res.status(200).send({ ok: true });
+    res.status(200).send({ ok: true });
 });
 
 //update profile
@@ -46,12 +46,16 @@ router.get("/orders", requireSignIn, getOrdersController);
 //all orders
 router.get("/all-orders", requireSignIn, isAdmin, getAllOrdersController);
 
+//all users
+// Fixed - no getAllUsers import (Zaidan - A0273278U)
+router.get("/all-users", requireSignIn, isAdmin, getUsersController);
+
 // order status update
 router.put(
-	"/order-status/:orderId",
-	requireSignIn,
-	isAdmin,
-	orderStatusController
+    "/order-status/:orderId",
+    requireSignIn,
+    isAdmin,
+    orderStatusController,
 );
 
 export default router;
