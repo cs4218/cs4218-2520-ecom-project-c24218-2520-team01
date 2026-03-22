@@ -67,7 +67,6 @@ jobs:
             MONGO_URL: mongodb://127.0.0.1:27017/ecommerce
             JWT_SECRET: test-jwt-secret
             DEV_MODE: test
-            PORT: 6060
         steps:
             - uses: actions/checkout@v4
             - name: Setup Node.js
