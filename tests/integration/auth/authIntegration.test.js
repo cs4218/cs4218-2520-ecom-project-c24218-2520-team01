@@ -25,14 +25,9 @@
 
 import "@testing-library/jest-dom";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import axios from "axios";
 import React from "react";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
-import cors from "cors";
-import express from "express";
 import jwt from "jsonwebtoken";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
 import request from "supertest";
 
 import { AuthProvider } from "../../../client/src/context/auth.js";
@@ -43,10 +38,13 @@ import PrivateRouteModule from "../../../client/src/components/Routes/Private.js
 import ForgotPasswordModule from "../../../client/src/pages/Auth/ForgotPassword.js";
 import LoginModule from "../../../client/src/pages/Auth/Login.js";
 import RegisterModule from "../../../client/src/pages/Auth/Register.js";
+import {
+	authIntegrationApp,
+	resetAuthIntegrationAxios,
+	startAuthIntegrationEnvironment,
+} from "./authIntegration.setup.js";
 import categoryModel from "../../../models/categoryModel.js";
 import userModel from "../../../models/userModel.js";
-import authRoutes from "../../../routes/authRoute.js";
-import categoryRoutes from "../../../routes/categoryRoutes.js";
 import { hashPassword, comparePassword } from "../../../helpers/authHelper.js";
 
 /**
@@ -62,15 +60,6 @@ import { hashPassword, comparePassword } from "../../../helpers/authHelper.js";
  * - I determined the final test scope, wrote the assertions, implemented and verified the tests.
  */
 
-
-// Create a minimal Express app with auth routes mounted, connecting Route → Controller → Helper → Model
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/category", categoryRoutes);
-const uiServerOrigin = "http://127.0.0.1:16767";
-
 // Unwrap default exports when Jest returns a module object.
 function resolveDefaultExport(moduleValue) {
 	return moduleValue.default ?? moduleValue;
@@ -82,10 +71,6 @@ const Login = resolveDefaultExport(LoginModule);
 const ForgotPassword = resolveDefaultExport(ForgotPasswordModule);
 const PrivateRoute = resolveDefaultExport(PrivateRouteModule);
 const AdminRoute = resolveDefaultExport(AdminRouteModule);
-
-// Keep axios defaults so the UI tests can restore them after each run.
-const originalAxiosBaseURL = axios.defaults.baseURL;
-const originalAuthorizationHeader = axios.defaults.headers.common.Authorization;
 
 /**
  * AI Usage Declaration (UI Harness)
@@ -315,13 +300,11 @@ const forgotPasswordMissingFieldCases = [
 ];
 
 describe("Authentication Integration Tests", () => {
-	let mongod;
-	let server;
+	let testEnvironment;
 
 	beforeAll(async () => {
 		process.env.SUPPRESS_JEST_WARNINGS = "true";
-		mongod = await MongoMemoryServer.create();
-		await mongoose.connect(mongod.getUri());
+		testEnvironment = await startAuthIntegrationEnvironment();
 
 		// Set JWT secret for test environment
 		process.env.JWT_SECRET = "test-jwt-secret";
@@ -344,43 +327,18 @@ describe("Authentication Integration Tests", () => {
 			});
 		}
 
-		server = await new Promise((resolve) => {
-			const listener = app.listen(16767, "127.0.0.1", () => resolve(listener));
-		});
-		axios.defaults.baseURL = uiServerOrigin;
 	});
 
 	afterAll(async () => {
-		axios.defaults.baseURL = originalAxiosBaseURL;
-		if (originalAuthorizationHeader === undefined) {
-			delete axios.defaults.headers.common.Authorization;
-		} else {
-			axios.defaults.headers.common.Authorization = originalAuthorizationHeader;
+		if (testEnvironment) {
+			await testEnvironment.stop();
 		}
-
-		if (server) {
-			await new Promise((resolve, reject) => {
-				server.close((error) => {
-					if (error) {
-						reject(error);
-						return;
-					}
-					resolve();
-				});
-			});
-		}
-		await mongoose.disconnect();
-		await mongod.stop();
 	});
 
 	afterEach(async () => {
 		cleanup();
 		localStorage.clear();
-		if (originalAuthorizationHeader === undefined) {
-			delete axios.defaults.headers.common.Authorization;
-		} else {
-			axios.defaults.headers.common.Authorization = originalAuthorizationHeader;
-		}
+		resetAuthIntegrationAxios();
 
 		// Clean up database after each test for isolation
 		await userModel.deleteMany({});
@@ -407,7 +365,7 @@ describe("Authentication Integration Tests", () => {
 		it("should register a new user, hash password via authHelper, and persist to DB", async () => {
 			// Layer 1 foundation: DB starts empty, so any saved record must come from the real model/helper dependencies used by this request.
 			// Layer 2 added here: authRoute accepts POST /register and hands off to registerController.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.post("/api/v1/auth/register")
 				.send(validUser);
 
@@ -444,7 +402,7 @@ describe("Authentication Integration Tests", () => {
 			});
 
 			// Layer 2 added here: authRoute/registerController now runs against the real DB state instead of mocks.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.post("/api/v1/auth/register")
 				.send(validUser);
 
@@ -468,7 +426,7 @@ describe("Authentication Integration Tests", () => {
 					"should return validation error when $field is missing",
 					async ({ missingBody, expectedMessage }) => {
 						// Layer 2 only: route/controller validation rejects before any helper hashing or model persistence layer is added.
-						const res = await request(app)
+						const res = await request(authIntegrationApp)
 							.post("/api/v1/auth/register")
 							.send(missingBody);
 
@@ -505,7 +463,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should login successfully and return a valid JWT token", async () => {
 			// Layer 2 added here: authRoute/loginController runs on top of the stored user created in Layer 1.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.post("/api/v1/auth/login")
 				.send({ email: "login@example.com", password: "correctpassword" });
 
@@ -526,7 +484,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should reject login with incorrect password (401)", async () => {
 			// Layer 2 added here: route/controller reaches comparePassword against the real user record and rejects on mismatch.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.post("/api/v1/auth/login")
 				.send({ email: "login@example.com", password: "wrongpassword" });
 
@@ -537,7 +495,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should reject login with non-existent email (404)", async () => {
 			// Layer 2 added here: route/controller checks the model layer and finds no matching user document to continue upward.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.post("/api/v1/auth/login")
 				.send({ email: "nobody@example.com", password: "anypassword" });
 
@@ -548,7 +506,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should reject login with missing email or password (404)", async () => {
 			// Layer 2 only: controller validation stops before comparePassword or JWT generation is added to the flow.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.post("/api/v1/auth/login")
 				.send({ email: "login@example.com" }); // missing password
 
@@ -586,7 +544,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should allow access to /user-auth with a valid token", async () => {
 			// Layer 2 added here: requireSignIn verifies the JWT against the real user identity.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.get("/api/v1/auth/user-auth")
 				.set("Authorization", userToken);
 
@@ -597,7 +555,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should reject access to /user-auth with no token (401)", async () => {
 			// Layer 2 only: request is blocked at requireSignIn before the route handler layer is added.
-			const res = await request(app).get("/api/v1/auth/user-auth");
+			const res = await request(authIntegrationApp).get("/api/v1/auth/user-auth");
 
 			expect(res.status).toBe(401);
 			expect(res.body.success).toBe(false);
@@ -606,7 +564,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should reject access to /user-auth with an invalid token (401)", async () => {
 			// Layer 2 only: middleware rejects an invalid JWT before the request can reach the protected route handler.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.get("/api/v1/auth/user-auth")
 				.set("Authorization", "invalid.token.value");
 
@@ -627,7 +585,7 @@ describe("Authentication Integration Tests", () => {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// Layer 2 only: requireSignIn rejects the expired token before the route handler is reached.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.get("/api/v1/auth/user-auth")
 				.set("Authorization", expiredToken);
 
@@ -681,7 +639,7 @@ describe("Authentication Integration Tests", () => {
 		it("should allow admin access to /admin-auth", async () => {
 			// Layer 2 added here: requireSignIn verifies the JWT.
 			// Layer 3 added immediately after: isAdmin checks the persisted role.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.get("/api/v1/auth/admin-auth")
 				.set("Authorization", adminToken);
 
@@ -693,7 +651,7 @@ describe("Authentication Integration Tests", () => {
 		it("should reject regular user from /admin-auth (401)", async () => {
 			// Layer 2 added here: requireSignIn accepts the JWT.
 			// Layer 3 stops the flow here: isAdmin reads role 0 from the model and blocks before the route handler layer is reached.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.get("/api/v1/auth/admin-auth")
 				.set("Authorization", userToken);
 
@@ -704,7 +662,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should allow admin access to /test route (requireSignIn + isAdmin)", async () => {
 			// Layer 2 and Layer 3 are added by the middleware chain before the test route handler responds.
-			const res = await request(app)
+			const res = await request(authIntegrationApp)
 				.get("/api/v1/auth/test")
 				.set("Authorization", adminToken);
 
@@ -714,7 +672,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should reject unauthenticated request to /admin-auth (401)", async () => {
 			// Layer 2 only: requireSignIn blocks before isAdmin or the route handler can be added.
-			const res = await request(app).get("/api/v1/auth/admin-auth");
+			const res = await request(authIntegrationApp).get("/api/v1/auth/admin-auth");
 
 			expect(res.status).toBe(401);
 			expect(res.body.success).toBe(false);
@@ -751,7 +709,7 @@ describe("Authentication Integration Tests", () => {
 			const newPassword = "newpassword6767";
 
 			// Layer 2 added here: authRoute/forgotPasswordController runs against the real user state.
-			const res = await request(app).post("/api/v1/auth/forgot-password").send({
+			const res = await request(authIntegrationApp).post("/api/v1/auth/forgot-password").send({
 				email: testEmail,
 				answer: testAnswer,
 				newPassword: newPassword,
@@ -775,14 +733,14 @@ describe("Authentication Integration Tests", () => {
 			const newPassword = "resetlogintest";
 
 			// Layer 2 first pass: forgot-password route/controller updates the persisted credential through helper hashing + model persistence.
-			await request(app).post("/api/v1/auth/forgot-password").send({
+			await request(authIntegrationApp).post("/api/v1/auth/forgot-password").send({
 				email: testEmail,
 				answer: testAnswer,
 				newPassword: newPassword,
 			});
 
 			// Layer 3 added next: login route/controller is exercised on top of the updated persisted state.
-			const loginRes = await request(app)
+			const loginRes = await request(authIntegrationApp)
 				.post("/api/v1/auth/login")
 				.send({ email: testEmail, password: newPassword });
 
@@ -791,7 +749,7 @@ describe("Authentication Integration Tests", () => {
 			expect(loginRes.body.token).toBeDefined();
 
 			// Layer 3 negative check: comparePassword now rejects the old secret.
-			const oldLoginRes = await request(app)
+			const oldLoginRes = await request(authIntegrationApp)
 				.post("/api/v1/auth/login")
 				.send({ email: testEmail, password: oldPassword });
 
@@ -801,7 +759,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should reject password reset with wrong security answer (404)", async () => {
 			// Layer 2 added here: controller reads the persisted user state but blocks before the helper/model update layer can run.
-			const res = await request(app).post("/api/v1/auth/forgot-password").send({
+			const res = await request(authIntegrationApp).post("/api/v1/auth/forgot-password").send({
 				email: testEmail,
 				answer: "WrongAnswer",
 				newPassword: "newpass",
@@ -812,7 +770,7 @@ describe("Authentication Integration Tests", () => {
 			expect(res.body.message).toBe("Wrong email or answer");
 
 			// Layer 3 assertion: the lower model state is unchanged after rejection.
-			const loginRes = await request(app)
+			const loginRes = await request(authIntegrationApp)
 				.post("/api/v1/auth/login")
 				.send({ email: testEmail, password: oldPassword });
 
@@ -822,7 +780,7 @@ describe("Authentication Integration Tests", () => {
 
 		it("should reject password reset with wrong email (404)", async () => {
 			// Layer 2 only: controller checks the model layer and fails to find a matching account before any update layer is added.
-			const res = await request(app).post("/api/v1/auth/forgot-password").send({
+			const res = await request(authIntegrationApp).post("/api/v1/auth/forgot-password").send({
 				email: "wrong@example.com",
 				answer: testAnswer,
 				newPassword: "newpass",
@@ -844,7 +802,7 @@ describe("Authentication Integration Tests", () => {
 					"should reject password reset when $field is missing (400)",
 					async ({ missingBody, expectedMessage }) => {
 						// Layer 2 only: controller validation stops before helper hashing or model update layers are added.
-						const res = await request(app)
+						const res = await request(authIntegrationApp)
 							.post("/api/v1/auth/forgot-password")
 							.send(missingBody);
 
