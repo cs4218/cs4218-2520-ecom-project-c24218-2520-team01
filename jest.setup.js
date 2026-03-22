@@ -25,5 +25,6 @@
 
 import { TextEncoder, TextDecoder } from "util";
 
+process.env.SUPPRESS_JEST_WARNINGS = "true";
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;

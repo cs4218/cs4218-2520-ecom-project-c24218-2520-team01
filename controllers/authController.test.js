@@ -1551,7 +1551,7 @@ describe("Unit test for updateProfileController", () => {
 
         // Assert
         expect(res.json).toHaveBeenCalledWith({
-            error: "Passsword is required and is 6 characters long"
+            error: "Password is required and is 6 characters long"
         });
         expect(userModel.findByIdAndUpdate).not.toHaveBeenCalled();
     });

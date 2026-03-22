@@ -68,10 +68,10 @@ jest.mock("react-router-dom", () => ({
     useNavigate: () => mockNavigate
 }));
 
-const mockSetCart = jest.fn();
+const mockAddToCart = jest.fn();
 const mockCart = [];
 jest.mock("../context/cart", () => ({
-    useCart: () => [mockCart, mockSetCart]
+    useCart: () => ({ cart: mockCart, addToCart: mockAddToCart })
 }));
 
 jest.mock("./../components/Layout", () => ({ children, title }) => (
@@ -688,14 +688,13 @@ describe("unit tests for home page component", () => {
             fireEvent.click(addToCartButtons[0]);
 
             // Assert
-            expect(mockSetCart).toHaveBeenCalledWith([MOCK_PRODUCTS[0]]);
+            expect(mockAddToCart).toHaveBeenCalledWith(MOCK_PRODUCTS[0]);
             expect(toast.success).toHaveBeenCalledWith("Item Added to cart");
         });
 
 
-        test("communication-based: save added product to cart in local storage ", async () => {
+        test("communication-based: call cart context addToCart when add to cart is clicked", async () => {
             // Arrange
-            const setItemSpy = jest.spyOn(Storage.prototype, "setItem");
             render(<HomePage />); 
             await waitFor(() => {
                 expect(screen.getByText("Wireless Bluetooth Headphones")).toBeInTheDocument();
@@ -706,12 +705,7 @@ describe("unit tests for home page component", () => {
             fireEvent.click(addToCartButtons[0]);
 
             // Assert
-            expect(setItemSpy).toHaveBeenCalledWith(
-                "cart",
-                JSON.stringify([MOCK_PRODUCTS[0]])
-            );
-
-            setItemSpy.mockRestore();
+            expect(mockAddToCart).toHaveBeenCalledWith(MOCK_PRODUCTS[0]);
         });
     });
 
