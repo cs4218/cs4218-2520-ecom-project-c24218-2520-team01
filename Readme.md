@@ -201,7 +201,7 @@ I am responsible for testing the following components:
     - Load an existing product into the update form and modify details like price and description (Update Product Flow)
     - View the list of registered accounts on the users page as an admin (Admin User Management Flow)
 
-After receiving feedback for milestone 1, in milestone 2, I corrected issues such as the lack of unit tests for the `userModel` as well as a typo where the unit test claimed to test logging when it in fact did not.
+After receiving milestone 1 feedback, in milestone 2, I corrected issues such as the lack of unit tests for the `userModel` as well as a typo where the unit test claimed to test logging when it in fact did not.
 
 ### Muhammad Zaidan bin Sani (A0273278U)
 
