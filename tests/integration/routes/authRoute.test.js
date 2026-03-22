@@ -46,7 +46,13 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     const categoryId = new mongoose.Types.ObjectId();
-    const STATUSES = ["Not Process", "Processing", "Shipped", "cancel"];
+    const STATUSES = [
+        "Not Process",
+        "Processing",
+        "Shipped",
+        "Delivered",
+        "Cancel",
+    ];
 
     products = await productModel.insertMany(
         Array.from({ length: 4 }, (_, i) => ({

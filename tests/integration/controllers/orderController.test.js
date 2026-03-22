@@ -23,7 +23,13 @@ const mockRes = () => {
 let mongod;
 
 const categoryId = new mongoose.Types.ObjectId();
-const STATUSES = ["Not Process", "Processing", "Shipped", "cancel"];
+const STATUSES = [
+    "Not Process",
+    "Processing",
+    "Shipped",
+    "Delivered",
+    "Cancel",
+];
 let users, products, orders;
 
 beforeAll(async () => {
@@ -164,7 +170,7 @@ describe("orderStatusController", () => {
     it("returns 200, and status is persisted", async () => {
         const req = {
             params: { orderId: orders[0]._id },
-            body: { status: "cancel" },
+            body: { status: "Cancel" },
         };
         const res = mockRes();
 
@@ -172,9 +178,9 @@ describe("orderStatusController", () => {
 
         expect(res.status).toHaveBeenCalledWith(200);
         const returned = res.json.mock.calls[0][0];
-        expect(returned.status).toBe("cancel");
+        expect(returned.status).toBe("Cancel");
         const persisted = await orderModel.findById(orders[0]._id);
-        expect(persisted.status).toBe("cancel");
+        expect(persisted.status).toBe("Cancel");
     });
 
     it("returns 422 with invalid enum", async () => {
