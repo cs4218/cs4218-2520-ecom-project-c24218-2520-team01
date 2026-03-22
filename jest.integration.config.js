@@ -5,7 +5,7 @@ export default {
 	testEnvironment: "jest-environment-jsdom",
 
 	// Run all integration specs from the shared integration folder.
-	testMatch: ["<rootDir>/tests/integration/**/*.test.js"],
+	testMatch: ["<rootDir>/tests/integration/**/*.test.js", "<rootDir>/client/src/tests/integration/**/*.test.js"],
 
 	transform: {
 		"^.+\\.js$": "babel-jest",
@@ -47,5 +47,7 @@ export default {
 
 	maxWorkers: 1,
 
-	collectCoverage: false,
+	collectCoverage: true,
+	collectCoverageFrom: ["routes/**/*.js"],
+	coverageDirectory: "coverage/integration",
 };
