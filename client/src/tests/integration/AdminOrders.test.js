@@ -142,7 +142,6 @@ describe("Admin Orders Management Flow Integration Tests", () => {
             await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2)); // initial and refresh so 2 times
         });
 
-        // TO BE FIXED LATER
         it("should log error when order status update fails", async () => {
 
             // Arrange
