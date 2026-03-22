@@ -26,7 +26,7 @@ const EMAIL_LOG = join(__dirname, ".test-emails.json");
 
 export default async function teardown() {
 
-    dotenv.config({ path: join(__dirname, "../../.env.local") });
+    dotenv.config({ path: join(__dirname, "../../.env") });
 
     const mongoUrl = process.env.MONGO_URL;
     if (!mongoUrl) {

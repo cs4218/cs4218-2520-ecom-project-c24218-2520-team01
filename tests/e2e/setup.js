@@ -31,10 +31,10 @@ export const EMAIL_LOG = join(__dirname, ".test-emails.json");
 
 export default async function setup() {
 
-    dotenv.config({ path: join(__dirname, "../../.env.local") });
+    dotenv.config({ path: join(__dirname, "../../.env") });
 
     const mongoUrl = process.env.MONGO_URL;
-    if (!mongoUrl) throw new Error("[setup] MONGO_URL not found in .env.local");
+    if (!mongoUrl) throw new Error("[setup] MONGO_URL not found in .env");
 
     await mongoose.connect(mongoUrl);
     const db = mongoose.connection.db;
