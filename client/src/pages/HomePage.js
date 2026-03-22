@@ -159,9 +159,9 @@ const HomePage = () => {
         </div>
         <div className="col-md-9 ">
           <h1 className="text-center">All Products</h1>
-          <div className="d-flex flex-wrap">
+          <div className="d-flex flex-wrap" data-testid="product-grid">
             {products?.map((p) => (
-              <div className="card m-2" key={p._id}>
+              <div className="card m-2" data-testid={`product-card-${p.slug}`} key={p._id}>
                 <img
                   src={`/api/v1/product/product-photo/${p._id}`}
                   className="card-img-top"

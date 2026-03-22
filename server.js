@@ -6,14 +6,15 @@ import connectDB from "./config/db.js";
 import authRoutes from './routes/authRoute.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import productRoutes from './routes/productRoutes.js'
+import uiTestingSetupSheen from "./tests/e2e/UiTestingSetupSheen.js";
 import userRoutes from './routes/userRoutes.js'
 import cors from "cors";
 
 // configure env
 dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local' });
 
-//database config
-connectDB();
+const isBrowserE2ETestEnv =
+	process.env.NODE_ENV === "test" && !process.env.JEST_WORKER_ID;
 
 const app = express();
 
@@ -27,6 +28,9 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/product", productRoutes);
+if (isBrowserE2ETestEnv) {
+	app.use("/api/v1/testing", uiTestingSetupSheen);
+}
 
 // rest api
 
@@ -36,6 +40,14 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 6060;
 
-app.listen(PORT, () => {
-    console.log(`Server running on ${process.env.DEV_MODE} mode on ${PORT}`.bgCyan.white);
-});
+const startServer = async () => {
+	await connectDB();
+
+	app.listen(PORT, () => {
+		console.log(
+			`Server running on ${process.env.DEV_MODE} mode on ${PORT}`.bgCyan.white,
+		);
+	});
+};
+
+startServer();
