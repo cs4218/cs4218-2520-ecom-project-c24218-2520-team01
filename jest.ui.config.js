@@ -21,13 +21,16 @@ export default {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/client/src/tests/ui/Auth/*.test.js",
+    "<rootDir>/tests/e2e/"
   ],
 
   // jest code coverage
   collectCoverage: true,
   collectCoverageFrom: [
     "client/src/pages/Auth/**",
+    "client/src/pages/Cart/**",
+    "client/src/pages/ProductDetails/**",
+    "client/src/pages/Home/**",
   ],
   coverageThreshold: {
     global: {

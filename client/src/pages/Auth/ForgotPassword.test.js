@@ -108,7 +108,9 @@ describe("Authentication Pages", () => {
 						answer: "Golf",
 					},
 				);
-				expect(screen.getByText("Login Page")).toBeInTheDocument();
+				await waitFor(() => {
+					expect(screen.getByText("Login Page")).toBeInTheDocument();
+				});
 			});
 
 			it("should handle form submission with success but no message", async () => {
@@ -147,7 +149,9 @@ describe("Authentication Pages", () => {
 
 				// Assert
 				await waitFor(() => expect(toast.success).toHaveBeenCalled());
-				expect(screen.getByText("Login Page")).toBeInTheDocument();
+				await waitFor(() => {
+					expect(screen.getByText("Login Page")).toBeInTheDocument();
+				});
 			});
 		});
 
