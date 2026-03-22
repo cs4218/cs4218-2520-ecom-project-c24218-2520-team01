@@ -236,7 +236,7 @@ describe("Authentication Pages", () => {
 					);
 				});
 
-				it("should handle localStorage.setItem failure gracefully", async () => {
+				it("should show an error toast and stay on the login page when localStorage.setItem fails", async () => {
 					// Arrange
 					const localStorageError = new Error("localStorage has an error");
 					window.localStorage.setItem.mockImplementationOnce(() => {
@@ -271,10 +271,13 @@ describe("Authentication Pages", () => {
 
 					// Assert
 					await waitFor(() => expect(axios.post).toHaveBeenCalled());
-					// The component should call localStorage.setItem
 					await waitFor(() =>
 						expect(window.localStorage.setItem).toHaveBeenCalled(),
 					);
+					await waitFor(() =>
+						expect(toast.error).toHaveBeenCalledWith("Something went wrong"),
+					);
+					expect(screen.queryByText("Home Page")).not.toBeInTheDocument();
 				});
 			});
 		});

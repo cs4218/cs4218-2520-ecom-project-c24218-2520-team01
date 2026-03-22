@@ -409,6 +409,19 @@ I am in charge of the unit testing for the authentication module across both the
 
 For **milestone 1**, I have done unit test for all components under Authentication (_more information can be seen in the MS1 report_).
 
+#### Milestone 2 Integration & E2E UI Tests
+
+I am responsible for testing the following components:
+ **Authentication Integration** (_tests/integration/auth/authIntegration.test.js_):
+    - Controllers & Routes: `registerController`, `loginController`, `forgotPasswordController`
+    - Middlewares: `requireSignIn`, `isAdmin`
+    - Models & Helpers: `userModel`, `hashPassword`, `comparePassword`
+
+**E2E UI Flows** (using Playwright):
+    - **Auth Flows** (_tests/e2e/authFlows.spec.js_): Registration logic, password recovery processes, form validation, and error handling.
+    - **Cart & Product Flows** (_tests/e2e/cartAndProduct.spec.js_): Browsing products on the homepage, viewing product details, adding/removing items from the cart, observing guest cart states, and completing the authenticated checkout process.
+    - **Search & Filtering Flows** (_tests/e2e/searchAndFilter.spec.js_): Handling search edge case (e.g., no products found), applying category and price filters, and resetting filters.
+
 ## 7. MS1 CI URL
 
 **CI URL**: https://github.com/cs4218/cs4218-2520-ecom-project-c24218-2520-team01/actions/runs/22282001657

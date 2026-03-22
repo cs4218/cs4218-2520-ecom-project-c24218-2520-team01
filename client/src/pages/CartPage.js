@@ -35,9 +35,28 @@ const CartPage = () => {
   const [auth, setAuth] = useAuth();
   const { cart, setCart, removeCartItem } = useCart();
   const [clientToken, setClientToken] = useState("");
-  const [instance, setInstance] = useState("");
+  const [instance, setInstance] = useState(null);
+  /**
+ * AI Usage Declaration
+ *
+ * Tool Used: GPT-5.4
+ *
+ * Prompt:
+ * - Asked for reference ideas on how to add config for test card details
+ *
+ * How the AI Output Was Used:
+ * - Used the suggestions on adding the visible test card configuration
+ *  */
+
+  const [showTestCardForm, setShowTestCardForm] = useState(false);
+  const [testCardDetails, setTestCardDetails] = useState({
+    number: "",
+    expiry: "",
+    cvv: "",
+  });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const isE2ETest = process.env.REACT_APP_E2E_TEST === "true";
 
   //total price
   const totalPrice = () => calculateTotalPrice(cart);
@@ -55,11 +74,36 @@ const CartPage = () => {
     getToken();
   }, [auth?.token]);
 
+  const hasValidTestCardDetails = () => {
+    const normalizedNumber = testCardDetails.number.replace(/\s+/g, "");
+    const normalizedExpiry = testCardDetails.expiry.replace(/\s+/g, "");
+    const normalizedCvv = testCardDetails.cvv.trim();
+
+    return (
+      normalizedNumber.length >= 16 &&
+      /^\d{2}\/\d{4}$/.test(normalizedExpiry) &&
+      normalizedCvv.length >= 3
+    );
+  };
+
   //handle payments
   const handlePayment = async () => {
     try {
       setLoading(true);
-      const { nonce } = await instance.requestPaymentMethod();
+      let nonce = "";
+
+      if (isE2ETest) {
+        if (!hasValidTestCardDetails()) {
+          toast.error("Please enter valid card details.");
+          setLoading(false);
+          return;
+        }
+        nonce = "fake-valid-nonce";
+      } else {
+        const paymentMethod = await instance.requestPaymentMethod();
+        nonce = paymentMethod.nonce;
+      }
+
       const { data } = await axios.post("/api/v1/product/braintree/payment", {
         nonce,
         cart,
@@ -168,6 +212,68 @@ const CartPage = () => {
               <div className="mt-2">
                 {!clientToken || !auth?.token || !cart?.length ? (
                   ""
+                ) : isE2ETest ? (
+                  <>
+                    <button
+                      className="btn btn-outline-primary mb-3"
+                      onClick={() => setShowTestCardForm((current) => !current)}
+                      disabled={loading || !auth?.user?.address}
+                    >
+                      Paying with Card
+                    </button>
+
+                    {showTestCardForm && (
+                      <div className="mb-3">
+                        <input
+                          aria-label="Credit Card Number"
+                          className="form-control mb-2"
+                          onChange={(event) =>
+                            setTestCardDetails((current) => ({
+                              ...current,
+                              number: event.target.value,
+                            }))
+                          }
+                          placeholder="4242 4242 4242 4242"
+                          type="text"
+                          value={testCardDetails.number}
+                        />
+                        <input
+                          aria-label="Expiration Date"
+                          className="form-control mb-2"
+                          onChange={(event) =>
+                            setTestCardDetails((current) => ({
+                              ...current,
+                              expiry: event.target.value,
+                            }))
+                          }
+                          placeholder="MM/YYYY"
+                          type="text"
+                          value={testCardDetails.expiry}
+                        />
+                        <input
+                          aria-label="CVV"
+                          className="form-control mb-3"
+                          onChange={(event) =>
+                            setTestCardDetails((current) => ({
+                              ...current,
+                              cvv: event.target.value,
+                            }))
+                          }
+                          placeholder="CVV"
+                          type="text"
+                          value={testCardDetails.cvv}
+                        />
+                      </div>
+                    )}
+
+                    <button
+                      className="btn btn-primary"
+                      onClick={handlePayment}
+                      disabled={loading || !showTestCardForm || !auth?.user?.address}
+                    >
+                      {loading ? "Processing ...." : "Make Payment"}
+                    </button>
+                  </>
                 ) : (
                   <>
                     <DropIn

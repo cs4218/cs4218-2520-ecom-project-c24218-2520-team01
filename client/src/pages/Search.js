@@ -1,7 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useSearch } from "../context/search";
 import Layout from "./../components/Layout";
+import { useSearch } from "../context/search";
+import { useNavigate } from "react-router-dom";
 
 const Search = () => {
     const [values, setValues] = useSearch();
