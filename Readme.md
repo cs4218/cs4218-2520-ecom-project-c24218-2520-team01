@@ -138,6 +138,8 @@ To begin unit testing with Jest in your project, follow these steps:
 
 ### Lim Jia Wei (A0277381W)
 
+#### Milestone 1 Unit Test
+
 I was responsible for testing the following components:
 
 **Server Files:**
@@ -161,9 +163,45 @@ I was responsible for testing the following components:
 - `pages/admin/Products.js`
 - `pages/admin/Users.js`
 
-#### Milestone 1 Unit Test
-
 For **milestone 1**, I unit tested all files specified above with the exception of `userModel.js` due to it being left for integration testing. (_more information can be seen in the MS1 report_).
+
+#### Milestone 2 Integration & E2E UI Tests
+
+I am responsible for testing the following components:
+
+- Admin Dashboard & Routing Components
+    - `components/AdminMenu.js`
+    - `components/AdminRoute.js`
+
+- Admin Management Pages (Products, Categories, Orders, Users)
+    - `pages/admin/AdminOrders.js`
+    - `pages/admin/CreateCategory.js`
+    - `pages/admin/CreateProduct.js`
+    - `pages/admin/Products.js`
+    - `pages/admin/UpdateProduct.js`
+    - `pages/admin/Users.js`
+
+- Static Pages:
+    - `pages/About.js`
+    - `pages/Contact.js`
+    - `pages/Pagenotfound.js`
+    - `pages/Policy.js`
+
+- Authentication & Context Providers:
+  - `context/auth.js`
+  - `context/cart.js`
+  - `context/search.js`
+  - `pages/Auth/Login.js`
+
+- E2E UI Flows:
+    - Encounter a payment failure or rejection from the gateway (Cart & Checkout Flow)
+    - Filter products by selecting checkboxes for specific categories (Main Browsing & Filtering Flow)
+    - Submit the registration form with all required and valid details (Registration Flow)
+    - Enter a valid search term and see the corresponding product results (Search Flow)
+    - Load an existing product into the update form and modify details like price and description (Update Product Flow)
+    - View the list of registered accounts on the users page as an admin (Admin User Management Flow)
+
+After receiving feedback for milestone 1, in milestone 2, I corrected issues such as the lack of unit tests for the `userModel` as well as a typo where the unit test claimed to test logging when it in fact did not.
 
 ### Muhammad Zaidan bin Sani (A0273278U)
 
