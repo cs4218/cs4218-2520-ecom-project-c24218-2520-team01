@@ -6,6 +6,7 @@ describe("Product viewing flow", () => {
     test("checks related products work and categories are correctly linked", async ({
         page,
     }) => {
+        // Written by muhammad ZAIDAN bin sani (A0273278U)
         await page.goto("/");
         await page.getByRole("button", { name: "More Details" }).nth(1).click();
 
