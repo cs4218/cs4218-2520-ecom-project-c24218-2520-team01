@@ -188,14 +188,16 @@ I am responsible for testing the following components:
         - `relatedProductsController`
         - `productCategoryController`
 - Product model - `models/productModel`
-  **Integration tests**
+
+    **Integration tests**
+
 - Product integrations
     - Integration with Model and DB
     - Integration with Auth middleware, Formidable etc.
-- Order integration
-    - Integration with Model and DB
-    - Integration with Auth middleware
-      **E2E tests**
+- Order integration - Integration with Model and DB - Integration with Auth middleware
+
+    **E2E tests**
+
 - Product creation with admin
 - Category > Product creation with admin
 - Related product viewing
@@ -204,6 +206,14 @@ I am responsible for testing the following components:
 #### Milestone 1 Unit Test
 
 For **milestone 1**, I unit tested every function seen under Product CRUD and product filters above, and left the product model for integration testing (_more information can be seen in the MS1 report_).
+
+## MIlestone 2 Integration and E2E tests
+
+For **milestone 2**, I added unit tests for the product model, and bottom-up integration tests for the product and order integration flows, which involved integration with the relevant models, and integration tests.
+
+I also added E2E tests for 4 scenarios as seen above.
+
+(_more information can be seen in the MS2 report_).
 
 ### Nicholas Cheng De Fei (A0269648H)
 
