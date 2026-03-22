@@ -7,25 +7,15 @@ import dotenv from "dotenv";
 import fs from "fs";
 import slugify from "slugify";
 
-dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local' });
-
-const isTestEnv = process.env.NODE_ENV === "test";
-
-const hasBraintreeConfig =
-    isTestEnv ||
-    process.env.BRAINTREE_MERCHANT_ID &&
-    process.env.BRAINTREE_PUBLIC_KEY &&
-    process.env.BRAINTREE_PRIVATE_KEY;
+dotenv.config();
 
 //payment gateway
-const gateway = hasBraintreeConfig
-    ? new braintree.BraintreeGateway({
-        environment: braintree.Environment.Sandbox,
-        merchantId: process.env.BRAINTREE_MERCHANT_ID || "test-merchant-id",
-        publicKey: process.env.BRAINTREE_PUBLIC_KEY || "test-public-key",
-        privateKey: process.env.BRAINTREE_PRIVATE_KEY || "test-private-key",
-    })
-    : null;
+var gateway = new braintree.BraintreeGateway({
+    environment: braintree.Environment.Sandbox,
+    merchantId: process.env.BRAINTREE_MERCHANT_ID,
+    publicKey: process.env.BRAINTREE_PUBLIC_KEY,
+    privateKey: process.env.BRAINTREE_PRIVATE_KEY,
+});
 
 export const createProductController = async (req, res) => {
     try {
@@ -414,6 +404,7 @@ export const productCategoryController = async (req, res) => {
 export const braintreeTokenController = async (req, res) => {
     try {
         gateway.clientToken.generate({}, function (error, response) {
+            console.log(error);
             if (error) {
                 res.status(500).send({
                     success: false,
@@ -461,35 +452,46 @@ export const brainTreePaymentController = async (req, res) => {
                 message: "No transaction is made because cart is empty",
             });
         }
+
         let total = 0;
         cart.map((i) => {
             total += i.price;
         });
-        let newTransaction = gateway.transaction.sale(
-            {
-                amount: total,
-                paymentMethodNonce: nonce,
-                options: {
-                    submitForSettlement: true,
+        // If total is 0 skip calling sale function
+        if (total == 0) {
+            const order = await new orderModel({
+                products: cart,
+                payment: { success: true }, // Here we just indicate that payment was done
+                buyer: req.user._id,
+            }).save();
+            return res.status(200).json({ ok: true });
+        } else {
+            let newTransaction = await gateway.transaction.sale(
+                {
+                    amount: total,
+                    paymentMethodNonce: nonce,
+                    options: {
+                        submitForSettlement: true,
+                    },
                 },
-            },
-            function (error, result) {
-                if (result) {
-                    const order = new orderModel({
-                        products: cart,
-                        payment: result,
-                        buyer: req.user._id,
-                    }).save();
-                    res.status(200).json({ ok: true });
-                } else {
-                    res.status(500).send({
-                        success: false,
-                        message: "Error while making transaction",
-                        error,
-                    });
-                }
-            },
-        );
+                function (error, result) {
+                    if (result.success) {
+                        const order = new orderModel({
+                            products: cart,
+                            payment: result,
+                            buyer: req.user._id,
+                        }).save();
+                        res.status(200).json({ ok: true });
+                    } else {
+                        res.status(500).send({
+                            success: false,
+                            message: "Error while making transaction",
+                            error,
+                        });
+                    }
+                },
+            );
+        }
     } catch (error) {
         console.log(error);
         res.status(500).send({

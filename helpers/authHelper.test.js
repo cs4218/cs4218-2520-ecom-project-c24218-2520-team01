@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { hashPassword, comparePassword } from "./authHelper.js";
 
+// Wong Sheen Kerr (A0269647J)
 // Mock bcrypt
 jest.mock("bcrypt");
 

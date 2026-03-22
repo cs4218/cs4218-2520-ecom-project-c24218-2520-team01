@@ -3,6 +3,10 @@ import { render, screen } from "@testing-library/react";
 import Search from "./Search";
 import { defaultState, newState } from "../tests/searchTestUtils";
 
+jest.mock("react-router-dom", () => ({
+    useNavigate: () => jest.fn()
+}));
+
 // Rachel Tai Ke Jia, A0258603A
 
 // Mock Layout
