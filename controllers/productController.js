@@ -5,7 +5,6 @@ import productModel from "../models/productModel.js";
 import braintree from "braintree";
 import dotenv from "dotenv";
 import fs from "fs";
-import mongoose from "mongoose";
 import slugify from "slugify";
 
 dotenv.config();
@@ -44,14 +43,6 @@ export const createProductController = async (req, res) => {
             case photo.size > 1000000:
                 return res.status(500).send({
                     error: "Photo Should Be Smaller Than 1MB",
-                });
-            case price < 0:
-                return res.status(500).send({
-                    error: "Price must be a non-negative number",
-                });
-            case quantity < 0:
-                return res.status(500).send({
-                    error: "Quantity must be a non-negative number",
                 });
         }
 
