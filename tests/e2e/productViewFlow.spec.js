@@ -11,8 +11,6 @@ import mongoose from "mongoose";
 
 dotenv.config();
 
-// Written by Nicholas Cheng, A0269648H
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -89,6 +87,7 @@ test.afterAll(async ({ }) => {
 });
 
 test.describe("Product View Flow", () => {
+    // Written by Nicholas Cheng, A0269648H
     test("System should handle gracefully when user views a non-existent product by showing the appropriate UI", async ({ page }) => {
 
         // Simulate a user logging in

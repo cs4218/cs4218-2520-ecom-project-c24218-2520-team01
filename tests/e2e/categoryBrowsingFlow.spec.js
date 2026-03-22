@@ -11,8 +11,6 @@ import mongoose from "mongoose";
 
 dotenv.config();
 
-// Written by Nicholas Cheng, A0269648H
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -71,6 +69,7 @@ test.afterAll(async ({ }) => {
 });
 
 test.describe("Category Browsing Flow", () => {
+    // Written by Nicholas Cheng, A0269648H
     test("Users should be able to see items from a specific category selected", async ({ page }) => {
 
         // Simulate a user logging in

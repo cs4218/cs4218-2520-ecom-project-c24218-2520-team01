@@ -9,8 +9,6 @@ import mongoose from "mongoose";
 
 dotenv.config();
 
-// Written by Nicholas Cheng, A0269648H
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -63,6 +61,7 @@ test.describe("Product Creation Flow", () => {
             await page.getByRole("link", { name: "Logout" }).click();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if there is a missing category", async ({ page }) => {
 
             // Login to an admin account
@@ -116,6 +115,7 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if there is a missing image", async ({ page }) => {
 
             // Login to an admin account
@@ -167,6 +167,7 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if there is a missing name", async ({ page }) => {
 
             // Login to an admin account
@@ -220,6 +221,7 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if there is a missing description", async ({ page }) => {
 
             // Login to an admin account
@@ -273,6 +275,7 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if there is a missing price", async ({ page }) => {
 
             // Login to an admin account
@@ -326,6 +329,7 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if there is a missing quantity", async ({ page }) => {
 
             // Login to an admin account
@@ -379,6 +383,7 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if there is a missing shipping option", async ({ page }) => {
 
             // Login to an admin account
@@ -432,6 +437,7 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if a negative price is given", async ({ page }) => {
 
             // Login to an admin account
@@ -489,6 +495,7 @@ test.describe("Product Creation Flow", () => {
             await expect(page.locator("div").filter({ hasText: "Something went wrong" }).nth(4)).toBeVisible();
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Product cannot be created if a negative quantity is given", async ({ page }) => {
 
             // Login to an admin account

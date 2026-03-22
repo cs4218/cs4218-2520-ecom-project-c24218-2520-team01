@@ -11,8 +11,6 @@ import mongoose from "mongoose";
 
 dotenv.config();
 
-// Written by Nicholas Cheng, A0269648H
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -90,6 +88,7 @@ test.describe("Category Browsing Flow", () => {
             }
         });
 
+        // Written by Nicholas Cheng, A0269648H
         test("Users should be able to load more produts on the main page when clicking on the load more button", async ({ page }) => {
 
             // No need to simulate login as the Main page is accessible to all users and you can view products

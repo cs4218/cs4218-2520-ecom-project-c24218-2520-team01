@@ -4,8 +4,6 @@ import userModel from "../../models/userModel";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-// Written by Nicholas Cheng, A0269648H
-
 dotenv.config();
 
 const USER_EMAIL = "jane@test.com";
@@ -41,6 +39,7 @@ test.afterAll(async ({ }) => {
 });
 
 test.describe("Checkout Flow", () => {
+    // Written by Nicholas Cheng, A0269648H
     test("Users who are not authenticated should not be able to checkout", async ({ page }) => {
         // Login to an account
         await page.getByRole("link", { name: "Login" }).click();

@@ -4,8 +4,6 @@ import userModel from "../../models/userModel";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-// Written by Nicholas Cheng, A0269648H
-
 dotenv.config();
 
 const USER_EMAIL = "jane@test.com";
@@ -41,6 +39,7 @@ test.afterAll(async ({ }) => {
 });
 
 test.describe("Login Flow", () => {
+    // Written by Nicholas Cheng, A0269648H
     test("Users who input invalid email should not be able to login", async ({ page }) => {
         // Redirect to the login page
         await page.getByRole("link", { name: "Login" }).click();
@@ -61,6 +60,7 @@ test.describe("Login Flow", () => {
         await expect(page.getByText("LOGIN FORMForgot PasswordLOGIN")).toBeVisible();
     });
 
+    // Written by Nicholas Cheng, A0269648H
     test("Users who input invalid password should not be able to login", async ({ page }) => {
         // Redirect to the login page
         await page.getByRole("link", { name: "Login" }).click();
@@ -83,6 +83,7 @@ test.describe("Login Flow", () => {
         await expect(page.getByText("LOGIN FORMForgot PasswordLOGIN")).toBeVisible();
     });
 
+    // Written by Nicholas Cheng, A0269648H
     test("Users who did not input an email will not be able to login", async ({ page }) => {
         // Redirect to the login page
         await page.getByRole("link", { name: "Login" }).click();
@@ -99,6 +100,7 @@ test.describe("Login Flow", () => {
         await expect(page.getByText("LOGIN FORMForgot PasswordLOGIN")).toBeVisible();
     });
 
+    // Written by Nicholas Cheng, A0269648H
     test("Users who did not input a password will not be able to login", async ({ page }) => {
         // Redirect to the login page
         await page.getByRole("link", { name: "Login" }).click();
