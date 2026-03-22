@@ -207,6 +207,8 @@ For **milestone 1**, I unit tested every function seen under Product CRUD and pr
 
 ### Nicholas Cheng De Fei (A0269648H)
 
+#### Milestone 1 Unit Test
+
 I am responsible for testing the following components:
 
 _Server Files:_
@@ -236,9 +238,41 @@ _Client Files:_
 - `hooks/useCategory\.js`
 - `pages/Categories\.js`
 
-#### Milestone 1 Unit Test
+For **milestone 1**, I have done unit test for all components.
 
-For **milestone 1**, I have done unit test for all components except for those under `Models`. The models will tested during integration testing (_more information can be seen in the MS1 report_).
+#### Milestone 2 Integration & E2E UI Tests
+
+I am responsible for testing the following components:
+
+- Category CRUD (_controllers/categoryController\.js_):
+    - `createCategoryController`
+    - `updateCategoryController`
+    - `deleteCategoryController`
+    - `categoryControlller`
+    - `singleCategoryController`
+
+- Payment (_controllers/productController\.js_):
+    - `braintreeTokenController`
+    - `brainTreePaymentController`
+
+- Models:
+    - `models/categoryModel\.js`
+    - `models/orderModel\.js`
+
+- E2E UI Flows:
+    - Attempt to login with an unregistered email (_Login Flow_)
+    - Attempting checkout without being logged in (_Cart & Checkout Flow_)
+    - Navigate to a specific category page (`CategoryProduct`) and view only products from that category (_Category Browsing Flow_)
+    - Attempt to submit the form without uploading a photo or missing a required field (_Create Product Flow_)
+    - Attempt to login with an incorrect password _Login Flow_)
+    - Use the "Load More" button to fetch additional products (_pagination_)
+    - Navigating to a product slug that does not exist or has been deleted (_fallback handling, Product Viewing Flow)_
+
+For **milestone 2**, the first thing I did was to correct the issues that were feedback to me in milestone 1, for instance typos and also to do unit test for the `Models`.
+
+Afterwards I did integraton tests for the category CRUD and the various payment using a bottom up incremental approach. I started with the lower level components like the controller, database / models and external components like Braintree. Afterwards I integrate the higher level components like the Express router, and authtentication middleware.
+
+As for the E2E UI tests I used PLaywright to write and generate the various test cases for the assigned flows.
 
 ### Rachel Tai Ke Jia (A0258603A)
 
