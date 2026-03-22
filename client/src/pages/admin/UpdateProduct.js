@@ -86,7 +86,8 @@ const UpdateProduct = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong");
+      const msg = error?.response?.data?.error || error?.response?.data?.message || "Something went wrong";
+      toast.error(msg);
     }
   };
 
@@ -102,7 +103,8 @@ const UpdateProduct = () => {
       navigate("/dashboard/admin/products");
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong");
+      const msg = error?.response?.data?.error || error?.response?.data?.message || "Something went wrong";
+      toast.error(msg);
     }
   };
   return (
