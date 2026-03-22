@@ -481,7 +481,6 @@ export const brainTreePaymentController = async (req, res) => {
  * - Used the suggestions on the mock payment config
  *  */
 
-
 		if (isBrowserE2ETestEnv && nonce === e2ePayment.nonce) {
 			const order = await new orderModel({
 				products: cart.map((item) => item._id ?? item),

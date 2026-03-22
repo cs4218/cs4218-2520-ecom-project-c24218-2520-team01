@@ -28,6 +28,9 @@ export default {
   collectCoverage: true,
   collectCoverageFrom: [
     "client/src/pages/Auth/**",
+    "client/src/pages/Cart/**",
+    "client/src/pages/ProductDetails/**",
+    "client/src/pages/Home/**",
   ],
   coverageThreshold: {
     global: {
