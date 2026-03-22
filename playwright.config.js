@@ -6,6 +6,11 @@ dotenv.config({
 	path: process.env.NODE_ENV === "production" ? ".env" : ".env.local",
 });
 
+const frontendWebServerCommand =
+	process.platform === "win32"
+		? `cmd /c "set PORT=3000&& set REACT_APP_E2E_TEST=true&& set DANGEROUSLY_DISABLE_HOST_CHECK=true&& set BROWSER=none&& set CI=true&& npm start --prefix ./client"`
+		: `PORT=3000 REACT_APP_E2E_TEST=true DANGEROUSLY_DISABLE_HOST_CHECK=true BROWSER=none CI=true npm start --prefix ./client`;
+
 export default defineConfig({
 	testDir: "./tests/e2e",
 	fullyParallel: false,
@@ -22,7 +27,7 @@ export default defineConfig({
 			timeout: 120 * 1000,
 		},
 		{
-			command: `node -e "process.env.REACT_APP_E2E_TEST='true'; require('child_process').spawn('npm', ['start', '--prefix', './client'], { stdio: 'inherit', shell: true, env: process.env }).on('exit', (code) => process.exit(code ?? 0));"`,
+			command: frontendWebServerCommand,
 			url: "http://localhost:3000",
 			name: "Frontend",
 			reuseExistingServer: !process.env.CI,
@@ -34,7 +39,6 @@ export default defineConfig({
 		trace: "on-first-retry",
 		screenshot: "only-on-failure",
 		video: "retain-on-failure",
-		testIdAttribute: "data-testid",
 	},
 	projects: [
 		{
