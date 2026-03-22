@@ -12,7 +12,7 @@
 		"sonarqube": "sonar-scanner",
 		"test": "npm run test:backend && npm run test:frontend && npm run test:integration && npm run test:ui",
 		"test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js",
-		"test:ui": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.ui.config.js",
+		"test:ui": "playwright test tests/e2e",
 		"test:backend": "node node_modules/jest/bin/jest.js --config jest.backend.config.js",
 		"test:integration": "node node_modules/jest/bin/jest.js --config jest.integration.config.js"
 	},
@@ -57,5 +57,7 @@
 		"jest-environment-jsdom": "^29.7.0",
 		"mockingoose": "^2.16.2",
 		"sonarqube-scanner": "^4.3.4"
+		"mongodb-memory-server": "^11.0.1",
+		"supertest": "^7.2.2"
 	}
 }

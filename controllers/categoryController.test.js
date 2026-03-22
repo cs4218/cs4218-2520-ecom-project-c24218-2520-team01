@@ -672,9 +672,9 @@ describe("Category CRUD operations", () => {
                 });
             });
 
-            test("Return 422 when category is null", async () => {
+            test("Return 422 when category id is null", async () => {
                 // Arrange
-                req.params.slug = null;
+                req.params.id = null;
 
                 // Act
                 await deleteCategoryController(req, res);
