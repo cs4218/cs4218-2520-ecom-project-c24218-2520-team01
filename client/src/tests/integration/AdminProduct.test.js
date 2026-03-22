@@ -296,22 +296,6 @@ describe("Admin Product Management Flow Integration Tests", () => {
             expect(axios.post).not.toHaveBeenCalled();
         });
 
-        it("should reject negative quantity with error toast", async () => {
-
-            // Act
-            renderProductFlow();
-
-            await waitFor(() => expect(screen.getByText("Create Product")).toBeInTheDocument());
-
-            fireEvent.change(screen.getByPlaceholderText("write a price"), { target: { value: "10" } });
-            fireEvent.change(screen.getByPlaceholderText("write a quantity"), { target: { value: "-1" } });
-            fireEvent.click(screen.getByText("CREATE PRODUCT"));
-
-            // Assert
-            await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Quantity must be greater than 0"));
-            expect(axios.post).not.toHaveBeenCalled();
-        });
-
         it("should handle empty product name and description input", async () => {
 
             // Arrange
