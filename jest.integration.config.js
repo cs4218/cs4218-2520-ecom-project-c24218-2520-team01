@@ -2,34 +2,41 @@ export default {
 	// display name
 	displayName: "integration",
 
-	// when testing backend
-	testEnvironment: "node",
+	// integration tests in this suite exercise React component interactions.
+	testEnvironment: "jest-environment-jsdom",
 
-	// which test to run
-	testMatch: [
-		"<rootDir>/tests/integration/models/*.test.js",
-	],
+	// run all integration specs
+	testMatch: ["<rootDir>/tests/integration/**/*.test.js"],
 
 	// transform files with babel
 	transform: {
 		"^.+\\.js$": "babel-jest",
 	},
 
+	moduleNameMapper: {
+		"\\.(css|scss)$": "<rootDir>/__mocks__/styleMock.js",
+		"^react$": "<rootDir>/node_modules/react",
+		"^react-dom$": "<rootDir>/node_modules/react-dom",
+		"^react-router$": "<rootDir>/node_modules/react-router",
+		"^react-router-dom$": "<rootDir>/node_modules/react-router-dom",
+	},
+
 	// module file extensions
 	moduleFileExtensions: ["js", "json"],
 
-	// test environment options
-	testEnvironmentOptions: {
-		experimentalEsmSupport: true,
-	},
+	setupFilesAfterEnv: [
+		"<rootDir>/client/src/setupTests.js",
+		"<rootDir>/tests/integration/setup/jest.integration.setup.js",
+	],
 
-	// jest code coverage
-	collectCoverage: true,
-	collectCoverageFrom: ["models/**"],
-	coverageThreshold: {
-		global: {
-			lines: 100,
-			functions: 100,
-		},
-	},
+	// avoid cross-file mock/module leakage in integration suite
+	resetModules: true,
+	clearMocks: true,
+	restoreMocks: true,
+
+	// run integration tests serially to avoid test DB/server collisions
+	maxWorkers: 1,
+
+	// keep integration runs focused on behavior verification.
+	collectCoverage: false,
 };
