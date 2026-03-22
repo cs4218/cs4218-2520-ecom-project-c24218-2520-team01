@@ -47,5 +47,7 @@ export default {
 
 	maxWorkers: 1,
 
-	collectCoverage: false,
+	collectCoverage: true,
+	collectCoverageFrom: ["routes/**/*.js"],
+	coverageDirectory: "coverage/integration",
 };
