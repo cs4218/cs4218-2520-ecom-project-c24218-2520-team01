@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./baseTest.js";
 import { ADMIN_CREDENTIALS } from "./testCredentials.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";

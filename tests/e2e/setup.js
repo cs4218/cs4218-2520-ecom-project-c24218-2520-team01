@@ -5,7 +5,7 @@ import { writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
-// Global setup for Playwright e2e tests
+// Setup for Playwright e2e tests
 // Creates temporary admin, user, and test product accounts before tests run
 
 // Lim Jia Wei, A0277381W
@@ -15,10 +15,10 @@ import { dirname, join } from "path";
 *
 * Tool Used: Gemini 3.1 Pro
 *
-* Prompt: How do I create a global setup file for Playwright e2e tests that creates temporary admin, user, and test product accounts before tests run so I do not have to use hardcoded values
+* Prompt: How do I create a setup file for Playwright e2e tests that creates temporary admin, user, and test product accounts before tests run so I do not have to use hardcoded values
 *
 * How the AI Output Was Used:
-* - Used some of the AI output as reference to develop the global setup file as shown below
+* - Used some of the AI output as reference to develop the setup file as shown below
 */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -29,7 +29,7 @@ export const CREDENTIALS_FILE = join(__dirname, ".test-credentials.json");
 // Store registration test emails for teardown
 export const EMAIL_LOG = join(__dirname, ".test-emails.json");
 
-export default async function globalSetup() {
+export default async function setup() {
 
     dotenv.config({ path: join(__dirname, "../../.env.local") });
 

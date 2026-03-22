@@ -4,8 +4,8 @@ import { readFileSync, unlinkSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
-// Global teardown for Playwright e2e tests
-// Deletes all accounts and products created by globalSetup and any users registered during tests
+// Teardown for Playwright e2e tests
+// Deletes all accounts and products created by setup and any users registered during tests
 
 // Lim Jia Wei, A0277381W
 
@@ -14,17 +14,17 @@ import { dirname, join } from "path";
 *
 * Tool Used: Gemini 3.1 Pro
 *
-* Prompt: How do I create a global teardown file for Playwright e2e tests that deletes temporary admin, user, and test product accounts after tests run so I do not have to use hardcoded values
+* Prompt: How do I create a teardown file for Playwright e2e tests that deletes temporary admin, user, and test product accounts after tests run so I do not have to use hardcoded values
 *
 * How the AI Output Was Used:
-* - Used some of the AI output as reference to develop the global teardown file as shown below
+* - Used some of the AI output as reference to develop the teardown file as shown below
 */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CREDENTIALS_FILE = join(__dirname, ".test-credentials.json");
 const EMAIL_LOG = join(__dirname, ".test-emails.json");
 
-export default async function globalTeardown() {
+export default async function teardown() {
 
     dotenv.config({ path: join(__dirname, "../../.env.local") });
 

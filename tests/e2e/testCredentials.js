@@ -15,7 +15,7 @@ function loadCredentials() {
 
     }
 
-    // in the event globalSetup fails - use hardcoded admin and user details
+    // in the event setup fails - use hardcoded admin and user details
     return {
         admin: { email: "testadmin@gmail.com", password: "123" },
         user: { email: "testuser@gmail.com", password: "123" },
