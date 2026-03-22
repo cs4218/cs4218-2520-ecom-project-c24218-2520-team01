@@ -21,7 +21,7 @@ export default {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/tests/e2e/*.spec.js"
+    "<rootDir>/tests/e2e/"
   ],
 
   // jest code coverage
