@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
@@ -10,7 +11,9 @@ import userRoutes from './routes/userRoutes.js'
 import cors from "cors";
 
 // configure env
-dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local' });
+dotenv.config({
+    path: process.env.NODE_ENV === "production" ? ".env" : ".env.local",
+});
 
 const isBrowserE2ETestEnv =
 	process.env.NODE_ENV === "test" && !process.env.JEST_WORKER_ID;
@@ -20,7 +23,7 @@ const app = express();
 //middlewares
 app.use(cors());
 app.use(express.json());
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
 //routes
 app.use("/api/v1/auth", authRoutes);
@@ -33,7 +36,7 @@ if (isBrowserE2ETestEnv) {
 
 // rest api
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     res.send("<h1>Welcome to ecommerce app</h1>");
 });
 
@@ -42,7 +45,7 @@ const PORT = process.env.PORT || 6060;
 const startServer = async () => {
 	await connectDB();
 
-	app.listen(PORT, () => {
+app.listen(PORT, () => {
 		console.log(
 			`Server running on ${process.env.DEV_MODE} mode on ${PORT}`.bgCyan.white,
 		);
