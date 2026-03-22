@@ -1,13 +1,14 @@
 import express from "express";
 import {
-	registerController,
-	loginController,
-	testController,
-	forgotPasswordController,
-	updateProfileController,
-	getOrdersController,
-	getAllOrdersController,
-	orderStatusController,
+  registerController,
+  loginController,
+  testController,
+  forgotPasswordController,
+  updateProfileController,
+  getOrdersController,
+  getAllOrdersController,
+  orderStatusController,
+  getUsersController,
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
