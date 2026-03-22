@@ -7,25 +7,15 @@ import dotenv from "dotenv";
 import fs from "fs";
 import slugify from "slugify";
 
-dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local' });
-
-const isTestEnv = process.env.NODE_ENV === "test";
-
-const hasBraintreeConfig =
-    isTestEnv ||
-    process.env.BRAINTREE_MERCHANT_ID &&
-    process.env.BRAINTREE_PUBLIC_KEY &&
-    process.env.BRAINTREE_PRIVATE_KEY;
+dotenv.config();
 
 //payment gateway
-const gateway = hasBraintreeConfig
-    ? new braintree.BraintreeGateway({
-        environment: braintree.Environment.Sandbox,
-        merchantId: process.env.BRAINTREE_MERCHANT_ID || "test-merchant-id",
-        publicKey: process.env.BRAINTREE_PUBLIC_KEY || "test-public-key",
-        privateKey: process.env.BRAINTREE_PRIVATE_KEY || "test-private-key",
-    })
-    : null;
+var gateway = new braintree.BraintreeGateway({
+    environment: braintree.Environment.Sandbox,
+    merchantId: process.env.BRAINTREE_MERCHANT_ID,
+    publicKey: process.env.BRAINTREE_PUBLIC_KEY,
+    privateKey: process.env.BRAINTREE_PRIVATE_KEY,
+});
 
 export const createProductController = async (req, res) => {
     try {
@@ -53,6 +43,14 @@ export const createProductController = async (req, res) => {
             case photo.size > 1000000:
                 return res.status(500).send({
                     error: "Photo Should Be Smaller Than 1MB",
+                });
+            case price < 0:
+                return res.status(500).send({
+                    error: "Price must be a non-negative number",
+                });
+            case quantity < 0:
+                return res.status(500).send({
+                    error: "Quantity must be a non-negative number",
                 });
         }
 
