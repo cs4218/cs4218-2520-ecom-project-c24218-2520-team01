@@ -45,7 +45,7 @@ const CartPage = () => {
  * - Asked for reference ideas on how to add config for test card details
  *
  * How the AI Output Was Used:
- * - Used the suggestions on adding the test id config for card
+ * - Used the suggestions on adding the visible test card configuration
  *  */
 
   const [showTestCardForm, setShowTestCardForm] = useState(false);

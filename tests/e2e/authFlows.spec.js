@@ -19,6 +19,12 @@ import {
 	TEST_SHOPPER_EMAIL,
 } from "./e2eConstantsSheen.js";
 
+const registerNameInput = (page) =>
+	page.getByRole("textbox", { name: "Enter Your Name" });
+
+const forgotPasswordEmailInput = (page) =>
+	page.getByRole("textbox", { name: "Enter Your Email" });
+
 test.describe("Registration Flow Error Handling UI", () => {
 	test.beforeEach(async ({ page, request }) => {
 		// Reset the backend data before each registration flow test.
@@ -52,17 +58,23 @@ test.describe("Registration Flow Error Handling UI", () => {
 		await expect(
 			page.getByRole("heading", { name: "REGISTER FORM" }),
 		).toBeVisible();
-		await expect(page.locator("#exampleInputName1")).toBeVisible();
+		await expect(registerNameInput(page)).toBeVisible();
 		await expect(
 			page.getByRole("textbox", { name: "Enter Your Email" }),
 		).toBeVisible();
 		await expect(
 			page.getByRole("textbox", { name: "Enter Your Password" }),
 		).toBeVisible();
-		await expect(page.locator("#exampleInputPhone1")).toBeVisible();
-		await expect(page.locator("#exampleInputaddress1")).toBeVisible();
-		await expect(page.locator("#exampleInputDOB1")).toBeVisible();
-		await expect(page.locator("#exampleInputanswer1")).toBeVisible();
+		await expect(
+			page.getByRole("textbox", { name: "Enter Your Phone" }),
+		).toBeVisible();
+		await expect(
+			page.getByRole("textbox", { name: "Enter Your Address" }),
+		).toBeVisible();
+		await expect(page.getByPlaceholder('Enter Your DOB')).toBeVisible();
+		await expect(
+			page.getByRole("textbox", { name: "What is Your Favorite Sport" }),
+		).toBeVisible();
 		await expect(page.getByRole("button", { name: "REGISTER" })).toBeVisible();
 	});
 
@@ -74,12 +86,12 @@ test.describe("Registration Flow Error Handling UI", () => {
 
 		// Check that the browser keeps focus on the first required field.
 		await expect(page).toHaveURL(/\/register$/);
-		await expect(page.locator("#exampleInputName1")).toBeFocused();
-		const validationMessage = await page
-			.locator("#exampleInputName1")
-			.evaluate((element) => {
+		await expect(registerNameInput(page)).toBeFocused();
+		const validationMessage = await registerNameInput(page).evaluate(
+			(element) => {
 				return element.validationMessage;
-			});
+			},
+		);
 		expect(validationMessage).not.toBe("");
 	});
 });
@@ -103,9 +115,7 @@ test.describe("Password Recovery Flow UI", () => {
 		await expect(
 			page.getByRole("heading", { name: "RESET PASSWORD" }),
 		).toBeVisible();
-		await expect(
-			page.getByRole("textbox", { name: "Enter Your Email" }),
-		).toBeVisible();
+		await expect(forgotPasswordEmailInput(page)).toBeVisible();
 		await expect(
 			page.getByRole("textbox", { name: "Enter Your favorite Sport Name" }),
 		).toBeVisible();
@@ -123,14 +133,12 @@ test.describe("Password Recovery Flow UI", () => {
 
 		// Check that the browser focuses the first required reset field.
 		await expect(page).toHaveURL(/\/forgot-password$/);
-		await expect(
-			page.getByRole("textbox", { name: "Enter Your Email" }),
-		).toBeFocused();
-		const validationMessage = await page
-			.locator("#exampleInputEmail1")
-			.evaluate((element) => {
+		await expect(forgotPasswordEmailInput(page)).toBeFocused();
+		const validationMessage = await forgotPasswordEmailInput(page).evaluate(
+			(element) => {
 				return element.validationMessage;
-			});
+			},
+		);
 		expect(validationMessage).not.toBe("");
 	});
 
@@ -138,9 +146,7 @@ test.describe("Password Recovery Flow UI", () => {
 		page,
 	}) => {
 		// Enter an incorrect email with the correct recovery answer.
-		await page
-			.getByRole("textbox", { name: "Enter Your Email" })
-			.fill("wrong-shopper@example.com");
+		await forgotPasswordEmailInput(page).fill("wrong-shopper@example.com");
 		await page
 			.getByRole("textbox", { name: "Enter Your favorite Sport Name" })
 			.fill(TEST_SHOPPER_ANSWER);
@@ -167,9 +173,7 @@ test.describe("Password Recovery Flow UI", () => {
 		page,
 	}) => {
 		// Enter the correct email with an incorrect recovery answer.
-		await page
-			.getByRole("textbox", { name: "Enter Your Email" })
-			.fill(TEST_SHOPPER_EMAIL);
+		await forgotPasswordEmailInput(page).fill(TEST_SHOPPER_EMAIL);
 		await page
 			.getByRole("textbox", { name: "Enter Your favorite Sport Name" })
 			.fill("wrong-answer");
@@ -210,20 +214,29 @@ test.describe("Password Recovery Flow UI", () => {
 		page,
 	}) => {
 		// Submit a valid password reset for the test shopper account.
-		await page
-			.getByRole("textbox", { name: "Enter Your Email" })
-			.fill(TEST_SHOPPER_EMAIL);
+		await forgotPasswordEmailInput(page).fill(TEST_SHOPPER_EMAIL);
 		await page
 			.getByRole("textbox", { name: "Enter Your favorite Sport Name" })
 			.fill(TEST_SHOPPER_ANSWER);
 		await page
 			.getByRole("textbox", { name: "Enter Your New Password" })
 			.fill("newpassword456");
-		await page.getByRole("button", { name: "RESET" }).click();
-		await expect(page.getByText("Password reset successfully")).toBeVisible();
-		await page.waitForURL("**/login");
+		const forgotPasswordResponse = page.waitForResponse((response) => {
+			return (
+				response.url().includes("/api/v1/auth/forgot-password") &&
+				response.request().method() === "POST"
+			);
+		});
+		await Promise.all([
+			page.waitForURL("**/login"),
+			page.getByRole("button", { name: "RESET" }).click(),
+		]);
+		const response = await forgotPasswordResponse;
+		const responseBody = await response.json();
 
 		// Confirm the user is sent back to the login page afterward.
+		expect(response.status()).toBe(200);
+		expect(responseBody.message).toBe("Password reset successfully");
 		await expect(
 			page.getByRole("heading", { name: "LOGIN FORM" }),
 		).toBeVisible();

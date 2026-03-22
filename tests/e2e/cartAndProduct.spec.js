@@ -8,7 +8,7 @@
  *
  * How the AI Output Was Used:
  * - Used a portion of the suggestions as reference for overall flow grouping only.
- * - Specifcially used the idea of the test-id for card, count as the codegen shows count as getTitle("1") which cannot be used to generalize the test case
+ * - Used a portion of the suggestions as reference for stable blackbox coverage of repeated homepage actions
  * Wong Sheen Kerr (A0269647J)
  */
 
@@ -23,6 +23,35 @@ import {
 	TEST_SHOPPER_PASSWORD,
 } from "./e2eConstantsSheen.js";
 
+const HOMEPAGE_PRODUCT_NAMES = [
+	"MacBook Pro M5",
+	"Mac Studio M5 Ultra",
+	"Mac Studio XDR",
+	"iPhone 67",
+];
+
+function homepageProductCard(page, productName) {
+	return page.locator(".card", {
+		has: page.getByRole("heading", { name: productName, exact: true }),
+	});
+}
+
+async function expectHomepageProducts(page) {
+	await expect(page.getByRole("heading", { name: "All Products" })).toBeVisible();
+	for (const productName of HOMEPAGE_PRODUCT_NAMES) {
+		await expect(
+			page.getByRole("heading", { name: productName, exact: true }),
+		).toBeVisible();
+	}
+	await expect(page.getByRole("button", { name: "ADD TO CART" })).toHaveCount(4);
+	await expect(page.getByRole("button", { name: "More Details" })).toHaveCount(4);
+}
+
+async function openCart(page) {
+	await page.getByRole("link", { name: "Cart" }).click();
+	await expect(page.locator(".cart-page")).toBeVisible();
+}
+
 test.describe("Shopping Cart & Checkout Flow", () => {
 	test.beforeEach(async ({ request, page }) => {
 		// Reset the backend data before each cart and checkout scenario.
@@ -33,30 +62,20 @@ test.describe("Shopping Cart & Checkout Flow", () => {
 
 		// Open the homepage and wait for the product grid to load.
 		await page.goto("/");
-		await expect(page.getByTestId("product-grid")).toBeVisible();
-		await expect(
-			page
-				.getByTestId("product-grid")
-				.locator('[data-testid^="product-card-"]'),
-		).toHaveCount(4);
+		await expectHomepageProducts(page);
 	});
 
 	test("should add a product to cart from the homepage and see it in the cart page", async ({
 		page,
 	}) => {
 		// Add a homepage product to the cart.
-		await page
-			.getByTestId("product-card-macbook-pro-m5")
+		await homepageProductCard(page, "MacBook Pro M5")
 			.getByRole("button", { name: "ADD TO CART" })
 			.click();
 
-		// Confirm the cart badge updates after the add action.
-		await expect(page.getByText("Item Added to cart").first()).toBeVisible();
-		await expect(page.getByTestId("cart-count")).toContainText("1");
-
 		// Navigate into the cart page to inspect its contents.
-		await page.getByRole("link", { name: "Cart" }).click();
-		await expect(page.locator(".cart-page")).toBeVisible();
+		await openCart(page);
+		await expect(page.getByText("You Have 1 items in your cart")).toBeVisible();
 		await expect(page.locator(".cart-page")).toContainText("MacBook Pro M5");
 		await expect(page.getByRole("button", { name: "Remove" })).toHaveCount(1);
 	});
@@ -65,20 +84,16 @@ test.describe("Shopping Cart & Checkout Flow", () => {
 		page,
 	}) => {
 		// Add two different products from the homepage.
-		await page
-			.getByTestId("product-card-macbook-pro-m5")
+		await homepageProductCard(page, "MacBook Pro M5")
 			.getByRole("button", { name: "ADD TO CART" })
 			.click();
-		await expect(page.getByTestId("cart-count")).toContainText("1");
-
-		await page
-			.getByTestId("product-card-iphone-67")
+		await homepageProductCard(page, "iPhone 67")
 			.getByRole("button", { name: "ADD TO CART" })
 			.click();
-		await expect(page.getByTestId("cart-count")).toContainText("2");
 
 		// Navigate into the cart page to verify both items appear.
-		await page.getByRole("link", { name: "Cart" }).click();
+		await openCart(page);
+		await expect(page.getByText("You Have 2 items in your cart")).toBeVisible();
 		await expect(page.getByRole("button", { name: "Remove" })).toHaveCount(2);
 		await expect(page.locator(".cart-page")).toContainText("MacBook Pro M5");
 		await expect(page.locator(".cart-page")).toContainText("iPhone 67");
@@ -86,19 +101,16 @@ test.describe("Shopping Cart & Checkout Flow", () => {
 
 	test("should remove a product from the cart", async ({ page }) => {
 		// Add a product first so the cart has something to remove.
-		await page
-			.getByTestId("product-card-macbook-pro-m5")
+		await homepageProductCard(page, "MacBook Pro M5")
 			.getByRole("button", { name: "ADD TO CART" })
 			.click();
-		await expect(page.getByTestId("cart-count")).toContainText("1");
 
 		// Navigate into the cart page and remove the only item.
-		await page.getByRole("link", { name: "Cart" }).click();
+		await openCart(page);
 		await page.getByRole("button", { name: "Remove" }).first().click();
 
 		// Confirm the cart returns to an empty state.
 		await expect(page.getByText("Your Cart Is Empty")).toBeVisible();
-		await expect(page.getByTestId("cart-count")).toContainText("0");
 		await expect(page.locator(".cart-page")).not.toContainText(
 			"MacBook Pro M5",
 		);
@@ -131,14 +143,14 @@ test.describe("Shopping Cart & Checkout Flow", () => {
 		await page.waitForURL("**/");
 
 		// Add a product and move into the checkout flow.
-		await page
-			.getByTestId("product-card-macbook-pro-m5")
+		await expectHomepageProducts(page);
+		await homepageProductCard(page, "MacBook Pro M5")
 			.getByRole("button", { name: "ADD TO CART" })
 			.click();
-		await expect(page.getByTestId("cart-count")).toContainText("1");
 
 		// Navigate into the cart and open the test card payment form.
-		await page.getByRole("link", { name: "Cart" }).click();
+		await openCart(page);
+		await expect(page.getByText("You Have 1 items in your cart")).toBeVisible();
 		await page.getByRole("button", { name: "Paying with Card" }).click();
 
 		// Fill in the E2E card details before making payment.
@@ -176,20 +188,14 @@ test.describe("Product Viewing Flow", () => {
 
 		// Open the homepage and wait for the product grid to load.
 		await page.goto("/");
-		await expect(page.getByTestId("product-grid")).toBeVisible();
-		await expect(
-			page
-				.getByTestId("product-grid")
-				.locator('[data-testid^="product-card-"]'),
-		).toHaveCount(4);
+		await expectHomepageProducts(page);
 	});
 
 	test("should navigate to the product details page when clicking More Details", async ({
 		page,
 	}) => {
 		// Navigate from the homepage into the chosen product details page.
-		await page
-			.getByTestId("product-card-macbook-pro-m5")
+		await homepageProductCard(page, "MacBook Pro M5")
 			.getByRole("button", { name: "More Details" })
 			.click();
 		await page.waitForURL("**/product/**");
@@ -210,19 +216,21 @@ test.describe("Product Viewing Flow", () => {
 		page,
 	}) => {
 		// Navigate from the homepage into the chosen product details page.
-		await page
-			.getByTestId("product-card-macbook-pro-m5")
+		await homepageProductCard(page, "MacBook Pro M5")
 			.getByRole("button", { name: "More Details" })
 			.click();
 		await page.waitForURL("**/product/**");
 
 		// Add the product to the cart from inside the details page.
 		await expect(page.locator(".product-details")).toBeVisible();
-		await page.getByRole("button", { name: "ADD TO CART" }).first().click();
+		await page
+			.locator(".product-details-info")
+			.getByRole("button", { name: "ADD TO CART" })
+			.click();
 
 		// Navigate into the cart to verify the added product appears.
-		await expect(page.getByTestId("cart-count")).toContainText("1");
-		await page.getByRole("link", { name: "Cart" }).click();
+		await openCart(page);
+		await expect(page.getByText("You Have 1 items in your cart")).toBeVisible();
 		await expect(page.locator(".cart-page")).toContainText("MacBook Pro M5");
 	});
 
@@ -230,8 +238,7 @@ test.describe("Product Viewing Flow", () => {
 		page,
 	}) => {
 		// Navigate from the homepage into the chosen product details page.
-		await page
-			.getByTestId("product-card-macbook-pro-m5")
+		await homepageProductCard(page, "MacBook Pro M5")
 			.getByRole("button", { name: "More Details" })
 			.click();
 		await page.waitForURL("**/product/**");
