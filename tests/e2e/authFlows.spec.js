@@ -147,10 +147,19 @@ test.describe("Password Recovery Flow UI", () => {
 		await page
 			.getByRole("textbox", { name: "Enter Your New Password" })
 			.fill("newPassword123");
+		const forgotPasswordResponse = page.waitForResponse((response) => {
+			return (
+				response.url().includes("/api/v1/auth/forgot-password") &&
+				response.request().method() === "POST"
+			);
+		});
 		await page.getByRole("button", { name: "RESET" }).click();
+		const response = await forgotPasswordResponse;
+		const responseBody = await response.json();
 
-		// Confirm the reset request is rejected and stays on the same page.
-		await expect(page.getByText("Wrong email or answer")).toBeVisible();
+		// Confirm the reset request is rejected and the user remains on the form.
+		expect(response.status()).toBe(404);
+		expect(responseBody.message).toBe("Wrong email or answer");
 		await expect(page).toHaveURL(/\/forgot-password$/);
 	});
 
@@ -167,10 +176,19 @@ test.describe("Password Recovery Flow UI", () => {
 		await page
 			.getByRole("textbox", { name: "Enter Your New Password" })
 			.fill("newPassword123");
+		const forgotPasswordResponse = page.waitForResponse((response) => {
+			return (
+				response.url().includes("/api/v1/auth/forgot-password") &&
+				response.request().method() === "POST"
+			);
+		});
 		await page.getByRole("button", { name: "RESET" }).click();
+		const response = await forgotPasswordResponse;
+		const responseBody = await response.json();
 
-		// Confirm the reset request is rejected and stays on the same page.
-		await expect(page.getByText("Wrong email or answer")).toBeVisible();
+		// Confirm the reset request is rejected and the user remains on the form.
+		expect(response.status()).toBe(404);
+		expect(responseBody.message).toBe("Wrong email or answer");
 		await expect(page).toHaveURL(/\/forgot-password$/);
 	});
 

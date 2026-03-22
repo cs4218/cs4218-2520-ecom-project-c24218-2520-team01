@@ -15,14 +15,14 @@ export default defineConfig({
 	reporter: [["html", { open: "never" }]],
 	webServer: [
 		{
-			command: "node scripts/start-server-e2e.mjs",
+			command: `node -e "process.env.NODE_ENV='test'; import('./server.js')"`,
 			url: "http://localhost:6060",
 			name: "Backend",
 			reuseExistingServer: !process.env.CI,
 			timeout: 120 * 1000,
 		},
 		{
-			command: "node scripts/start-client-e2e.mjs",
+			command: `node -e "process.env.REACT_APP_E2E_TEST='true'; require('child_process').spawn('npm', ['start', '--prefix', './client'], { stdio: 'inherit', shell: true, env: process.env }).on('exit', (code) => process.exit(code ?? 0));"`,
 			url: "http://localhost:3000",
 			name: "Frontend",
 			reuseExistingServer: !process.env.CI,

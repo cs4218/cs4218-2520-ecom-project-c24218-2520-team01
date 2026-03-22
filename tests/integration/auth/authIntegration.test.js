@@ -2,7 +2,7 @@
  * @jest-environment jest-environment-jsdom
  * @jest-environment-options {"customExportConditions":["node","node-addons"],"url":"http://127.0.0.1:16767/"}
  */
-
+// JSDOM idea from https://stackoverflow.com/questions/69227566/consider-using-the-jsdom-test-environment
 
 /**
  * Authentication Integration Tests
