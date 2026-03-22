@@ -1,16 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useSearch } from "../context/search";
 import Layout from "./../components/Layout";
+import { useSearch } from "../context/search";
+import { useNavigate } from "react-router-dom";
 
 const Search = () => {
     const [values, setValues] = useSearch();
-    const navigate = useNavigate();
     return (
         <Layout title={"Search results"}>
             <div className="container">
                 <div className="text-center">
-                    <h1>Search Resuts</h1>
+                    <h1>Search Results</h1>
                     <h6>
                         {values?.results.length < 1
                             ? "No Products Found"
@@ -18,11 +17,7 @@ const Search = () => {
                     </h6>
                     <div className="d-flex flex-wrap mt-4">
                         {values?.results.map((p) => (
-                            <div
-                                key={p._id}
-                                className="card m-2"
-                                style={{ width: "18rem" }}
-                            >
+                            <div key={p._id} className="card m-2" style={{ width: "18rem" }}>
                                 <img
                                     src={`/api/v1/product/product-photo/${p._id}`}
                                     className="card-img-top"
@@ -34,18 +29,8 @@ const Search = () => {
                                         {p.description.substring(0, 30)}...
                                     </p>
                                     <p className="card-text"> $ {p.price}</p>
-                                    {/* Bug fixed by muhammad ZAIDAN bin sani (A0273278U) */}
-                                    <button
-                                        className="btn btn-primary ms-1"
-                                        onClick={() =>
-                                            navigate(`/product/${p.slug}`)
-                                        }
-                                    >
-                                        More Details
-                                    </button>
-                                    <button className="btn btn-secondary ms-1">
-                                        ADD TO CART
-                                    </button>
+                                    <button className="btn btn-primary ms-1">More Details</button>
+                                    <button className="btn btn-secondary ms-1">ADD TO CART</button>
                                 </div>
                             </div>
                         ))}

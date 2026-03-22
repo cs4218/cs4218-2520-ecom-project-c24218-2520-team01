@@ -2,7 +2,7 @@
  * @jest-environment jest-environment-jsdom
  * @jest-environment-options {"customExportConditions":["node","node-addons"],"url":"http://127.0.0.1:16767/"}
  */
-
+// JSDOM idea from https://stackoverflow.com/questions/69227566/consider-using-the-jsdom-test-environment
 
 /**
  * Authentication Integration Tests
@@ -349,7 +349,7 @@ describe("Authentication Integration Tests", () => {
 	// Story 1: Registration Flow Integration
 	// Integration: authRoute -> registerController -> hashPassword -> userModel
 	// =========================================================================
-	describe("Story 1: Registration Flow Integration", () => {
+	describe("Registration Flow Integration", () => {
 		// Layer 1 foundation: direct userModel state and helper-produced hashes.
 		// Layer 2 added in each request: authRoute -> registerController.
 		// Layer 3 confirmed by assertions: helper hashing and model persistence.
@@ -443,7 +443,7 @@ describe("Authentication Integration Tests", () => {
 	// Story 2: Login Flow Integration
 	// Integration: authRoute -> loginController -> comparePassword -> JWT.sign
 	// =========================================================================
-	describe("Story 2: Login Flow Integration", () => {
+	describe("Login Flow Integration", () => {
 		// Layer 1 foundation: real stored user plus helper-produced password hash.
 		// Layer 2 added in each request: authRoute -> loginController.
 		// Layer 3 confirmed by assertions: comparePassword and JWT generation.
@@ -520,7 +520,7 @@ describe("Authentication Integration Tests", () => {
 	// Story 3: Protected User Route Integration
 	// Integration: requireSignIn middleware -> JWT verification -> route handler
 	// =========================================================================
-	describe("Story 3: Protected User Route Integration", () => {
+	describe("Protected User Route Integration", () => {
 		// Layer 1 foundation: real user document plus JWT derived from that user.
 		// Layer 2 added in each request: requireSignIn middleware.
 		// Layer 3 confirmed by assertions: protected route handler is reached or blocked.
@@ -598,7 +598,7 @@ describe("Authentication Integration Tests", () => {
 	// Story 4: Admin Authorization Integration
 	// Integration: requireSignIn + isAdmin middleware -> userModel role check -> route
 	// =========================================================================
-	describe("Story 4: Admin Authorization Integration", () => {
+	describe("Admin Authorization Integration", () => {
 		// Layer 1 foundation: real admin/user documents plus JWTs.
 		// Layer 2 added in each request: requireSignIn.
 		// Layer 3 added after sign-in: isAdmin reads the persisted role.
@@ -683,7 +683,7 @@ describe("Authentication Integration Tests", () => {
 	// Story 5: Forgot Password Flow Integration
 	// Integration: authRoute -> forgotPasswordController -> hashPassword -> userModel.findByIdAndUpdate -> DB update
 	// =========================================================================
-	describe("Story 5: Forgot Password Flow Integration", () => {
+	describe("Forgot Password Flow Integration", () => {
 		// Layer 1 foundation: real stored credential with helper-produced hash.
 		// Layer 2 added in each request: authRoute -> forgotPasswordController.
 		// Layer 3 confirmed by assertions: helper hashing and model update.

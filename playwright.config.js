@@ -1,7 +1,12 @@
+// @ts-check
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 
 dotenv.config({ path: ".env.local" });
+
+dotenv.config({
+    path: process.env.NODE_ENV === "production" ? ".env" : ".env.local",
+});
 
 export default defineConfig({
     testDir: "./tests/e2e",

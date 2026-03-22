@@ -297,7 +297,7 @@ For **milestone 2**, the first thing I did was to correct the issues that were f
 
 Afterwards I did integraton tests for the category CRUD and the various payment using a bottom up incremental approach. I started with the lower level components like the controller, database / models and external components like Braintree. Afterwards I integrate the higher level components like the Express router, and authtentication middleware.
 
-As for the E2E UI tests I used PLaywright to write and generate the various test cases for the assigned flows.
+As for the E2E UI tests I used Playwright to write and generate the various test cases for the assigned flows.
 
 ### Rachel Tai Ke Jia (A0258603A)
 
@@ -408,6 +408,19 @@ I am in charge of the unit testing for the authentication module across both the
 #### Milestone 1 Unit Test
 
 For **milestone 1**, I have done unit test for all components under Authentication (_more information can be seen in the MS1 report_).
+
+#### Milestone 2 Integration & E2E UI Tests
+
+I am responsible for testing the following components:
+ **Authentication Integration** (_tests/integration/auth/authIntegration.test.js_):
+    - Controllers & Routes: `registerController`, `loginController`, `forgotPasswordController`
+    - Middlewares: `requireSignIn`, `isAdmin`
+    - Models & Helpers: `userModel`, `hashPassword`, `comparePassword`
+
+**E2E UI Flows** (using Playwright):
+    - **Auth Flows** (_tests/e2e/authFlows.spec.js_): Registration logic, password recovery processes, form validation, and error handling.
+    - **Cart & Product Flows** (_tests/e2e/cartAndProduct.spec.js_): Browsing products on the homepage, viewing product details, adding/removing items from the cart, observing guest cart states, and completing the authenticated checkout process.
+    - **Search & Filtering Flows** (_tests/e2e/searchAndFilter.spec.js_): Handling search edge case (e.g., no products found), applying category and price filters, and resetting filters.
 
 ## 7. MS1 CI URL
 

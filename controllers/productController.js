@@ -6,16 +6,30 @@ import braintree from "braintree";
 import dotenv from "dotenv";
 import fs from "fs";
 import slugify from "slugify";
+import { e2ePayment } from "../tests/e2e/e2eFixturesSheen.js";
 
-dotenv.config({ path: process.env.NODE_ENV === "production" ? ".env" : ".env.local" });
+dotenv.config({
+    path: process.env.NODE_ENV === "production" ? ".env" : ".env.local",
+});
+
+const isTestEnv = process.env.NODE_ENV === "test";
+const isBrowserE2ETestEnv = isTestEnv && !process.env.JEST_WORKER_ID;
+
+const hasBraintreeConfig =
+    isTestEnv ||
+    (process.env.BRAINTREE_MERCHANT_ID &&
+        process.env.BRAINTREE_PUBLIC_KEY &&
+        process.env.BRAINTREE_PRIVATE_KEY);
 
 //payment gateway
-var gateway = new braintree.BraintreeGateway({
-    environment: braintree.Environment.Sandbox,
-    merchantId: process.env.BRAINTREE_MERCHANT_ID,
-    publicKey: process.env.BRAINTREE_PUBLIC_KEY,
-    privateKey: process.env.BRAINTREE_PRIVATE_KEY,
-});
+const gateway = hasBraintreeConfig
+    ? new braintree.BraintreeGateway({
+          environment: braintree.Environment.Sandbox,
+          merchantId: process.env.BRAINTREE_MERCHANT_ID || "test-merchant-id",
+          publicKey: process.env.BRAINTREE_PUBLIC_KEY || "test-public-key",
+          privateKey: process.env.BRAINTREE_PRIVATE_KEY || "test-private-key",
+      })
+    : null;
 
 export const createProductController = async (req, res) => {
     try {
@@ -242,8 +256,10 @@ export const updateProductController = async (req, res) => {
             { new: true },
         );
 
-        products.photo.data = fs.readFileSync(photo.path);
-        products.photo.contentType = photo.type;
+        if (photo) {
+            products.photo.data = fs.readFileSync(photo.path);
+            products.photo.contentType = photo.type;
+        }
 
         await products.save();
         res.status(201).send({
@@ -407,8 +423,13 @@ export const productCategoryController = async (req, res) => {
 //token
 export const braintreeTokenController = async (req, res) => {
     try {
+        if (isBrowserE2ETestEnv) {
+            return res.status(200).send({
+                success: true,
+                clientToken: e2ePayment.clientToken,
+            });
+        }
         gateway.clientToken.generate({}, function (error, response) {
-            console.log(error);
             if (error) {
                 res.status(500).send({
                     success: false,
@@ -456,46 +477,65 @@ export const brainTreePaymentController = async (req, res) => {
                 message: "No transaction is made because cart is empty",
             });
         }
-
         let total = 0;
         cart.map((i) => {
             total += i.price;
         });
-        // If total is 0 skip calling sale function
-        if (total == 0) {
+        /**
+         * AI Usage Declaration
+         *
+         * Tool Used: GPT-5.4
+         *
+         * Prompt:
+         * - Asked for reference ideas on how to add config for mock paymnent
+         *
+         * How the AI Output Was Used:
+         * - Used the suggestions on the mock payment config
+         *  */
+
+        if (isBrowserE2ETestEnv && nonce === e2ePayment.nonce) {
             const order = await new orderModel({
-                products: cart,
-                payment: { success: true }, // Here we just indicate that payment was done
+                products: cart.map((item) => item._id ?? item),
+                payment: {
+                    id: e2ePayment.transactionId,
+                    success: true,
+                    status: "submitted_for_settlement",
+                    amount: total,
+                },
                 buyer: req.user._id,
             }).save();
-            return res.status(200).json({ ok: true });
-        } else {
-            let newTransaction = await gateway.transaction.sale(
-                {
-                    amount: total,
-                    paymentMethodNonce: nonce,
-                    options: {
-                        submitForSettlement: true,
-                    },
-                },
-                function (error, result) {
-                    if (result.success) {
-                        const order = new orderModel({
-                            products: cart,
-                            payment: result,
-                            buyer: req.user._id,
-                        }).save();
-                        res.status(200).json({ ok: true });
-                    } else {
-                        res.status(500).send({
-                            success: false,
-                            message: "Error while making transaction",
-                            error,
-                        });
-                    }
-                },
-            );
+
+            return res.status(200).json({
+                ok: true,
+                orderId: order._id,
+            });
         }
+
+        gateway.transaction.sale(
+            {
+                amount: total,
+                paymentMethodNonce: nonce,
+                options: {
+                    submitForSettlement: true,
+                },
+            },
+            async function (error, result) {
+                if (result) {
+                    await new orderModel({
+                        products: cart.map((item) => item._id ?? item),
+                        payment: result,
+                        buyer: req.user._id,
+                    }).save();
+                    return res.status(200).json({ ok: true });
+                } else {
+                    return res.status(500).send({
+                        success: false,
+                        message: "Error while making transaction",
+                        error,
+                    });
+                }
+            },
+        );
     } catch (error) {
         console.log(error);
         res.status(500).send({
