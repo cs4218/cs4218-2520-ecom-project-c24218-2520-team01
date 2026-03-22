@@ -3,6 +3,7 @@
  * @jest-environment-options {"customExportConditions":["node","node-addons"],"url":"http://127.0.0.1:16767/"}
  */
 
+
 /**
  * Authentication Integration Tests
  * 
@@ -48,6 +49,20 @@ import authRoutes from "../../../routes/authRoute.js";
 import categoryRoutes from "../../../routes/categoryRoutes.js";
 import { hashPassword, comparePassword } from "../../../helpers/authHelper.js";
 
+/**
+ * AI Usage Declaration
+ *
+ * Tool Used: GPT-5.4
+ *
+ * Prompt: What bottom-up integration flows should authIntegration.test.js cover for registration, login, protected routes, admin authorization, forgot-password, 
+ * and React UI authentication flows?
+ *
+ * How the AI Output Was Used:
+ * - Used only as a planning reference for possible integration scenarios and edge cases.
+ * - I determined the final test scope, wrote the assertions, implemented and verified the tests.
+ */
+
+
 // Create a minimal Express app with auth routes mounted, connecting Route → Controller → Helper → Model
 const app = express();
 app.use(cors());
@@ -71,6 +86,19 @@ const AdminRoute = resolveDefaultExport(AdminRouteModule);
 // Keep axios defaults so the UI tests can restore them after each run.
 const originalAxiosBaseURL = axios.defaults.baseURL;
 const originalAuthorizationHeader = axios.defaults.headers.common.Authorization;
+
+/**
+ * AI Usage Declaration (UI Harness)
+ *
+ * Tool Used: GPT-5.4
+ *
+ * Prompt: What is a minimal React integration test harness for auth pages
+ * using MemoryRouter, providers, protected routes, and simple form helpers?
+ *
+ * How the AI Output Was Used:
+ * - Used only as a reference for UI harness structure and helper ideas.
+ * - I chose the final providers, routes, helper functions, and test interactions, and implemented and verified them
+ */
 
 // Small home page stub used to check navigation after auth flows.
 function TestHomePage() {
