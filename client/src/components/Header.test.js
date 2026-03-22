@@ -6,6 +6,17 @@ import * as cartContext from '../context/cart';
 import * as useCategory from '../hooks/useCategory';
 import Header from './Header';
 
+jest.mock('axios', () => ({
+    __esModule: true,
+    default: {
+        defaults: {
+            headers: {
+                common: {},
+            },
+        },
+    },
+}));
+
 // fake for SearchInput component 
 jest.mock('./Form/SearchInput', 
     () => () => <div data-testid="search-input">Search Input</div>);
@@ -86,7 +97,7 @@ describe('unit tests for header component', () => {
         jest.spyOn(authContext, 'useAuth').mockReturnValue(
             [{ user: null, token: '' }, jest.fn()]
         );
-        jest.spyOn(cartContext, 'useCart').mockReturnValue([[]]);
+        jest.spyOn(cartContext, 'useCart').mockReturnValue({ cart: [] });
         useCategory.default.mockReturnValue([]);
     });
 
