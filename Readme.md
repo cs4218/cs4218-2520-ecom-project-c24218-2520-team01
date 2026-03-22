@@ -297,7 +297,7 @@ For **milestone 2**, the first thing I did was to correct the issues that were f
 
 Afterwards I did integraton tests for the category CRUD and the various payment using a bottom up incremental approach. I started with the lower level components like the controller, database / models and external components like Braintree. Afterwards I integrate the higher level components like the Express router, and authtentication middleware.
 
-As for the E2E UI tests I used PLaywright to write and generate the various test cases for the assigned flows.
+As for the E2E UI tests I used Playwright to write and generate the various test cases for the assigned flows.
 
 ### Rachel Tai Ke Jia (A0258603A)
 
