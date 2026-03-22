@@ -2,6 +2,7 @@ import React from 'react'
 import Layout from '../../components/Layout';
 import AdminMenu from '../../components/AdminMenu';
 import axios from "axios";
+import toast from "react-hot-toast";
 import { useState, useEffect } from 'react';
 
 const Users = () => {
@@ -16,7 +17,7 @@ const Users = () => {
       setLoading(false);
 
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to load users");
       setLoading(false);
     }
   };

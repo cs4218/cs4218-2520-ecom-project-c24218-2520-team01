@@ -41,6 +41,12 @@ const CreateProduct = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
+      if (price !== "" && Number(price) <= 0) {
+        return toast.error("Price must be greater than 0");
+      }
+      if (quantity !== "" && Number(quantity) <= 0) {
+        return toast.error("Quantity must be greater than 0");
+      }
       const productData = new FormData();
       productData.append("name", name);
       productData.append("description", description);
