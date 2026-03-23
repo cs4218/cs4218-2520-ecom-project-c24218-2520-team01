@@ -68,7 +68,7 @@ test.beforeEach(async ({ page }) => {
         }
     }).save();
 
-    await page.goto("http://localhost:3000/");
+    await page.goto("/");
 });
 
 test.afterEach(async ({ page }) => {
@@ -147,7 +147,7 @@ test.describe("Product View Flow", () => {
         await page.getByRole("button", { name: "LOGIN" }).click();
 
         // Simulate a user viewing the product again by going to that page directly
-        await page.goto("http://localhost:3000/product/Ball");
+        await page.goto("/product/Ball");
 
         // Now the product should not exist
         await expect(page.getByRole("heading", { name: "Product not found" })).toBeVisible();
