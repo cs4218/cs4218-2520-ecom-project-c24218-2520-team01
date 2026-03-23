@@ -1041,6 +1041,23 @@ describe("Product Filters", () => {
                         error,
                     });
                 });
+
+                test("returns 500 when page number is invalid", async () => {
+                    req = { params: { page: 0 } };
+                    const beforeFindCalls = productModel.find.mock.calls.length;
+
+                    await productListController(req, res);
+
+                    expect(productModel.find.mock.calls.length).toBe(
+                        beforeFindCalls,
+                    );
+                    expect(res.status).toHaveBeenCalledWith(500);
+                    expect(res.send).toHaveBeenCalledWith({
+                        success: false,
+                        message: "error in per page ctrl",
+                        error: expect.any(Error),
+                    });
+                });
             });
         });
     });

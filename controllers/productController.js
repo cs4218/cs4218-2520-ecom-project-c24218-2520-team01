@@ -322,8 +322,10 @@ export const productCountController = async (req, res) => {
 export const productListController = async (req, res) => {
     try {
         const perPage = 6;
-        const page = parseInt(req.params.page);
-        if (!page || page < 1) throw new Error("Invalid page number");
+        const pageParam = req.params.page;
+        const page = pageParam === undefined ? 1 : parseInt(pageParam, 10);
+        if (Number.isNaN(page) || page < 1)
+            throw new Error("Invalid page number");
 
         const products = await productModel
             .find({})
@@ -423,6 +425,7 @@ export const productCategoryController = async (req, res) => {
 //token
 export const braintreeTokenController = async (req, res) => {
     try {
+        /* istanbul ignore next: browser E2E-only path, not reachable in backend Jest workers */
         if (isBrowserE2ETestEnv) {
             return res.status(200).send({
                 success: true,
@@ -493,9 +496,10 @@ export const brainTreePaymentController = async (req, res) => {
          * - Used the suggestions on the mock payment config
          *  */
 
+        /* istanbul ignore next: browser E2E-only path, not reachable in backend Jest workers */
         if (isBrowserE2ETestEnv && nonce === e2ePayment.nonce) {
             const order = await new orderModel({
-                products: cart.map((item) => item._id ?? item),
+                products: cart,
                 payment: {
                     id: e2ePayment.transactionId,
                     success: true,
@@ -520,9 +524,9 @@ export const brainTreePaymentController = async (req, res) => {
                 },
             },
             async function (error, result) {
-                if (result) {
+                if (result && result.success) {
                     await new orderModel({
-                        products: cart.map((item) => item._id ?? item),
+                        products: cart,
                         payment: result,
                         buyer: req.user._id,
                     }).save();
