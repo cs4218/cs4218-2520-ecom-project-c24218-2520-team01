@@ -16,20 +16,68 @@ const isTestEnv = process.env.NODE_ENV === "test";
 const isBrowserE2ETestEnv = isTestEnv && !process.env.JEST_WORKER_ID;
 
 const hasBraintreeConfig =
-    isTestEnv ||
-    (process.env.BRAINTREE_MERCHANT_ID &&
-        process.env.BRAINTREE_PUBLIC_KEY &&
-        process.env.BRAINTREE_PRIVATE_KEY);
+    process.env.BRAINTREE_MERCHANT_ID &&
+    process.env.BRAINTREE_PUBLIC_KEY &&
+    process.env.BRAINTREE_PRIVATE_KEY;
+
+const createMockTestGateway = () => ({
+    clientToken: {
+        generate: (_params, callback) => {
+            callback(null, {
+                clientToken: "mock-client-token",
+            });
+        },
+    },
+    transaction: {
+        sale: ({ amount, paymentMethodNonce }, callback) => {
+            const total = Number(amount);
+            const nonce = paymentMethodNonce;
+            const invalidNonces = new Set([
+                "fake-consumed-nonce",
+                "fake-luhn-invalid-nonce",
+            ]);
+            const acceptedNonces = new Set([
+                "fake-valid-nonce",
+                "fake-valid-commercial-nonce",
+            ]);
+
+            if (!nonce || invalidNonces.has(nonce) || !acceptedNonces.has(nonce)) {
+                callback(new Error("Invalid payment nonce"), {
+                    success: false,
+                });
+                return;
+            }
+
+            if (total === 3000 || total === 2000) {
+                callback(new Error("Mocked processor failure"), {
+                    success: false,
+                });
+                return;
+            }
+
+            callback(null, {
+                success: true,
+                transaction: {
+                    id: "mock-transaction-id",
+                    amount: total,
+                    status: "submitted_for_settlement",
+                },
+            });
+        },
+    },
+});
 
 //payment gateway
-const gateway = hasBraintreeConfig
-    ? new braintree.BraintreeGateway({
-          environment: braintree.Environment.Sandbox,
-          merchantId: process.env.BRAINTREE_MERCHANT_ID || "test-merchant-id",
-          publicKey: process.env.BRAINTREE_PUBLIC_KEY || "test-public-key",
-          privateKey: process.env.BRAINTREE_PRIVATE_KEY || "test-private-key",
-      })
-    : null;
+const gateway = isTestEnv
+        ? createMockTestGateway()
+        : hasBraintreeConfig
+            ? new braintree.BraintreeGateway({
+                        environment: braintree.Environment.Sandbox,
+                        merchantId: process.env.BRAINTREE_MERCHANT_ID,
+                        publicKey: process.env.BRAINTREE_PUBLIC_KEY,
+                        privateKey: process.env.BRAINTREE_PRIVATE_KEY,
+                })
+            : null;
 
 export const createProductController = async (req, res) => {
     try {
