@@ -44,7 +44,7 @@ test.beforeAll(async ({ }) => {
 
 test.beforeEach(async ({ page }) => {
 
-    await page.goto("http://localhost:3000/");
+    await page.goto("/");
 });
 
 
@@ -78,7 +78,7 @@ test.describe("Category Browsing Flow", () => {
             }
 
             // Refresh the page to get updates on the products
-            await page.goto("http://localhost:3000/");
+            await page.goto("/");
         });
 
         test.afterAll(async ({ }) => {
