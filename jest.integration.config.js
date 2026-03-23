@@ -22,6 +22,7 @@ export default {
 		"^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/main.js",
 		"^@remix-run/router$":
 			"<rootDir>/node_modules/@remix-run/router/dist/router.cjs.js",
+		"^moment$": "<rootDir>/node_modules/moment/moment.js",
 	},
 
 	moduleFileExtensions: ["js", "json"],
