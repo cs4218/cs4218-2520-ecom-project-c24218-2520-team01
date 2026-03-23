@@ -13,7 +13,11 @@ test.describe("Admin User Management Flow", () => {
         await page.getByRole("textbox", { name: "Enter Your Password" }).click();
         await page.getByRole("textbox", { name: "Enter Your Password" }).fill(ADMIN_CREDENTIALS.password);
         await page.getByRole("button", { name: "LOGIN" }).click();
-        await page.getByRole("button", { name: /E2E Admin|testadmin/i }).click();
+        await page
+            .getByRole("button", { name: /E2E Admin|testadmin/i })
+            .or(page.getByRole("link", { name: /E2E Admin|testadmin/i }))
+            .first()
+            .click();
         await page.getByRole("link", { name: "Dashboard" }).click();
         await page.getByRole("link", { name: "Users" }).click();
 

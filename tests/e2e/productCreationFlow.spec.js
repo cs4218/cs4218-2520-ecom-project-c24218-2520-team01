@@ -138,7 +138,7 @@ test.describe("Product Creation Flow", () => {
 
             // Indicate category
             await page.locator("#rc_select_0").click();
-            await page.getByTitle("Book").click();
+            await page.locator(".ant-select-item-option-content").first().click();
 
             // Indicate product name
             await page.getByRole("textbox", { name: "write a name" }).click();
@@ -190,7 +190,7 @@ test.describe("Product Creation Flow", () => {
 
             // Indicate category
             await page.locator("#rc_select_0").click();
-            await page.getByTitle("Book").click();
+            await page.locator(".ant-select-item-option-content").first().click();
 
             // Upload the image file
             const fileChooserPromise = page.waitForEvent("filechooser");
@@ -244,7 +244,7 @@ test.describe("Product Creation Flow", () => {
 
             // Indicate category
             await page.locator("#rc_select_0").click();
-            await page.getByTitle("Book").click();
+            await page.locator(".ant-select-item-option-content").first().click();
 
             // Upload the image file
             const fileChooserPromise = page.waitForEvent("filechooser");
@@ -298,7 +298,7 @@ test.describe("Product Creation Flow", () => {
 
             // Indicate category
             await page.locator("#rc_select_0").click();
-            await page.getByTitle("Book").click();
+            await page.locator(".ant-select-item-option-content").first().click();
 
             // Upload the image file
             const fileChooserPromise = page.waitForEvent("filechooser");
@@ -352,7 +352,7 @@ test.describe("Product Creation Flow", () => {
 
             // Indicate category
             await page.locator("#rc_select_0").click();
-            await page.getByTitle("Book").click();
+            await page.locator(".ant-select-item-option-content").first().click();
 
             // Upload the image file
             const fileChooserPromise = page.waitForEvent("filechooser");
@@ -406,7 +406,7 @@ test.describe("Product Creation Flow", () => {
 
             // Indicate category
             await page.locator("#rc_select_0").click();
-            await page.getByTitle("Book").click();
+            await page.locator(".ant-select-item-option-content").first().click();
 
             // Upload the image file
             const fileChooserPromise = page.waitForEvent("filechooser");
@@ -460,7 +460,7 @@ test.describe("Product Creation Flow", () => {
 
             // Indicate category
             await page.locator("#rc_select_0").click();
-            await page.getByTitle("Book").click();
+            await page.locator(".ant-select-item-option-content").first().click();
 
             // Upload the image file
             const fileChooserPromise = page.waitForEvent("filechooser");
@@ -518,7 +518,7 @@ test.describe("Product Creation Flow", () => {
 
             // Indicate category
             await page.locator("#rc_select_0").click();
-            await page.getByTitle("Book").click();
+            await page.locator(".ant-select-item-option-content").first().click();
 
             // Upload the image file
             const fileChooserPromise = page.waitForEvent("filechooser");

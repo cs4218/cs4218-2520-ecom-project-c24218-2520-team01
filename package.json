@@ -7,12 +7,15 @@
     "scripts": {
         "start": "node server.js",
         "server": "nodemon server.js",
+        "server:e2e": "NODE_ENV=test PORT=6060 nodemon server.js",
         "client": "npm start --prefix ./client",
+        "client:e2e": "PORT=3000 npm start --prefix ./client",
         "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "dev:e2e": "concurrently \"npm run server:e2e\" \"npm run client:e2e\"",
         "sonarqube": "sonar-scanner",
         "test": "node node_modules/jest/bin/jest.js --config jest.config.js",
         "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js",
-        "test:ui": "playwright test tests/e2e",
+        "test:ui": "playwright test tests/e2e --config=playwright.config.js",
         "test:backend": "node node_modules/jest/bin/jest.js --config jest.backend.config.js",
         "test:integration": "node node_modules/jest/bin/jest.js --config jest.integration.config.js"
     },

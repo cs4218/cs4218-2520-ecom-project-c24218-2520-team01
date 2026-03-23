@@ -6,6 +6,7 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const dirName = dirname(fileURLToPath(import.meta.url));
+const FIXTURE_IMAGE = join(dirName, "../fixtures/test-image.jpg");
 
 // Lim Jia Wei, A0277381W
 
@@ -92,7 +93,11 @@ test.describe("Update Product Flow", () => {
         await page.getByRole("textbox", { name: "Enter Your Email" }).fill(ADMIN_CREDENTIALS.email);
         await page.getByRole("textbox", { name: "Enter Your Password" }).fill(ADMIN_CREDENTIALS.password);
         await page.getByRole("button", { name: "LOGIN" }).click();
-        await page.getByRole("button", { name: /E2E Admin|testadmin/i }).click();
+        await page
+            .getByRole("button", { name: /E2E Admin|testadmin/i })
+            .or(page.getByRole("link", { name: /E2E Admin|testadmin/i }))
+            .first()
+            .click();
         await page.getByRole("link", { name: "Dashboard" }).click();
         await page.getByRole("link", { name: "Products" }).click();
 
@@ -101,6 +106,11 @@ test.describe("Update Product Flow", () => {
 
         await expect(page.getByRole("heading", { name: "Update Product" })).toBeVisible({ timeout: 10000 });
         await expect(page.getByPlaceholder("write a name")).toHaveValue(testProduct.name);
+
+        const photoChooser = page.waitForEvent("filechooser");
+        await page.getByText("Upload Photo").click();
+        const fileChooser = await photoChooser;
+        await fileChooser.setFiles(FIXTURE_IMAGE);
 
     });
 

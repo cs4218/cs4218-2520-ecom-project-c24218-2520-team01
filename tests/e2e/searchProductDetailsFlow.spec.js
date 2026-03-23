@@ -157,7 +157,7 @@ test.describe("ui test for search to product details flow", () => {
         ]);
 
         // layout & data: verify search results page and target product card are rendered.
-        await expect(page.getByText(/Search Resuts/i)).toBeVisible();
+        await expect(page.getByText(/Search Results/i)).toBeVisible();
         await expect(page.getByText(/Found \d+/i)).toBeVisible();
         await expect(page.locator(".card", { hasText: productName })).toBeVisible();
 
