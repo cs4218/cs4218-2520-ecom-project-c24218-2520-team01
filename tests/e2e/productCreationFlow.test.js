@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import path from "path";
 import { fileURLToPath } from "url";
+import { BACKEND_BASE_URL } from "./e2eConstantsSheen.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const { describe } = test;
@@ -14,6 +15,14 @@ describe("Product Creation flow", () => {
     let adminToken;
 
     test.beforeAll(async ({ request }) => {
+        // Reset test data first
+        const resetRes = await request.post(
+            `${BACKEND_BASE_URL}/api/v1/testing/reset-and-prepare-test-data`,
+        );
+        if (!resetRes.ok()) {
+            console.warn("Reset failed, continuing with login attempt");
+        }
+
         const loginRes = await request.post("/api/v1/auth/login", {
             data: { email: ADMIN.email, password: ADMIN.password },
         });

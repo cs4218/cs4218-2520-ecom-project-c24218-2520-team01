@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 const ADMIN_EMAIL = "admin@admin.com";
 const ADMIN_PASSWORD = "admin";
 const API_BASE_URL = process.env.E2E_API_BASE_URL || "http://localhost:6060";
+const BACKEND_BASE_URL = API_BASE_URL;
 const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017/ecommerce";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -45,6 +46,14 @@ const ensureAdminUserExists = async () => {
 // Rachel Tai Ke Jia, A0258603A
 test.describe("ui test for browsing and price filtering", () => {
     const createdProductIds = [];
+
+    test.beforeAll(async ({ request }) => {
+        // Reset test data first
+        const resetRes = await request.post(`${BACKEND_BASE_URL}/api/v1/testing/reset-and-prepare-test-data`);
+        if (!resetRes.ok()) {
+            console.warn("Reset failed, continuing...");
+        }
+    });
 
     test.afterAll(async ({ request }) => {
         if (!createdProductIds.length) {

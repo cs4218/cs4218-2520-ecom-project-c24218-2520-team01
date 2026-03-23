@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 const ADMIN_EMAIL = "admin@admin.com";
 const ADMIN_PASSWORD = "admin";
 const API_BASE_URL = process.env.E2E_API_BASE_URL || "http://localhost:6060";
+const BACKEND_BASE_URL = API_BASE_URL; // For reset endpoint
 const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017/ecommerce";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURE_IMAGE_PATH = path.join(__dirname, "../fixtures/macbook.png");
@@ -43,6 +44,14 @@ const ensureAdminUserExists = async () => {
 // Rachel Tai Ke Jia, A0258603A
 test.describe("ui test for search to product details flow", () => {
     let createdProductId;
+
+    test.beforeAll(async ({ request }) => {
+        // Reset test data before running all tests
+        const resetRes = await request.post(`${BACKEND_BASE_URL}/api/v1/testing/reset-and-prepare-test-data`);
+        if (!resetRes.ok()) {
+            console.warn("Reset failed, continuing...");
+        }
+    });
 
     test.afterAll(async ({ request }) => {
         if (!createdProductId) {

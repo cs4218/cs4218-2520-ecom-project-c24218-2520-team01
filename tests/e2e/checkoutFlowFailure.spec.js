@@ -1,9 +1,17 @@
 import { test, expect } from "./baseTest.js";
 import { USER_CREDENTIALS } from "./testCredentials.js";
+import { BACKEND_BASE_URL } from "./e2eConstantsSheen.js";
 
 // Lim Jia Wei, A0277381W
 
 test.describe("Cart and Checkout Flow", () => {
+
+    test.beforeEach(async ({ request }) => {
+        const response = await request.post(
+            `${BACKEND_BASE_URL}/api/v1/testing/reset-and-prepare-test-data`,
+        );
+        expect(response.ok()).toBeTruthy();
+    });
 
     test("should show error when payment fails", async ({ page }) => {
 
