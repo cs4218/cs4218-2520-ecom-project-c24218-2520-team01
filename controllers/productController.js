@@ -14,6 +14,9 @@ dotenv.config({
 
 const isTestEnv = process.env.NODE_ENV === "test";
 const isBrowserE2ETestEnv = isTestEnv && !process.env.JEST_WORKER_ID;
+const isJestBraintreeMocked =
+    typeof braintree._exposedGenerateMock === "function" ||
+    typeof braintree._exposedPaymentMock === "function";
 
 const hasBraintreeConfig =
     process.env.BRAINTREE_MERCHANT_ID &&
@@ -68,9 +71,9 @@ const createMockTestGateway = () => ({
 });
 
 //payment gateway
-const gateway = isTestEnv
-        ? createMockTestGateway()
-        : hasBraintreeConfig
+const gateway = isBrowserE2ETestEnv || (isTestEnv && !isJestBraintreeMocked)
+    ? createMockTestGateway()
+        : hasBraintreeConfig || isTestEnv
             ? new braintree.BraintreeGateway({
                         environment: braintree.Environment.Sandbox,
                         merchantId: process.env.BRAINTREE_MERCHANT_ID,
@@ -473,7 +476,6 @@ export const productCategoryController = async (req, res) => {
 //token
 export const braintreeTokenController = async (req, res) => {
     try {
-        /* istanbul ignore next: browser E2E-only path, not reachable in backend Jest workers */
         if (isBrowserE2ETestEnv) {
             return res.status(200).send({
                 success: true,
@@ -544,7 +546,6 @@ export const brainTreePaymentController = async (req, res) => {
          * - Used the suggestions on the mock payment config
          *  */
 
-        /* istanbul ignore next: browser E2E-only path, not reachable in backend Jest workers */
         if (isBrowserE2ETestEnv && nonce === e2ePayment.nonce) {
             const order = await new orderModel({
                 products: cart,
