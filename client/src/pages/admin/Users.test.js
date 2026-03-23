@@ -9,6 +9,16 @@ import Users from "./Users";
 // Mock Axios
 jest.mock("axios");
 
+// Mock toast module to avoid ESM/CJS manual mock loading issues
+jest.mock("react-hot-toast", () => ({
+    __esModule: true,
+    default: {
+        success: jest.fn(),
+        error: jest.fn(),
+    },
+    Toaster: () => null,
+}));
+
 // Mock Layout component
 jest.mock("./../../components/Layout", () => ({ children }) => (
     <div data-testid="layout">{children}</div>

@@ -230,6 +230,26 @@ describe("Tests for Create Product page", () => {
         });
     });
 
+    test("shows error when quantity is zero", async () => {
+
+        // Arrange
+        setupCreateProductMocks();
+        await renderAndWait();
+
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: "0" },
+        });
+
+        // Act
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        // Assert
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith("Quantity must be greater than 0");
+            expect(axios.post).not.toHaveBeenCalled();
+        });
+    });
+
     test("shows error toast when get category API fails", async () => {
 
         // Arrange
