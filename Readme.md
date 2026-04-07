@@ -431,6 +431,19 @@ For the integration tests, I used a combination of top-down and bottom-up increm
 
 For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable. 
 
+#### Milestone 3 Non-Functional Testing
+
+I am responsible for the load testing setup using JMeter under `tests/nft/load-testing`, covering the main non-functional flows of the ecommerce platform:
+
+- Product browsing flow
+- Search and filter flow
+- Authentication flow
+- Order checkout flow
+
+For this milestone, I prepared the load test scripts and supporting analysis files, including the individual flow runners, the all-flows runner, and the JTL analyzer used to measure response time, throughput, error rate, and bottlenecks under concurrent usage.
+
+The default load profile I used for expected traffic was 100 concurrent users with a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration.
+
 ### Wong Sheen Kerr (A0269647J)
 
 I am in charge of the unit testing for the authentication module across both the backend and frontend, namely:
