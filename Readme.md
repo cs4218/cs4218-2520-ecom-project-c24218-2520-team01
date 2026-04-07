@@ -138,8 +138,6 @@ To begin unit testing with Jest in your project, follow these steps:
 
 ### Lim Jia Wei (A0277381W)
 
-#### Milestone 1 Unit Test
-
 I was responsible for testing the following components:
 
 **Server Files:**
@@ -163,49 +161,14 @@ I was responsible for testing the following components:
 - `pages/admin/Products.js`
 - `pages/admin/Users.js`
 
+#### Milestone 1 Unit Test
+
 For **milestone 1**, I unit tested all files specified above with the exception of `userModel.js` due to it being left for integration testing. (_more information can be seen in the MS1 report_).
-
-#### Milestone 2 Integration & E2E UI Tests
-
-I am responsible for testing the following components:
-
-- Admin Dashboard & Routing Components
-    - `components/AdminMenu.js`
-    - `components/AdminRoute.js`
-
-- Admin Management Pages (Products, Categories, Orders, Users)
-    - `pages/admin/AdminOrders.js`
-    - `pages/admin/CreateCategory.js`
-    - `pages/admin/CreateProduct.js`
-    - `pages/admin/Products.js`
-    - `pages/admin/UpdateProduct.js`
-    - `pages/admin/Users.js`
-
-- Static Pages:
-    - `pages/About.js`
-    - `pages/Contact.js`
-    - `pages/Pagenotfound.js`
-    - `pages/Policy.js`
-
-- Authentication & Context Providers:
-    - `context/auth.js`
-    - `context/cart.js`
-    - `context/search.js`
-    - `pages/Auth/Login.js`
-
-- E2E UI Flows:
-    - Encounter a payment failure or rejection from the gateway (Cart & Checkout Flow)
-    - Filter products by selecting checkboxes for specific categories (Main Browsing & Filtering Flow)
-    - Submit the registration form with all required and valid details (Registration Flow)
-    - Enter a valid search term and see the corresponding product results (Search Flow)
-    - Load an existing product into the update form and modify details like price and description (Update Product Flow)
-    - View the list of registered accounts on the users page as an admin (Admin User Management Flow)
-
-After receiving milestone 1 feedback, in milestone 2, I corrected issues such as the lack of unit tests for the `userModel` as well as a typo where the unit test claimed to test logging when it in fact did not.
 
 ### Muhammad Zaidan bin Sani (A0273278U)
 
 I am responsible for testing the following components:
+**Unit Tests**
 
 - Product CRUD
     - `controllers/productController`
@@ -223,16 +186,48 @@ I am responsible for testing the following components:
         - `searchProductController`
         - `relatedProductsController`
         - `productCategoryController`
-- Product model
-    - `models/productModel`
+- Product model - `models/productModel`
+
+**Integration tests**
+
+- Product integrations
+    - Integration with Model and DB
+    - Integration with Auth middleware, Formidable etc.
+- Order integration - Integration with Model and DB - Integration with Auth middleware
+
+**E2E tests**
+
+- Product creation with admin
+- Category > Product creation with admin
+- Related product viewing
+- Authentication flow tests
+
+**Security Testing**
+
+- IDOR vulnerabilities
+- MongoDB Injection
+- Price and Checkout Tampering
+- Session Replay attacks
 
 #### Milestone 1 Unit Test
 
 For **milestone 1**, I unit tested every function seen under Product CRUD and product filters above, and left the product model for integration testing (_more information can be seen in the MS1 report_).
 
-#### Milestone 2 Integration & E2E UI Tests
+#### Milestone 2 Integration and E2E tests
 
-I am responsible for testing the following components:
+For **milestone 2**, I added unit tests for the product model, and bottom-up integration tests for the product and order integration flows, which involved integration with the relevant models, and integration tests.
+
+I also added E2E tests for 4 scenarios as seen above.
+
+(_more information can be seen in the MS2 report_).
+
+#### Milestone 3 Non-Functional Tests
+
+For **milestone 3**, I added tests to check for IDOR (Insecure Direct Object References) vulnerabilities, MongoDB Injection, price & checkout tampering as well as session replay. I fixed a few bugs relating to input validation to fix the security vulnerabilities found.
+
+In addition, I used a white-box LLM-powered vulnerability scanner to find more vulnerabilties in the system.
+
+(_more information can be seen in the MS3 report_).
 
 ### Nicholas Cheng De Fei (A0269648H)
 
@@ -301,11 +296,9 @@ For **milestone 2**, the first thing I did was to correct the issues that were f
 
 Afterwards I did integraton tests for the category CRUD and the various payment using a bottom up incremental approach. I started with the lower level components like the controller, database / models and external components like Braintree. Afterwards I integrate the higher level components like the Express router, and authtentication middleware.
 
-As for the E2E UI tests I used Playwright to write and generate the various test cases for the assigned flows.
+As for the E2E UI tests I used PLaywright to write and generate the various test cases for the assigned flows.
 
 ### Rachel Tai Ke Jia (A0258603A)
-
-#### Milestone 1 Unit Test
 
 I am responsible for unit testing frontend components, context providers, and one backend controller:
 
@@ -334,58 +327,9 @@ I am responsible for unit testing frontend components, context providers, and on
     - `pages/user/Profile.js`
     - `controllers/authController.js` (specifically `updateProfileController`)
 
+#### Milestone 1 Unit Test
+
 For **milestone 1**, I have done unit tests for all client components (pages, context, components) (_more information can be seen in the MS1 report_).
-
-#### Milestone 2 Integration & E2E UI Tests
-
-I am responsible for testing the following components:
-
-**Integration Scopes:**
-
-- Profile Management:
-    - `client/src/pages/user/Profile.js`
-    - `context/auth.js`
-    - `routes/authRoute.js`
-    - `middlewares/authMiddleware.js`
-    - `controllers/authController.js` → `updateProfileController`
-    - `helpers/authHelper.js`
-    - `models/userModel.js`
-- Cart Full Flow:
-    - `pages/HomePage.js`
-    - `pages/CartPage.js`
-    - `context/cart.js`
-    - `components/Header.js`
-    - browser localStorage
-- Search Flow:
-    - `components/Form/SearchInput.js`
-    - `components/Header.js`
-    - `pages/Search.js`
-    - `context/search.js`
-    - `routes/productRoutes.js`
-    - `controllers/productController.js` → `searchProductController`
-    - `models/productModel.js`
-- Browsing + Filtering:
-    - `pages/HomePage.js`
-    - `components/Prices.js`
-    - `routes/productRoutes.js`
-    - `controllers/productController.js` → `productFiltersController`
-    - `productListController`
-    - `productCountController`
-    - `models/productModel.js`
-    - `models/categoryModel.js`
-
-**E2E UI Flows:**
-
-- Filter products by price range on the home page _(Main Browsing & Filtering)_
-- View product details, price, category, and images on ProductDetails _(Product Viewing Flow)_
-- Search for a product and click through to its detail page _(Search Flow)_
-- Reset forgotten password and log in with new password _(Password Recovery Flow)_
-- Attempt to register with an already-registered email _(Registration Flow)_
-- Delete a product from the Update Product page _(Delete Product Flow)_
-
-For the integration tests, I used a combination of top-down and bottom-up incremental approaches depending on the scope. For the search flow, I used a top-down approach, beginning with SearchInput and SearchContext with a stubbed API, then incrementally adding Header navigation, the Search results page, and finally replacing the stub with a live backend call against a real test database. For the cart flow, I started from the top with HomePage integrating into CartContext, and separately from the bottom with CartPage reading from localStorage.
-
-For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable.
 
 ### Wong Sheen Kerr (A0269647J)
 
@@ -413,13 +357,6 @@ I am in charge of the unit testing for the authentication module across both the
 #### Milestone 1 Unit Test
 
 For **milestone 1**, I have done unit test for all components under Authentication (_more information can be seen in the MS1 report_).
-
-#### Milestone 2 Integration & E2E UI Tests
-
-I am responsible for testing the following components:
-**Authentication Integration** (_tests/integration/auth/authIntegration.test.js_): - Controllers & Routes: `registerController`, `loginController`, `forgotPasswordController` - Middlewares: `requireSignIn`, `isAdmin` - Models & Helpers: `userModel`, `hashPassword`, `comparePassword`
-
-**E2E UI Flows** (using Playwright): - **Auth Flows** (_tests/e2e/authFlows.spec.js_): Registration logic, password recovery processes, form validation, and error handling. - **Cart & Product Flows** (_tests/e2e/cartAndProduct.spec.js_): Browsing products on the homepage, viewing product details, adding/removing items from the cart, observing guest cart states, and completing the authenticated checkout process. - **Search & Filtering Flows** (_tests/e2e/searchAndFilter.spec.js_): Handling search edge case (e.g., no products found), applying category and price filters, and resetting filters.
 
 ## 7. MS1 CI URL
 
