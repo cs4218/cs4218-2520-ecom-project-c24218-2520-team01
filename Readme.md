@@ -188,10 +188,10 @@ I am responsible for testing the following components:
     - `pages/Policy.js`
 
 - Authentication & Context Providers:
-  - `context/auth.js`
-  - `context/cart.js`
-  - `context/search.js`
-  - `pages/Auth/Login.js`
+    - `context/auth.js`
+    - `context/cart.js`
+    - `context/search.js`
+    - `pages/Auth/Login.js`
 
 - E2E UI Flows:
     - Encounter a payment failure or rejection from the gateway (Cart & Checkout Flow)
@@ -233,51 +233,6 @@ For **milestone 1**, I unit tested every function seen under Product CRUD and pr
 #### Milestone 2 Integration & E2E UI Tests
 
 I am responsible for testing the following components:
-
-**Integration Scopes:**
-- Profile Management:
-  - `client/src/pages/user/Profile.js`
-  - `context/auth.js`
-  - `routes/authRoute.js`
-  - `middlewares/authMiddleware.js`
-  - `controllers/authController.js` → `updateProfileController`
-  - `helpers/authHelper.js`
-  - `models/userModel.js`
-- Cart Full Flow:
-  - `pages/HomePage.js`
-  - `pages/CartPage.js`
-  - `context/cart.js`
-  - `components/Header.js`
-  - browser localStorage
-- Search Flow:
-  - `components/Form/SearchInput.js`
-  - `components/Header.js`
-  - `pages/Search.js`
-  - `context/search.js`
-  - `routes/productRoutes.js`
-  - `controllers/productController.js` → `searchProductController`
-  - `models/productModel.js`
-- Browsing + Filtering:
-  - `pages/HomePage.js`
-  - `components/Prices.js`
-  - `routes/productRoutes.js`
-  - `controllers/productController.js` → `productFiltersController`
-  - `productListController`
-  - `productCountController`
-  - `models/productModel.js`
-  - `models/categoryModel.js`
-
-**E2E UI Flows:**
-- Filter products by price range on the home page *(Main Browsing & Filtering)*
-- View product details, price, category, and images on ProductDetails *(Product Viewing Flow)*
-- Search for a product and click through to its detail page *(Search Flow)*
-- Reset forgotten password and log in with new password *(Password Recovery Flow)*
-- Attempt to register with an already-registered email *(Registration Flow)*
-- Delete a product from the Update Product page *(Delete Product Flow)*
-
-For the integration tests, I used a combination of top-down and bottom-up incremental approaches depending on the scope. For the search flow, I used a top-down approach, beginning with SearchInput and SearchContext with a stubbed API, then incrementally adding Header navigation, the Search results page, and finally replacing the stub with a live backend call against a real test database. For the cart flow, I started from the top with HomePage integrating into CartContext, and separately from the bottom with CartPage reading from localStorage. 
-
-For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable. 
 
 ### Nicholas Cheng De Fei (A0269648H)
 
@@ -378,58 +333,59 @@ I am responsible for unit testing frontend components, context providers, and on
     - `pages/user/Orders.js`
     - `pages/user/Profile.js`
     - `controllers/authController.js` (specifically `updateProfileController`)
- 
-For **milestone 1**, I have done unit tests for all client components (pages, context, components) (_more information can be seen in the MS1 report_).
 
+For **milestone 1**, I have done unit tests for all client components (pages, context, components) (_more information can be seen in the MS1 report_).
 
 #### Milestone 2 Integration & E2E UI Tests
 
 I am responsible for testing the following components:
 
 **Integration Scopes:**
+
 - Profile Management:
-  - `client/src/pages/user/Profile.js`
-  - `context/auth.js`
-  - `routes/authRoute.js`
-  - `middlewares/authMiddleware.js`
-  - `controllers/authController.js` → `updateProfileController`
-  - `helpers/authHelper.js`
-  - `models/userModel.js`
+    - `client/src/pages/user/Profile.js`
+    - `context/auth.js`
+    - `routes/authRoute.js`
+    - `middlewares/authMiddleware.js`
+    - `controllers/authController.js` → `updateProfileController`
+    - `helpers/authHelper.js`
+    - `models/userModel.js`
 - Cart Full Flow:
-  - `pages/HomePage.js`
-  - `pages/CartPage.js`
-  - `context/cart.js`
-  - `components/Header.js`
-  - browser localStorage
+    - `pages/HomePage.js`
+    - `pages/CartPage.js`
+    - `context/cart.js`
+    - `components/Header.js`
+    - browser localStorage
 - Search Flow:
-  - `components/Form/SearchInput.js`
-  - `components/Header.js`
-  - `pages/Search.js`
-  - `context/search.js`
-  - `routes/productRoutes.js`
-  - `controllers/productController.js` → `searchProductController`
-  - `models/productModel.js`
+    - `components/Form/SearchInput.js`
+    - `components/Header.js`
+    - `pages/Search.js`
+    - `context/search.js`
+    - `routes/productRoutes.js`
+    - `controllers/productController.js` → `searchProductController`
+    - `models/productModel.js`
 - Browsing + Filtering:
-  - `pages/HomePage.js`
-  - `components/Prices.js`
-  - `routes/productRoutes.js`
-  - `controllers/productController.js` → `productFiltersController`
-  - `productListController`
-  - `productCountController`
-  - `models/productModel.js`
-  - `models/categoryModel.js`
+    - `pages/HomePage.js`
+    - `components/Prices.js`
+    - `routes/productRoutes.js`
+    - `controllers/productController.js` → `productFiltersController`
+    - `productListController`
+    - `productCountController`
+    - `models/productModel.js`
+    - `models/categoryModel.js`
 
 **E2E UI Flows:**
-- Filter products by price range on the home page *(Main Browsing & Filtering)*
-- View product details, price, category, and images on ProductDetails *(Product Viewing Flow)*
-- Search for a product and click through to its detail page *(Search Flow)*
-- Reset forgotten password and log in with new password *(Password Recovery Flow)*
-- Attempt to register with an already-registered email *(Registration Flow)*
-- Delete a product from the Update Product page *(Delete Product Flow)*
 
-For the integration tests, I used a combination of top-down and bottom-up incremental approaches depending on the scope. For the search flow, I used a top-down approach, beginning with SearchInput and SearchContext with a stubbed API, then incrementally adding Header navigation, the Search results page, and finally replacing the stub with a live backend call against a real test database. For the cart flow, I started from the top with HomePage integrating into CartContext, and separately from the bottom with CartPage reading from localStorage. 
+- Filter products by price range on the home page _(Main Browsing & Filtering)_
+- View product details, price, category, and images on ProductDetails _(Product Viewing Flow)_
+- Search for a product and click through to its detail page _(Search Flow)_
+- Reset forgotten password and log in with new password _(Password Recovery Flow)_
+- Attempt to register with an already-registered email _(Registration Flow)_
+- Delete a product from the Update Product page _(Delete Product Flow)_
 
-For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable. 
+For the integration tests, I used a combination of top-down and bottom-up incremental approaches depending on the scope. For the search flow, I used a top-down approach, beginning with SearchInput and SearchContext with a stubbed API, then incrementally adding Header navigation, the Search results page, and finally replacing the stub with a live backend call against a real test database. For the cart flow, I started from the top with HomePage integrating into CartContext, and separately from the bottom with CartPage reading from localStorage.
+
+For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable.
 
 ### Wong Sheen Kerr (A0269647J)
 
@@ -461,15 +417,9 @@ For **milestone 1**, I have done unit test for all components under Authenticati
 #### Milestone 2 Integration & E2E UI Tests
 
 I am responsible for testing the following components:
- **Authentication Integration** (_tests/integration/auth/authIntegration.test.js_):
-    - Controllers & Routes: `registerController`, `loginController`, `forgotPasswordController`
-    - Middlewares: `requireSignIn`, `isAdmin`
-    - Models & Helpers: `userModel`, `hashPassword`, `comparePassword`
+**Authentication Integration** (_tests/integration/auth/authIntegration.test.js_): - Controllers & Routes: `registerController`, `loginController`, `forgotPasswordController` - Middlewares: `requireSignIn`, `isAdmin` - Models & Helpers: `userModel`, `hashPassword`, `comparePassword`
 
-**E2E UI Flows** (using Playwright):
-    - **Auth Flows** (_tests/e2e/authFlows.spec.js_): Registration logic, password recovery processes, form validation, and error handling.
-    - **Cart & Product Flows** (_tests/e2e/cartAndProduct.spec.js_): Browsing products on the homepage, viewing product details, adding/removing items from the cart, observing guest cart states, and completing the authenticated checkout process.
-    - **Search & Filtering Flows** (_tests/e2e/searchAndFilter.spec.js_): Handling search edge case (e.g., no products found), applying category and price filters, and resetting filters.
+**E2E UI Flows** (using Playwright): - **Auth Flows** (_tests/e2e/authFlows.spec.js_): Registration logic, password recovery processes, form validation, and error handling. - **Cart & Product Flows** (_tests/e2e/cartAndProduct.spec.js_): Browsing products on the homepage, viewing product details, adding/removing items from the cart, observing guest cart states, and completing the authenticated checkout process. - **Search & Filtering Flows** (_tests/e2e/searchAndFilter.spec.js_): Handling search edge case (e.g., no products found), applying category and price filters, and resetting filters.
 
 ## 7. MS1 CI URL
 

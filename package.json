@@ -14,7 +14,8 @@
         "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js",
         "test:ui": "playwright test tests/e2e",
         "test:backend": "node node_modules/jest/bin/jest.js --config jest.backend.config.js",
-        "test:integration": "node node_modules/jest/bin/jest.js --config jest.integration.config.js"
+        "test:integration": "node node_modules/jest/bin/jest.js --config jest.integration.config.js",
+        "test:security": "node node_modules/jest/bin/jest.js --config jest.security.config.js"
     },
     "keywords": [],
     "author": "RP",

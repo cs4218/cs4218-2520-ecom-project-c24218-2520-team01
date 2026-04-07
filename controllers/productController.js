@@ -477,9 +477,49 @@ export const brainTreePaymentController = async (req, res) => {
                 message: "No transaction is made because cart is empty",
             });
         }
+
+        // A0273278U Zaidan
+        // Fixed security bug where client-supplied prices overrode server-side prices.
+
+        const productIds = cart.map((i) => i._id);
+        const dbProducts = await productModel.find(
+            { _id: { $in: productIds } },
+            "price",
+        );
+
+        if (dbProducts.length !== cart.length) {
+            return res.status(400).send({
+                success: false,
+                message: "One or more products in the cart do not exist",
+            });
+        }
+
+        const priceMap = Object.fromEntries(
+            dbProducts.map((p) => [p._id.toString(), p.price]),
+        );
+
+        // A0273278U Zaidan
+        // For security bug: checks for tampered price, and returns 400 if price tampered.
+        const hasTamperedPrice = cart.some((i) => {
+            const clientPrice = i.price;
+            const dbPrice = priceMap[i._id.toString()];
+            return (
+                typeof clientPrice !== "number" ||
+                !isFinite(clientPrice) ||
+                clientPrice !== dbPrice
+            );
+        });
+
+        if (hasTamperedPrice) {
+            return res.status(400).send({
+                success: false,
+                message: "One or more cart prices do not match server prices",
+            });
+        }
+
         let total = 0;
         cart.map((i) => {
-            total += i.price;
+            total += priceMap[i._id.toString()];
         });
         /**
          * AI Usage Declaration
