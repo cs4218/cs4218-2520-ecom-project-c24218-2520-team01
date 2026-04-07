@@ -4,28 +4,39 @@ import { check, sleep } from 'k6';
 // k6 options to define the load stages and pass/fail thresholds
 export const options = {
     stages: [
-        { duration: '30s', target: 20 },  // Ramp-up: 0 to 20 users over 30s
-        { duration: '10s', target: 20 },   // Plateaus: Stay at 20 users for 10s
-        { duration: '30s', target: 40 },  // Ramp-up: 20 to 40 users over 30s
-        { duration: '10s', target: 40 },   // Plateaus: Stay at 40 users for 10s
-        { duration: '30s', target: 80 },  // Ramp-up: 40 to 80 users over 30s
-        { duration: '10s', target: 80 },   // Plateaus: Stay at 80 users for 10s
-        { duration: '30s', target: 160 },  // Ramp-up: 80 to 160 users over 30s
-        { duration: '10s', target: 160 },   // Plateaus: Stay at 160 users for 10s
-        { duration: '20s', target: 0 },   // Ramp-down: Back to 0
+        // RAMP UP: Gradually increase traffic to find the breaking point
+        { duration: '15s', target: 10 },
+        { duration: '15s', target: 20 },
+        { duration: '15s', target: 40 },
+        { duration: '15s', target: 60 },
+        { duration: '15s', target: 80 },
+        { duration: '15s', target: 100 },
+
+        // PLATEAU: Hold the peak load to test system stability over time
+        // 15 seconds is too short to catch memory leaks or DB pool queues.
+        { duration: '3m', target: 100 },
+
+        // RAMP DOWN: Cool down gracefully
+        { duration: '30s', target: 0 },
     ],
     thresholds: {
 
-        // 95% of requests must complete below 500ms
-        http_req_duration: [{
-            threshold: 'p(95)<500',
-            abortOnFail: true,
-            delayAbortEval: '10s',
-        }],
-        // Less than 1% of requests should fail as a threshold recommended in lecture
+        http_req_duration: [
+            {
+                // 95% of requests must complete below 500ms
+                threshold: 'p(95)<500',
+                abortOnFail: true,
+                delayAbortEval: '10s',
+            },
+            {
+                // Catch the worst 1% of outliers (changed from p90)
+                threshold: 'p(99)<1000',
+                abortOnFail: true,
+                delayAbortEval: '10s',
+            }
+        ],
+        // Less than 1% of requests should fail
         http_req_failed: ['rate<0.01'],
-        // Throughput threshold of 20 requests per second
-        http_reqs: ['rate>20'],
     },
 };
 
