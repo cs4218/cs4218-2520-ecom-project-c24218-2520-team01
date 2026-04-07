@@ -244,6 +244,9 @@ const thresholds = {
   authRegisterP95Ms: parseThreshold("AUTH_REGISTER_P95_THRESHOLD_MS", 1200),
   authLoginP95Ms: parseThreshold("AUTH_LOGIN_P95_THRESHOLD_MS", 900),
   authUserAuthP95Ms: parseThreshold("AUTH_USER_AUTH_P95_THRESHOLD_MS", 700),
+  orderPlacementP95Ms: parseThreshold("ORDER_PLACEMENT_P95_THRESHOLD_MS", 2500),
+  paymentFlowP95Ms: parseThreshold("PAYMENT_FLOW_P95_THRESHOLD_MS", 2200),
+  checkoutFlowP95Ms: parseThreshold("CHECKOUT_FLOW_P95_THRESHOLD_MS", 3000),
   errorRatePct: parseThreshold("ERROR_RATE_THRESHOLD_PCT", 1),
   minThroughputReqPerSec: parseThreshold("MIN_THROUGHPUT_REQ_PER_SEC", 5),
 };
@@ -253,6 +256,9 @@ const filterStat = findLabelStat(labelStats, ["flow 2 - filter results", "flow 4
 const authRegisterStat = findLabelStat(labelStats, ["flow 1 - register", "post register"]);
 const authLoginStat = findLabelStat(labelStats, ["flow 2 - login", "post login"]);
 const authUserAuthStat = findLabelStat(labelStats, ["flow 3 - validate auth token", "get user auth"]);
+const paymentFlowStat = findLabelStat(labelStats, ["flow 2 - payment token request", "get braintree token"]);
+const orderPlacementStat = findLabelStat(labelStats, ["flow 3 - concurrent order placement", "post braintree payment"]);
+const checkoutFlowStat = findLabelStat(labelStats, ["flow 4 - checkout end-to-end validation", "get user orders"]);
 
 const checks = [
   {
@@ -309,6 +315,30 @@ if (authUserAuthStat) {
     name: `Auth User-Auth P95 <= ${thresholds.authUserAuthP95Ms}ms`,
     pass: authUserAuthStat.p95 <= thresholds.authUserAuthP95Ms,
     actual: `${authUserAuthStat.p95.toFixed(1)}ms (${authUserAuthStat.label})`,
+  });
+}
+
+if (paymentFlowStat) {
+  checks.push({
+    name: `Payment Flow P95 <= ${thresholds.paymentFlowP95Ms}ms`,
+    pass: paymentFlowStat.p95 <= thresholds.paymentFlowP95Ms,
+    actual: `${paymentFlowStat.p95.toFixed(1)}ms (${paymentFlowStat.label})`,
+  });
+}
+
+if (orderPlacementStat) {
+  checks.push({
+    name: `Order Placement P95 <= ${thresholds.orderPlacementP95Ms}ms`,
+    pass: orderPlacementStat.p95 <= thresholds.orderPlacementP95Ms,
+    actual: `${orderPlacementStat.p95.toFixed(1)}ms (${orderPlacementStat.label})`,
+  });
+}
+
+if (checkoutFlowStat) {
+  checks.push({
+    name: `Checkout Flow P95 <= ${thresholds.checkoutFlowP95Ms}ms`,
+    pass: checkoutFlowStat.p95 <= thresholds.checkoutFlowP95Ms,
+    actual: `${checkoutFlowStat.p95.toFixed(1)}ms (${checkoutFlowStat.label})`,
   });
 }
 
