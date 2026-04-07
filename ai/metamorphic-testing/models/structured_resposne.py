@@ -15,3 +15,7 @@ class MetamorphicRelation(BaseModel):
 class FunctionMetamorphicAnalysis(BaseModel):
     function_overview: str = Field(description="A clear summary of what the function does do not include any other information or anything about the metamorphic relationss")
     relations: List[MetamorphicRelation] = Field(description="List of metamorphic relations for the function")
+
+class TestGenerationResult(BaseModel):
+    explanation: str = Field(description="A brief explanation of the test setup and mocks used.")
+    test_code: str = Field(description="The complete, runnable Jest test suite code in JavaScript.")

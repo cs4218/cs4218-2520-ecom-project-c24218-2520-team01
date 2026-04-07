@@ -14,8 +14,8 @@ load_dotenv()
 
 # Initialize the LLM dynamically
 llm = init_chat_model(
-    model = os.getenv("MODEL"),
-    model_provider = "openai",
+    model = os.getenv("MR_GENERATION_MDOEL"),
+    model_provider = os.getenv("MR_GENERATION_PROVIDER"),
     temperature = 0,
     api_key = os.getenv("OPENROUTER_API_KEY"),
     base_url = os.getenv("OPENROUTER_BASE_URL")
