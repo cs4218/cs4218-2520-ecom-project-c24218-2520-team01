@@ -136,7 +136,11 @@ export const loginController = async (req, res) => {
 export const forgotPasswordController = async (req, res) => {
     try {
         const { email, answer, newPassword } = req.body;
+        // A0273278U Zaidan
         // Bug: Added return statements to each validation check to prevent further execution after sending an error response
+        // INJ-VULN-01: Login bypass via $ne/$gt NoSQL injection on email field.
+        // INJ-VULN-02: Registration DoS — $ne on email always matched an existing user.
+        // INJ-VULN-04: User enumeration via $regex on email field.
         if (!email || typeof email !== "string") {
             return res
                 .status(400)

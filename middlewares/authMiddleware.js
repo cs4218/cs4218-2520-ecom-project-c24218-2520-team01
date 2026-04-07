@@ -39,6 +39,9 @@ export const requireSignIn = async (req, res, next) => {
         req.user = decode;
         next();
     } catch (error) {
+        // Bug: catch block previously sent no response, so invalid/missing tokens fell
+        // through silently to the next middleware.
+        // AUTHZ-VULN-03: Even after requireSignIn+isAdmin were added to DELETE /delete-product/:pid, a non-admin with any token (or no token) could still reach the controller because requireSignIn never stopped the request on failure.
         console.log(error);
         res.status(401).send({
             success: false,

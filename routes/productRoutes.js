@@ -47,6 +47,11 @@ router.get("/get-product/:slug", getSingleProductController);
 router.get("/product-photo/:pid", productPhotoController);
 
 //delete product
+// AUTHZ-VULN-03: Non-admin authenticated users could delete any product.
+// Two fixes were required together:
+//   1. requireSignIn+isAdmin added here (route had no auth middleware at all).
+//   2. requireSignIn catch block fixed to return 401 (previously sent no response,
+//      so invalid tokens fell through to the controller regardless).
 router.delete(
     "/delete-product/:pid",
     requireSignIn,
