@@ -30,6 +30,23 @@ if ! command -v jmeter >/dev/null 2>&1; then
   exit 1
 fi
 
+prune_old_search_filter_artifacts() {
+  shopt -s nullglob
+  local files=(
+    "${RESULTS_DIR}/search-filter-"*.jtl
+    "${RESULTS_DIR}/search-filter-"*-response-time-over-time.csv
+    "${RESULTS_DIR}/search-filter-"*-response-time-by-endpoint.csv
+  )
+  local dirs=("${RESULTS_DIR}/search-filter-report-"*)
+  if ((${#files[@]} > 0)); then
+    rm -f "${files[@]}"
+  fi
+  if ((${#dirs[@]} > 0)); then
+    rm -rf "${dirs[@]}"
+  fi
+  shopt -u nullglob
+}
+
 run_single_profile() {
   local profile_name="$1"
   local users="$2"
@@ -44,6 +61,7 @@ run_single_profile() {
   local report_dir="${RESULTS_DIR}/search-filter-report-${profile_name}-${timestamp}"
 
   mkdir -p "${RESULTS_DIR}"
+  prune_old_search_filter_artifacts
 
   echo "Running search-filter load test profile: ${profile_name}"
   echo "Target: ${PROTOCOL}://${HOST}:${PORT}"
@@ -80,12 +98,5 @@ run_single_profile() {
     echo "Node.js not found; skipping JTL analysis script."
   fi
 }
-
-if [[ "${1:-}" == "--matrix" ]]; then
-  run_single_profile "baseline" "100" "60" "3" "900"
-  run_single_profile "peak" "200" "90" "3" "900"
-  run_single_profile "stress" "350" "120" "2" "600"
-  exit 0
-fi
 
 run_single_profile "custom" "${USERS}" "${RAMP_UP_SECONDS}" "${LOOPS}" "${DURATION_SECONDS}"

@@ -26,6 +26,23 @@ if ! command -v jmeter >/dev/null 2>&1; then
   exit 1
 fi
 
+prune_old_browsing_artifacts() {
+  shopt -s nullglob
+  local files=(
+    "${RESULTS_DIR}/browsing-flow-"*.jtl
+    "${RESULTS_DIR}/browsing-flow-"*-response-time-over-time.csv
+    "${RESULTS_DIR}/browsing-flow-"*-response-time-by-endpoint.csv
+  )
+  local dirs=("${RESULTS_DIR}/browsing-flow-report-"*)
+  if ((${#files[@]} > 0)); then
+    rm -f "${files[@]}"
+  fi
+  if ((${#dirs[@]} > 0)); then
+    rm -rf "${dirs[@]}"
+  fi
+  shopt -u nullglob
+}
+
 CPU_STOP_FILE=""
 CPU_STATE_FILE=""
 CPU_SAMPLER_PID=""
@@ -102,6 +119,7 @@ JTL_FILE="${RESULTS_DIR}/browsing-flow-${timestamp}.jtl"
 REPORT_DIR="${RESULTS_DIR}/browsing-flow-report-${timestamp}"
 
 mkdir -p "${RESULTS_DIR}"
+prune_old_browsing_artifacts
 
 echo "Running browsing-flow load test"
 echo "Target: ${PROTOCOL}://${HOST}:${PORT}"

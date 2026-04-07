@@ -241,12 +241,18 @@ const thresholds = {
   overallP95Ms: parseThreshold("OVERALL_P95_THRESHOLD_MS", 1500),
   searchP95Ms: parseThreshold("SEARCH_P95_THRESHOLD_MS", 900),
   filterP95Ms: parseThreshold("FILTER_P95_THRESHOLD_MS", 1200),
+  authRegisterP95Ms: parseThreshold("AUTH_REGISTER_P95_THRESHOLD_MS", 1200),
+  authLoginP95Ms: parseThreshold("AUTH_LOGIN_P95_THRESHOLD_MS", 900),
+  authUserAuthP95Ms: parseThreshold("AUTH_USER_AUTH_P95_THRESHOLD_MS", 700),
   errorRatePct: parseThreshold("ERROR_RATE_THRESHOLD_PCT", 1),
   minThroughputReqPerSec: parseThreshold("MIN_THROUGHPUT_REQ_PER_SEC", 5),
 };
 
 const searchStat = findLabelStat(labelStats, ["flow 1 - search", "get search products"]);
 const filterStat = findLabelStat(labelStats, ["flow 2 - filter results", "flow 4 - price filter", "post product filters"]);
+const authRegisterStat = findLabelStat(labelStats, ["flow 1 - register", "post register"]);
+const authLoginStat = findLabelStat(labelStats, ["flow 2 - login", "post login"]);
+const authUserAuthStat = findLabelStat(labelStats, ["flow 3 - validate auth token", "get user auth"]);
 
 const checks = [
   {
@@ -279,6 +285,30 @@ if (filterStat) {
     name: `Filter P95 <= ${thresholds.filterP95Ms}ms`,
     pass: filterStat.p95 <= thresholds.filterP95Ms,
     actual: `${filterStat.p95.toFixed(1)}ms (${filterStat.label})`,
+  });
+}
+
+if (authRegisterStat) {
+  checks.push({
+    name: `Auth Register P95 <= ${thresholds.authRegisterP95Ms}ms`,
+    pass: authRegisterStat.p95 <= thresholds.authRegisterP95Ms,
+    actual: `${authRegisterStat.p95.toFixed(1)}ms (${authRegisterStat.label})`,
+  });
+}
+
+if (authLoginStat) {
+  checks.push({
+    name: `Auth Login P95 <= ${thresholds.authLoginP95Ms}ms`,
+    pass: authLoginStat.p95 <= thresholds.authLoginP95Ms,
+    actual: `${authLoginStat.p95.toFixed(1)}ms (${authLoginStat.label})`,
+  });
+}
+
+if (authUserAuthStat) {
+  checks.push({
+    name: `Auth User-Auth P95 <= ${thresholds.authUserAuthP95Ms}ms`,
+    pass: authUserAuthStat.p95 <= thresholds.authUserAuthP95Ms,
+    actual: `${authUserAuthStat.p95.toFixed(1)}ms (${authUserAuthStat.label})`,
   });
 }
 
