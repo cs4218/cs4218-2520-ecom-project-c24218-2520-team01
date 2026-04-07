@@ -19,6 +19,7 @@
         "nft:load:search-filter": "bash tests/nft/load-testing/scripts/run-search-filter-load.sh",
         "nft:load:auth": "bash tests/nft/load-testing/scripts/run-auth-load.sh",
         "nft:load:order": "bash tests/nft/load-testing/scripts/run-order-load.sh",
+        "nft:load:product-detail": "bash tests/nft/load-testing/scripts/run-product-detail-load.sh",
         "nft:load:all": "bash tests/nft/load-testing/scripts/run-all-load.sh",
         "nft:load:analyze": "node tests/nft/load-testing/scripts/analyze-jtl.mjs"
     },
