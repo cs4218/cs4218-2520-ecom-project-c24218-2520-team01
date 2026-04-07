@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+## Rachel Tai Ke Jia (A0258603A)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,12 +18,84 @@ DURATION_SECONDS="${DURATION_SECONDS:-900}"
 SEARCH_DATA_FILE="${SEARCH_DATA_FILE:-${ROOT_DIR}/tests/nft/load-testing/data/search-keywords.csv}"
 CATEGORY_DATA_FILE="${CATEGORY_DATA_FILE:-${ROOT_DIR}/tests/nft/load-testing/data/category-slugs.csv}"
 PRICE_DATA_FILE="${PRICE_DATA_FILE:-${ROOT_DIR}/tests/nft/load-testing/data/price-ranges.csv}"
+AUTO_CPU_UTILIZATION="${AUTO_CPU_UTILIZATION:-1}"
 
 if ! command -v jmeter >/dev/null 2>&1; then
   echo "JMeter is required but not found in PATH."
   echo "Install Apache JMeter and ensure the 'jmeter' command is available."
   exit 1
 fi
+
+CPU_STOP_FILE=""
+CPU_STATE_FILE=""
+CPU_SAMPLER_PID=""
+CPU_BUSY_SECONDS=""
+CPU_TOTAL_SECONDS=""
+
+get_cpu_busy_pct() {
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    local line idle
+    line="$(top -l 1 | grep -m1 "CPU usage" || true)"
+    idle="$(echo "$line" | sed -E 's/.* ([0-9]+(\.[0-9]+)?)% idle.*/\1/' || true)"
+    if [[ -n "$idle" ]]; then
+      awk -v idle="$idle" 'BEGIN { printf "%.4f", 100 - idle }'
+      return 0
+    fi
+  fi
+  return 1
+}
+
+start_cpu_sampler() {
+  if [[ "$AUTO_CPU_UTILIZATION" != "1" ]]; then
+    return
+  fi
+
+  CPU_STOP_FILE="$(mktemp "${RESULTS_DIR}/cpu-stop-XXXXXX")"
+  CPU_STATE_FILE="$(mktemp "${RESULTS_DIR}/cpu-state-XXXXXX")"
+  rm -f "$CPU_STOP_FILE"
+
+  (
+    local sum="0"
+    local count="0"
+    while [[ ! -f "$CPU_STOP_FILE" ]]; do
+      local busy
+      busy="$(get_cpu_busy_pct || true)"
+      if [[ -n "$busy" ]]; then
+        sum="$(awk -v a="$sum" -v b="$busy" 'BEGIN { printf "%.6f", a + b }')"
+        count=$((count + 1))
+      fi
+      sleep 1
+    done
+    printf "%s %s\n" "$sum" "$count" > "$CPU_STATE_FILE"
+  ) &
+  CPU_SAMPLER_PID="$!"
+}
+
+stop_cpu_sampler() {
+  if [[ -z "$CPU_SAMPLER_PID" ]]; then
+    return
+  fi
+
+  touch "$CPU_STOP_FILE" 2>/dev/null || true
+  wait "$CPU_SAMPLER_PID" 2>/dev/null || true
+
+  if [[ -f "$CPU_STATE_FILE" ]]; then
+    local sum count
+    read -r sum count < "$CPU_STATE_FILE"
+    if [[ -n "${sum:-}" && -n "${count:-}" && "$count" -gt 0 ]]; then
+      CPU_BUSY_SECONDS="$(awk -v s="$sum" 'BEGIN { printf "%.6f", s / 100 }')"
+      CPU_TOTAL_SECONDS="$(awk -v c="$count" 'BEGIN { printf "%.6f", c }')"
+    fi
+  fi
+
+  rm -f "$CPU_STOP_FILE" "$CPU_STATE_FILE" 2>/dev/null || true
+}
+
+cleanup() {
+  stop_cpu_sampler
+}
+
+trap cleanup EXIT
 
 timestamp="$(date +%Y%m%d-%H%M%S)"
 JTL_FILE="${RESULTS_DIR}/browsing-flow-${timestamp}.jtl"
@@ -33,6 +106,17 @@ mkdir -p "${RESULTS_DIR}"
 echo "Running browsing-flow load test"
 echo "Target: ${PROTOCOL}://${HOST}:${PORT}"
 echo "Users=${USERS}, RampUp=${RAMP_UP_SECONDS}s, Loops=${LOOPS}, Duration=${DURATION_SECONDS}s"
+
+health_url="${PROTOCOL}://${HOST}:${PORT}/api/v1/product/product-count"
+if command -v curl >/dev/null 2>&1; then
+  if ! curl --silent --show-error --fail --max-time 3 "$health_url" >/dev/null; then
+    echo "Target API is unreachable at ${health_url}"
+    echo "Start your backend first (for example: npm run server), then rerun this load test."
+    exit 1
+  fi
+fi
+
+start_cpu_sampler
 
 jmeter -n \
   -t "${PLAN}" \
@@ -52,11 +136,19 @@ jmeter -n \
   -Jjmeter.save.saveservice.print_field_names=true \
   -Jjmeter.save.saveservice.timestamp_format=ms
 
+stop_cpu_sampler
+
 echo "JTL saved to: ${JTL_FILE}"
 echo "HTML report: ${REPORT_DIR}/index.html"
 
 if command -v node >/dev/null 2>&1; then
-  node "${ROOT_DIR}/tests/nft/load-testing/scripts/analyze-jtl.mjs" "${JTL_FILE}"
+  if [[ -n "$CPU_BUSY_SECONDS" && -n "$CPU_TOTAL_SECONDS" ]]; then
+    echo "CPU sample window: busy=${CPU_BUSY_SECONDS}s total=${CPU_TOTAL_SECONDS}s"
+    CPU_BUSY_SECONDS="$CPU_BUSY_SECONDS" CPU_TOTAL_SECONDS="$CPU_TOTAL_SECONDS" \
+      node "${ROOT_DIR}/tests/nft/load-testing/scripts/analyze-jtl.mjs" "${JTL_FILE}"
+  else
+    node "${ROOT_DIR}/tests/nft/load-testing/scripts/analyze-jtl.mjs" "${JTL_FILE}"
+  fi
 else
   echo "Node.js not found; skipping JTL analysis script."
 fi
