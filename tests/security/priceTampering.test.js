@@ -1,5 +1,10 @@
 // Price Tampering / Checkout Security Tests
 // Zaidan, A0273278U
+//
+// Report references:
+//   AUTHZ-VULN-06 (Critical): Server trusted client-supplied prices without database
+//     validation, allowing buyers to purchase items at arbitrary prices (e.g. $2,499
+//     item for $0.01). Covered throughout "Manipulation of Prices" and "Server-Side Guardrails".
 
 import express from "express";
 import JWT from "jsonwebtoken";

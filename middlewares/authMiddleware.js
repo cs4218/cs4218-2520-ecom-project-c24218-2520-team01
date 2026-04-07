@@ -9,8 +9,10 @@ export const requireSignIn = async (req, res, next) => {
             process.env.JWT_SECRET,
         );
 
-        // A0273278U Zaidan
-        // Checks if user is still in database
+        // A0273278U, Zaidan
+        // Session replay fix: reject tokens whose account no longer exists.
+        // A structurally valid JWT can still be replayed after the user is deleted;
+        // verifying DB existence closes that window.
         const user = await userModel.findById(decode._id);
         if (!user) {
             return res.status(401).send({
@@ -19,8 +21,11 @@ export const requireSignIn = async (req, res, next) => {
             });
         }
 
-        // A0273278U Zaidan
-        // Checks if password changed is the same (prevents usage of changed password tokens)
+        // A0273278U, Zaidan
+        // Session replay fix: reject tokens issued before a password change.
+        // loginController embeds the last 8 chars of the bcrypt hash (pwdFingerprint)
+        // at issue time. If the password has since changed the stored hash differs,
+        // so any pre-change token is invalidated here.
         if (
             decode.pwdFingerprint !== undefined &&
             decode.pwdFingerprint !== user.password.slice(-8)

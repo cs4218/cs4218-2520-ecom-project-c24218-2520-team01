@@ -5,6 +5,11 @@
 // and reuses ("replays") it after it should no longer be trusted — e.g., after
 // expiry, after the account is deleted, or after a password change.
 //
+// Report references:
+//   No specific pentest finding — session replay is a class of attack not separately
+//   itemised in the report. Tests here verify the JWT authentication pipeline is
+//   resilient to token reuse after expiry, deletion, tampering, and password change.
+//
 // Tests cover:
 //   1. Expired tokens are rejected.
 //   2. Tokens for deleted users are rejected on all routes.

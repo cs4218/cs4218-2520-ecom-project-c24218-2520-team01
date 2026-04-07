@@ -479,7 +479,11 @@ export const brainTreePaymentController = async (req, res) => {
         }
 
         // A0273278U Zaidan
-        // Fixed security bug where client-supplied prices overrode server-side prices.
+        // AUTHZ-VULN-06: Price manipulation in payment processing.
+        // The server trusted client-supplied prices, allowing buyers to purchase items
+        // at arbitrary prices (e.g. $2,499 item for $0.01).
+        // Fix: fetch authoritative prices from the DB and reject any cart whose
+        // client-supplied prices deviate from the stored values.
 
         const productIds = cart.map((i) => i._id);
         const dbProducts = await productModel.find(

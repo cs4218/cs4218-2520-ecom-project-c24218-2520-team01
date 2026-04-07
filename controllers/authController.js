@@ -97,8 +97,9 @@ export const loginController = async (req, res) => {
             });
         }
         //token
-        // A027327U Zaidan
-        // Add password fingerprint to guard against signin with a changed password
+        // A0273278U Zaidan
+        // Session replay fix: embed a password fingerprint in the token so that
+        // requireSignIn can detect and reject tokens issued before a password change.
         const pwdFingerprint = user.password.slice(-8);
         const token = await JWT.sign(
             { _id: user._id, pwdFingerprint },
@@ -141,7 +142,10 @@ export const forgotPasswordController = async (req, res) => {
                 .status(400)
                 .send({ success: false, message: "Email is required" });
         }
-        // Zaidan (A0273278U). This was changed to fix the security bug that allowed passing of answer as a object like {$gt: ""}.
+        // A0273278U Zaidan
+        // INJ-VULN-03: Account takeover via forgot-password NoSQL injection.
+        // Passing answer as {"$ne": null} always matched, bypassing the security check.
+        // Fix: reject non-string values before they reach the MongoDB query.
         if (!answer || typeof answer !== "string") {
             return res
                 .status(400)

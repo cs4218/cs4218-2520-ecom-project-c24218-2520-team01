@@ -1,5 +1,11 @@
 // MongoDB Injection Security Tests
 // Zaidan, A0273278U
+//
+// Report references:
+//   INJ-VULN-01 (Critical):  Login authentication bypass via $ne/$gt/$regex NoSQL operators.
+//   INJ-VULN-02 (High):      Registration DoS via $ne on email — always matches an existing user.
+//   INJ-VULN-03 (Critical):  Account takeover via $ne on forgot-password answer field.
+//   INJ-VULN-04 (Medium):    User enumeration via $regex on login email field.
 
 import express from "express";
 import JWT from "jsonwebtoken";
@@ -46,6 +52,9 @@ afterAll(async () => {
 });
 
 describe("MongoDB Injection", () => {
+    // INJ-VULN-01: Login bypass — userModel.findOne({ email }) accepted operator objects
+    // because only truthiness was checked, not type. $ne, $gt, $regex all matched arbitrary users.
+    // INJ-VULN-04: User enumeration — $regex patterns on email leaked which users exist.
     describe("POST /api/v1/auth/login", () => {
         it("does not authenticate when email is a $gt operator object", async () => {
             const res = await supertest(app)
@@ -92,6 +101,8 @@ describe("MongoDB Injection", () => {
         });
     });
 
+    // INJ-VULN-03: Account takeover — userModel.findOne({ email, answer }) accepted operator
+    // objects for both fields. $ne: null on answer always matched, bypassing the security check.
     describe("POST /api/v1/auth/forgot-password", () => {
         it("does not reset password when email is a $gt operator object", async () => {
             const res = await supertest(app)
@@ -145,6 +156,8 @@ describe("MongoDB Injection", () => {
         });
     });
 
+    // INJ-VULN-02: Registration DoS — userModel.findOne({ email: {"$ne": null} }) always
+    // returned a match, making the server treat every registration as a duplicate.
     describe("POST /api/v1/auth/register", () => {
         it("does not accept an operator object as the email field", async () => {
             const res = await supertest(app)
