@@ -1,4 +1,6 @@
 import os
+import json
+import re
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -41,6 +43,21 @@ SYSTEM_PROMPT = """
         GOOD (True MR): Transformation: Multiply all numeric inputs in a shopping cart by 2. Relation: O' == O * 2 (The final calculated price must perfectly double).
 """
 
+FALLBACK_JSON_INSTRUCTION = """
+Return ONLY valid JSON with this exact shape and no markdown:
+{
+    "function_overview": "string",
+    "relations": [
+        {
+            "name": "string",
+            "source_input_transformation": "string",
+            "expected_output_relation": "string",
+            "description": "string"
+        }
+    ]
+}
+"""
+
 
 def _build_agent():
     model_name = os.getenv("MODEL")
@@ -69,6 +86,67 @@ def _build_agent():
         debug=False,
     )
 
+
+def _build_fallback_agent():
+    model_name = os.getenv("MODEL")
+    model_provider = os.getenv("MODEL_PROVIDER")
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    base_url = os.getenv("OPENROUTER_BASE_URL")
+
+    llm = init_chat_model(
+        model=model_name,
+        model_provider=model_provider,
+        temperature=0,
+        api_key=api_key,
+        base_url=base_url,
+    )
+
+    return create_agent(
+        model=llm,
+        tools=[fetch_relevant_functions, fetch_source_code],
+        system_prompt=f"{SYSTEM_PROMPT}\n\n{FALLBACK_JSON_INSTRUCTION}",
+        debug=False,
+    )
+
+
+def _extract_text(result: dict) -> str:
+    messages = result.get("messages", [])
+    if not messages:
+        return ""
+
+    last = messages[-1]
+    content = getattr(last, "content", None)
+    if content is None and isinstance(last, dict):
+        content = last.get("content")
+
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        text_chunks = []
+        for item in content:
+            if isinstance(item, dict) and "text" in item:
+                text_chunks.append(str(item["text"]))
+            else:
+                text_chunks.append(str(item))
+        return "\n".join(text_chunks)
+
+    return str(content or "")
+
+
+def _extract_json_block(text: str) -> str:
+    # Accept either fenced JSON or a raw object literal so providers with looser formatting still work.
+    fenced = re.search(r"```(?:json)?\s*(\{[\s\S]*\})\s*```", text)
+    if fenced:
+        return fenced.group(1)
+
+    start = text.find("{")
+    end = text.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        return text[start : end + 1]
+
+    return text.strip()
+
 def generate_metamorphic_relations(target_function: str):
     """
     Executes the agent to gather context and directly returns the structured Pydantic model.
@@ -76,12 +154,23 @@ def generate_metamorphic_relations(target_function: str):
     agent = _build_agent()
 
     # The human message is now beautifully simple, as the logic lives in the system prompt.
-    result = agent.invoke({
+    user_message = {
         "messages": [
             {
                 "role": "user",
                 "content": f"Analyze the function: '{target_function}'"
             }
         ]
-    })
-    return result["structured_response"]
+    }
+
+    try:
+        result = agent.invoke(user_message)
+        return result["structured_response"]
+    except Exception:
+        # If native structured output fails, re-run with a stricter prompt and parse the JSON manually.
+        fallback_agent = _build_fallback_agent()
+        fallback_result = fallback_agent.invoke(user_message)
+        text = _extract_text(fallback_result)
+        payload = _extract_json_block(text)
+        parsed = json.loads(payload)
+        return FunctionMetamorphicAnalysis.model_validate(parsed)

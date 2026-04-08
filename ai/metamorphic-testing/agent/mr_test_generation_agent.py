@@ -13,6 +13,7 @@ from tools.mr_test_generation_tools import write_test_to_file
 
 # Load environment variables
 project_root = Path(__file__).resolve().parents[1]
+# Keep agent configuration aligned with the local .env file so terminal runs and VS Code runs behave the same.
 load_dotenv(project_root / ".env")
 
 model = os.getenv("MODEL")
@@ -42,6 +43,7 @@ SYSTEM_PROMPT = """
 
 
 def _build_agent():
+    # Build the model lazily so missing env vars fail here with a clear error instead of breaking module import.
     if not model or not model_provider:
         raise RuntimeError(
             "Missing model configuration. Set MODEL and MODEL_PROVIDER in ai/metamorphic-testing/.env"
@@ -58,6 +60,7 @@ def _build_agent():
 
     return create_agent(
         model=llm,
+        # The test agent needs code lookup tools plus a file writer to persist the generated Jest suite.
         tools=[write_test_to_file, fetch_relevant_functions, fetch_source_code],
         system_prompt=SYSTEM_PROMPT,
         debug=False,
@@ -69,6 +72,7 @@ def generate_test_suite(target_function: str, relations: str):
     """
     agent = _build_agent()
     
+    # Send the relations as a preformatted block so the test generator can consume them without extra parsing logic.
     agent.invoke({
         "messages": [
             {
