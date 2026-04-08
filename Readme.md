@@ -435,14 +435,15 @@ For the E2E UI tests, I used Playwright to simulate complete user journeys acros
 
 I am responsible for the load testing setup using JMeter under `tests/nft/load-testing`, covering the main non-functional flows of the ecommerce platform:
 
-- Product browsing flow
-- Search and filter flow
-- Authentication flow
-- Order checkout flow
+- Product browsing flow: catalog, category, search, price filter, and pagination endpoints
+- Search and filter flow: category bootstrap, keyword search, and combined category-and-price filtering
+- Authentication flow: register, login, and token validation
+- Order checkout flow: login, braintree token, payment submission, and order retrieval validation
 
-For this milestone, I prepared the load test scripts and supporting analysis files, including the individual flow runners, the all-flows runner, and the JTL analyzer used to measure response time, throughput, error rate, and bottlenecks under concurrent usage.
+I prepared load test scripts and supporting analysis files, including individual flow runners, an all-flows runner, and a JTL analyzer.
+The purpose was to simulate expected day-to-day traffic, measure response time, throughput, and error rate, and identify bottlenecks under concurrent usage.
+For configuration, I assumed day-to-day traffic would be 100 concurrent users and used a default profile with 100 users, a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration.
 
-The default load profile I used for expected traffic was 100 concurrent users with a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration.
 
 ### Wong Sheen Kerr (A0269647J)
 
