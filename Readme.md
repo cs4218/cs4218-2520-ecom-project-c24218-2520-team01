@@ -435,14 +435,23 @@ For the E2E UI tests, I used Playwright to simulate complete user journeys acros
 
 I am responsible for the load testing setup using JMeter under `tests/nft/load-testing`, covering the main non-functional flows of the ecommerce platform:
 
-- Product browsing flow: catalog, category, search, price filter, and pagination endpoints
-- Search and filter flow: category bootstrap, keyword search, and combined category-and-price filtering
-- Authentication flow: register, login, and token validation
-- Order checkout flow: login, braintree token, payment submission, and order retrieval validation
+- **Product browsing flow** for catalog, category, search, price filter, and pagination endpoints: 
+    - [product-browsing-flow.jmx](tests/nft/load-testing/jmeter/product-browsing-flow.jmx) 
+    - [run-browsing-load.sh](tests/nft/load-testing/scripts/run-browsing-load.sh) 
+- **Search and filter flow** for category bootstrap, keyword search, and combined category-and-price filtering: 
+    - [search-filter-flow.jmx](tests/nft/load-testing/jmeter/search-filter-flow.jmx) 
+    - [run-search-filter-load.sh](tests/nft/load-testing/scripts/run-search-filter-load.sh) 
+- **Authentication flow** for register, login, and token validation
+    - [authentication-flow.jmx](tests/nft/load-testing/jmeter/authentication-flow.jmx) 
+    - [run-auth-load.sh](tests/nft/load-testing/scripts/run-auth-load.sh)
+- **Order checkout flow** for login, braintree token, payment submission, and order retrieval validation: 
+    - [order-checkout-flow.jmx](tests/nft/load-testing/jmeter/order-checkout-flow.jmx) 
+    - [run-order-load.sh](tests/nft/load-testing/scripts/run-order-load.sh) 
+- **Product detail flow** for viewing details of a single product:
+    - [product-detail-flow.jmx](tests/nft/load-testing/jmeter/product-detail-flow.jmx)
+    - [run-product-detail-load.sh](tests/nft/load-testing/scripts/run-product-detail-load.sh)
 
-I prepared load test scripts and supporting analysis files, including individual flow runners, an all-flows runner, and a JTL analyzer.
-The purpose was to simulate expected day-to-day traffic, measure response time, throughput, and error rate, and identify bottlenecks under concurrent usage.
-For configuration, I assumed day-to-day traffic would be 100 concurrent users and used a default profile with 100 users, a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration.
+I prepared load test scripts and supporting analysis files, including individual flow runners, an all-flows runner, and a JTL analyzer. The purpose of load testing was to simulate expected day-to-day traffic, measure response time, throughput, and error rate, and identify bottlenecks under concurrent usage. In terms of configuration, I assumed day-to-day traffic would be 100 concurrent users and used a default profile with 100 users, a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration.
 
 
 ### Wong Sheen Kerr (A0269647J)
