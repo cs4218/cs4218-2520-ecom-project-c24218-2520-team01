@@ -89,38 +89,38 @@ def main():
             return
 
         start = time.time()
-        print(f"\n{BLUE}🔍 Stage 1: Generating metamorphic relations for '{target_function}'...{RESET}")
+        print(f"\n{BLUE}Stage 1: Generating metamorphic relations for '{target_function}'...{RESET}")
         
         stage1_start = time.time()
-        print(f"   {CYAN}🤖 Calling LLM to analyze code and derive metamorphic relations...{RESET}")
+        print(f"   {CYAN}Calling LLM to analyze code and derive metamorphic relations...{RESET}")
         relations = generate_metamorphic_relations(target_function)
         stage1_elapsed = time.time() - stage1_start
         
-        print(f"\n{GREEN}✅ Generated {len(relations.relations)} metamorphic relations ({stage1_elapsed:.2f}s):{RESET}")
+        print(f"\n{GREEN}Generated {len(relations.relations)} metamorphic relations ({stage1_elapsed:.2f}s):{RESET}")
         for idx, mr in enumerate(relations.relations, 1):
             print(f"\n{GREEN}   MR-{idx}{RESET}")
             print(f"   {YELLOW}Description:{RESET} {mr.description}")
             print(f"   {YELLOW}Transformation:{RESET} {mr.source_input_transformation}")
             print(f"   {YELLOW}Relation:{RESET} {mr.expected_output_relation}")
         
-        print(f"\n{YELLOW}📋 Function Overview: {relations.function_overview}{RESET}")
+        print(f"\n{YELLOW}Function Overview: {relations.function_overview}{RESET}")
         linearized_relations = linearize_metamorphic_analysis(relations)
         
-        print(f"\n{BLUE}✍️  Stage 2: Synthesizing Jest test suite...{RESET}")
+        print(f"\n{BLUE}Stage 2: Synthesizing Jest test suite...{RESET}")
         print(f"   Target: {target_function}.test.js")
         
         stage2_start = time.time()
-        print(f"   {CYAN}🤖 Calling LLM to generate Jest tests from metamorphic relations...{RESET}")
+        print(f"   {CYAN}Calling LLM to generate Jest tests from metamorphic relations...{RESET}")
         generate_test_suite(target_function, linearized_relations)
         stage2_elapsed = time.time() - stage2_start
         
         output_file = Path("output") / f"{target_function}.test.js"
         if output_file.exists():
-            print(f"\n{GREEN}✅ Test suite created at: output/{target_function}.test.js ({stage2_elapsed:.2f}s){RESET}")
-            print(f"{GREEN}🎉 Metamorphic pipeline complete!{RESET}")
+            print(f"\n{GREEN}Test suite created at: output/{target_function}.test.js ({stage2_elapsed:.2f}s){RESET}")
+            print(f"{GREEN}Metamorphic pipeline complete!{RESET}")
         
         elapsed = time.time() - start
-        print(f"\n{CYAN}⏱️  Stage Breakdown:{RESET}")
+        print(f"\n{CYAN}Stage Breakdown:{RESET}")
         print(f"   {CYAN}Stage 1 (Relations): {stage1_elapsed:.2f}s{RESET}")
         print(f"   {CYAN}Stage 2 (Tests):     {stage2_elapsed:.2f}s{RESET}")
         print(f"   {CYAN}Total time:          {elapsed:.2f}s{RESET}")
