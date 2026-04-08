@@ -431,6 +431,42 @@ For the integration tests, I used a combination of top-down and bottom-up increm
 
 For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable. 
 
+#### Milestone 3 AI-driven Testing
+
+I am responsible for implementing and validating an AI-driven metamorphic testing pipeline.
+
+**Scope and Components:**
+- Metamorphic pipeline orchestration:
+  - `ai/metamorphic-testing/main.py`
+- Codebase indexing and retrieval preparation:
+  - `ai/metamorphic-testing/scripts/indexer.js`
+  - `ai/metamorphic-testing/scripts/codebase-index.json`
+- Relation generation agent:
+  - `ai/metamorphic-testing/agent/relations_agent.py`
+- Test synthesis agent:
+  - `ai/metamorphic-testing/agent/mr_test_generation_agent.py`
+- Structured output contracts:
+  - `ai/metamorphic-testing/models/structured_response.py`
+- Generated artifacts:
+  - `ai/metamorphic-testing/output/*.test.js`
+
+**What I implemented:**
+- Refined a two-stage agent workflow:
+  - Stage 1: Generate metamorphic relations from source code context.
+  - Stage 2: Generate Jest tests from the relations and save them automatically.
+- Added deterministic preflight validation mode (`--validate`) to verify index lookup and source extraction without LLM calls.
+- Improved indexer path handling to be script-relative, so indexing works reliably regardless of current working directory.
+- Added robust fallback handling in the relations agent when native structured output fails:
+  - strict JSON fallback prompt
+  - JSON block extraction from model text output
+  - Pydantic validation before downstream use
+- Added clearer pipeline logging (stage progress and timing) to make execution and debugging observable.
+
+**Validation Outcome:**
+- Successfully ran end-to-end generation for target functions, where an example is `deleteCategoryController`.
+- Pipeline produced a generated test artifact in `ai/metamorphic-testing/output/deleteCategoryController.test.js`.
+
+
 ### Wong Sheen Kerr (A0269647J)
 
 I am in charge of the unit testing for the authentication module across both the backend and frontend, namely:
