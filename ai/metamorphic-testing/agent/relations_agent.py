@@ -17,8 +17,8 @@ llm = init_chat_model(
     model = os.getenv("MR_GENERATION_MDOEL"),
     model_provider = os.getenv("MR_GENERATION_PROVIDER"),
     temperature = 0,
-    api_key = os.getenv("OPENROUTER_API_KEY"),
-    base_url = os.getenv("OPENROUTER_BASE_URL")
+    api_key = os.getenv("MODEL"),
+    base_url = os.getenv("MODEL_PROVIDER")
 )
 
 # Setup the Agent natively with tools and structured output

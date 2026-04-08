@@ -16,8 +16,8 @@ load_dotenv()
 
 # Initialize the LLM dynamically
 llm = init_chat_model(
-    model = os.getenv("MR_GENERATION_MDOEL"),
-    model_provider = os.getenv("MR_GENERATION_PROVIDER"),
+    model = os.getenv("MODEL"),
+    model_provider = os.getenv("MODEL_PROVIDER"),
     temperature = 0,
     max_retries = 3,
     api_key = os.getenv("OPENROUTER_API_KEY"),
