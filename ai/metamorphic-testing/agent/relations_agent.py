@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Modern LangChain imports
@@ -6,28 +7,14 @@ from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 
 # Import your custom modules
-from models.structured_resposne import FunctionMetamorphicAnalysis
+from models.structured_response import FunctionMetamorphicAnalysis
 from tools.relations_agent_tools import fetch_relevant_functions, fetch_source_code
 
 # Load environment variables
-load_dotenv()
+project_root = Path(__file__).resolve().parents[1]
+load_dotenv(project_root / ".env")
 
-# Initialize the LLM dynamically
-llm = init_chat_model(
-    model = os.getenv("MR_GENERATION_MDOEL"),
-    model_provider = os.getenv("MR_GENERATION_PROVIDER"),
-    temperature = 0,
-    api_key = os.getenv("MODEL"),
-    base_url = os.getenv("MODEL_PROVIDER")
-)
-
-# Setup the Agent natively with tools and structured output
-agent = create_agent(
-    model=llm,
-    tools=[fetch_relevant_functions, fetch_source_code],
-    response_format=FunctionMetamorphicAnalysis, 
-    system_prompt=(
-        """
+SYSTEM_PROMPT = """
         You are an expert QA researcher and engineer specializing in Metamorphic Testing. 
         Your objective is to analyze a target function, trace its logic, and formulate strict, mathematically sound Metamorphic Relations (MRs).
 
@@ -52,15 +39,42 @@ agent = create_agent(
         BAD (Standard Test): Transformation: Remove ID from request. Relation: Output is 422 Validation Error. (Do NOT do this).
         GOOD (True MR): Transformation: Append a valid but ignored filter parameter to the query string. Relation: O == O' (The API's response payload must be identical regardless of extraneous ignored parameters).
         GOOD (True MR): Transformation: Multiply all numeric inputs in a shopping cart by 2. Relation: O' == O * 2 (The final calculated price must perfectly double).
-        """
-    ),
-    debug = False
-)
+"""
+
+
+def _build_agent():
+    model_name = os.getenv("MODEL")
+    model_provider = os.getenv("MODEL_PROVIDER")
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    base_url = os.getenv("OPENROUTER_BASE_URL")
+
+    if not model_name or not model_provider:
+        raise RuntimeError(
+            "Missing model configuration. Set MR_GENERATION_MODEL/MR_GENERATION_PROVIDER or MODEL/MODEL_PROVIDER in ai/metamorphic-testing/.env"
+        )
+
+    llm = init_chat_model(
+        model=model_name,
+        model_provider=model_provider,
+        temperature=0,
+        api_key=api_key,
+        base_url=base_url,
+    )
+
+    return create_agent(
+        model=llm,
+        tools=[fetch_relevant_functions, fetch_source_code],
+        response_format=FunctionMetamorphicAnalysis,
+        system_prompt=SYSTEM_PROMPT,
+        debug=False,
+    )
 
 def generate_metamorphic_relations(target_function: str):
     """
     Executes the agent to gather context and directly returns the structured Pydantic model.
     """
+    agent = _build_agent()
+
     # The human message is now beautifully simple, as the logic lives in the system prompt.
     result = agent.invoke({
         "messages": [

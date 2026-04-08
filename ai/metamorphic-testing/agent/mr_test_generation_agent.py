@@ -1,5 +1,5 @@
-from openai import max_retries
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Modern LangChain imports
@@ -7,29 +7,18 @@ from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 
 # Import your custom modules
-from models.structured_resposne import TestGenerationResult
+from models.structured_response import TestGenerationResult
 from tools.relations_agent_tools import fetch_relevant_functions, fetch_source_code
 from tools.mr_test_generation_tools import write_test_to_file
 
 # Load environment variables
-load_dotenv()
+project_root = Path(__file__).resolve().parents[1]
+load_dotenv(project_root / ".env")
 
-# Initialize the LLM dynamically
-llm = init_chat_model(
-    model = os.getenv("MODEL"),
-    model_provider = os.getenv("MODEL_PROVIDER"),
-    temperature = 0,
-    max_retries = 3,
-    api_key = os.getenv("OPENROUTER_API_KEY"),
-    base_url = os.getenv("OPENROUTER_BASE_URL")
-)
+model = os.getenv("MODEL")
+model_provider = os.getenv("MODEL_PROVIDER")
 
-# Setup the Agent natively with tools and structured output
-agent = create_agent(
-    model=llm,
-    tools=[write_test_to_file, fetch_relevant_functions, fetch_source_code],
-    system_prompt=(
-        """
+SYSTEM_PROMPT = """
         You are an expert Software Development Engineer in Test. 
         Your task is to write automated tests in JavaScript using Jest based on provided Metamorphic Relations (MRs).
         Guidelines:
@@ -49,15 +38,36 @@ agent = create_agent(
         Step 2: Generate the complete Jest test suite code internally following the structure above and testing the provided MRs.
         Step 3: Use the `write_test_to_file` tool to save your generated code to a `.test.js` file. Name the file after the target function.
         Step 4: Once the tool confirms the file is saved, return your final structured summary.
-        """
-    ),
-    debug = False
-)
+"""
+
+
+def _build_agent():
+    if not model or not model_provider:
+        raise RuntimeError(
+            "Missing model configuration. Set MODEL and MODEL_PROVIDER in ai/metamorphic-testing/.env"
+        )
+
+    llm = init_chat_model(
+        model=model,
+        model_provider=model_provider,
+        temperature=0,
+        max_retries=3,
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url=os.getenv("OPENROUTER_BASE_URL"),
+    )
+
+    return create_agent(
+        model=llm,
+        tools=[write_test_to_file, fetch_relevant_functions, fetch_source_code],
+        system_prompt=SYSTEM_PROMPT,
+        debug=False,
+    )
 
 def generate_test_suite(target_function: str, relations: str):
     """
     Passes the context to the test agent, which writes the file and returns a summary.
     """
+    agent = _build_agent()
     
     agent.invoke({
         "messages": [
