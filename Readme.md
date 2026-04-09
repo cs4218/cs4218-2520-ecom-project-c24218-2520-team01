@@ -1,5 +1,22 @@
 # CS4218 Project - Virtual Vault
 
+## Table of Contents
+
+- [1. Project Introduction](#1-project-introduction)
+- [2. Website Features](#2-website-features)
+- [3. Your Task](#3-your-task)
+- [4. Setting Up The Project](#4-setting-up-the-project)
+- [5. Unit Testing with Jest](#5-unit-testing-with-jest)
+- [6. Who Handled What](#6-who-handled-what)
+    - [Lim Jia Wei (A0277381W)](#lim-jia-wei-a0277381w)
+    - [Muhammad Zaidan bin Sani (A0273278U)](#muhammad-zaidan-bin-sani-a0273278u)
+    - [Nicholas Cheng De Fei (A0269648H)](#nicholas-cheng-de-fei-a0269648h)
+    - [Rachel Tai Ke Jia (A0258603A)](#rachel-tai-ke-jia-a0258603a)
+    - [Wong Sheen Kerr (A0269647J)](#wong-sheen-kerr-a0269647j)
+- [7. MS1 CI URL](#7-ms1-ci-url)
+- [8. AI-driven Testing](#8-ai-driven-testing)
+    - [Metamorphic testing](#metamorphic-testing)
+
 ## 1. Project Introduction
 
 Virtual Vault is a full-stack MERN (MongoDB, Express.js, React.js, Node.js) e-commerce website, offering seamless connectivity and user-friendly features. The platform provides a robust framework for online shopping. The website is designed to adapt to evolving business needs and can be efficiently extended.
@@ -431,42 +448,6 @@ For the integration tests, I used a combination of top-down and bottom-up increm
 
 For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable. 
 
-#### Milestone 3 AI-driven Testing
-
-I am responsible for implementing and validating an AI-driven metamorphic testing pipeline.
-
-**Scope and Components:**
-- Metamorphic pipeline orchestration:
-  - `ai/metamorphic-testing/main.py`
-- Codebase indexing and retrieval preparation:
-  - `ai/metamorphic-testing/scripts/indexer.js`
-  - `ai/metamorphic-testing/scripts/codebase-index.json`
-- Relation generation agent:
-  - `ai/metamorphic-testing/agent/relations_agent.py`
-- Test synthesis agent:
-  - `ai/metamorphic-testing/agent/mr_test_generation_agent.py`
-- Structured output contracts:
-  - `ai/metamorphic-testing/models/structured_response.py`
-- Generated artifacts:
-  - `ai/metamorphic-testing/output/*.test.js`
-- Test configuration:
-  - `ai/metamorphic-testing/jest.generated.config.cjs`
-
-**What I implemented:**
-- Refined a two-stage agent workflow:
-  - Stage 1: Generate metamorphic relations from source code context.
-  - Stage 2: Generate Jest tests from the relations and save them automatically.
-- Added deterministic preflight validation mode (`--validate`) to verify index lookup and source extraction without LLM calls.
-- Improved indexer path handling to be script-relative, so indexing works reliably regardless of current working directory.
-- Added robust fallback handling in the relations agent when native structured output fails:
-  - strict JSON fallback prompt
-  - JSON block extraction from model text output
-  - Pydantic validation before downstream use
-- Added clearer pipeline logging (stage progress and timing) to make execution and debugging observable.
-- Added Jest configuration to run generated tests in fully autonomouse mode or semi-autonomous mode
-    - Fully autonomous mode: AI generates relations and tests, then tests are executed directly.
-    - Semi-automatic mode: AI proposes relations/tests first, then humans review or refine before execution.
-
 
 ### Wong Sheen Kerr (A0269647J)
 
@@ -511,3 +492,40 @@ I am responsible for testing the following components:
 ## 7. MS1 CI URL
 
 **CI URL**: https://github.com/cs4218/cs4218-2520-ecom-project-c24218-2520-team01/actions/runs/22282001657
+
+## 8. AI-driven Testing
+
+### Metamorphic testing
+
+**Scope and Components:**
+- Metamorphic pipeline orchestration:
+  - `ai/metamorphic-testing/main.py`
+- Codebase indexing and retrieval preparation:
+  - `ai/metamorphic-testing/scripts/indexer.js`
+  - `ai/metamorphic-testing/scripts/codebase-index.json`
+- Relation generation agent:
+  - `ai/metamorphic-testing/agent/relations_agent.py`
+- Test synthesis agent:
+  - `ai/metamorphic-testing/agent/mr_test_generation_agent.py`
+- Structured output contracts:
+  - `ai/metamorphic-testing/models/structured_response.py`
+- Generated artifacts:
+  - `ai/metamorphic-testing/output/*.test.js`
+- Test configuration:
+  - `ai/metamorphic-testing/jest.generated.config.cjs`
+
+**What was done:**
+- Refined a two-stage agent workflow:
+  - Stage 1: Generate metamorphic relations from source code context.
+  - Stage 2: Generate Jest tests from the relations and save them automatically.
+- Added deterministic preflight validation mode (`--validate`) to verify index lookup and source extraction without LLM calls.
+- Improved indexer path handling to be script-relative, so indexing works reliably regardless of current working directory.
+- Added robust fallback handling in the relations agent when native structured output fails:
+    - strict JSON fallback prompt
+    - JSON block extraction from model text output
+    - Pydantic validation before downstream use
+- Added clearer pipeline logging (stage progress and timing) to make execution and debugging observable.
+- Added Jest configuration to run generated tests in fully autonomouse mode or semi-autonomous mode
+    - Fully autonomous mode: AI generates relations and tests, then tests are executed directly.
+    - Semi-autonomous mode: AI proposes relations/tests first, then humans review or refine before execution.
+
