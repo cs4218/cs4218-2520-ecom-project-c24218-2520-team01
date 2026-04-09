@@ -15,13 +15,13 @@ const TESTER_PASSWORD = 'ILoveSoftwareTesting';
 export const options = {
     stages: [
         { duration: '30s', target: 10 },   // Ramp up to a light load
-        { duration: '30s', target: 10 },   // Hold at 5 VUs
+        { duration: '30s', target: 10 },   // Hold at 10 VUs
         { duration: '30s', target: 40 },  // Ramp up to expected load
-        { duration: '30s', target: 40 },  // Hold at 15 VUs
+        { duration: '30s', target: 40 },  // Hold at 40 VUs
         { duration: '30s', target: 100 },   // Ramp up to heavy load
-        { duration: '30s', target: 100 },  // Hold at 50 VUs
+        { duration: '30s', target: 100 },  // Hold at 100 VUs
         { duration: '30s', target: 200 },  // Push to stress load
-        { duration: '30s', target: 200 }, // Hold at 100 VUs 
+        { duration: '30s', target: 200 }, // Hold at 200 VUs 
         { duration: '1m', target: 0 },    // Ramp down to observe recovery
     ],
 
@@ -43,7 +43,7 @@ function generateRandomEmail() {
 export default function () {
     const registerUrl = `${BASE_URL}/api/v1/auth/register`;
 
-    // 2. Generate a fresh, unique email for this specific attempt
+    // Generate a fresh, unique email for this specific attempt
     const uniqueEmail = generateRandomEmail();
 
     const payload = JSON.stringify({

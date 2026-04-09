@@ -11,13 +11,13 @@ const TESTER_PASSWORD = "password123"
 export const options = {
     stages: [
         { duration: '30s', target: 25 },  // Ramp up to a light load in 30 seconds
-        { duration: '30s', target: 25 },  // Hold at 25 VUs for 10 seconds
+        { duration: '30s', target: 25 },  // Hold at 25 VUs for 30 seconds
         { duration: '30s', target: 50 },  // Ramp up to expected load in 30 seconds
-        { duration: '30s', target: 50 },  // Hold at 50 VUs for 10 seconds
-        { duration: '30s', target: 200 }, // Ramp up to heavy load in 1 minute
-        { duration: '30s', target: 200 }, // Hold at 200 VUs for 10 seconds
-        { duration: '30s', target: 400 }, // Ramp up to stress load in 1 minute
-        { duration: '30s', target: 400 }, // Hold at 400 VUs for 30 seconds we want to observe a little longer how the system performs under stress
+        { duration: '30s', target: 50 },  // Hold at 50 VUs for 30 seconds
+        { duration: '30s', target: 200 }, // Ramp up to heavy load in 30 seconds
+        { duration: '30s', target: 200 }, // Hold at 200 VUs for 30 seconds
+        { duration: '30s', target: 400 }, // Ramp up to stress load in 30 seconds
+        { duration: '30s', target: 400 }, // Hold at 400 VUs for 30 seconds
         { duration: '1m', target: 0 }, // Ramp down to 0 VUs to observe server recovery
     ],
 
