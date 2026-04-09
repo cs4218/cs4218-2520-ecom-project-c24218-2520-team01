@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
+
+# AI Usage Declaration
+#
+# Tool Used:
+# - GPT-5.3-Codex
+#
+# Prompt:
+# - Help me design and refine a runner script for the product-detail flow load test.
+# - Help me structure thresholds, output artifacts, and analyzer invocation for product detail performance checks.
+#
+# How the AI Output Was Used:
+# - Used the AI output as a reference for this product-detail runner script 
+
 ## Rachel Tai Ke Jia (A0258603A)
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

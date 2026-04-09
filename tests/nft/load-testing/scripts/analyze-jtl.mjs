@@ -1,4 +1,19 @@
 #!/usr/bin/env node
+
+/**
+ * AI Usage Declaration
+ *
+ * Tool Used:
+ * - GPT-5.3-Codex
+ *
+ * Prompt:
+ * - Help me design and refine a JTL analysis utility for summarizing latency, throughput, and error-rate metrics.
+ * - Help me structure CSV parsing, percentile calculations, bottleneck detection, and threshold validation logic.
+ *
+ * How the AI Output Was Used:
+ * - Used the AI output as a reference for the analyzer script
+ */
+
 // Rachel Tai Ke Jia (A0258603A)
 
 import fs from "fs";

@@ -451,7 +451,9 @@ I am responsible for the load testing setup using JMeter under `tests/nft/load-t
     - [product-detail-flow.jmx](tests/nft/load-testing/jmeter/product-detail-flow.jmx)
     - [run-product-detail-load.sh](tests/nft/load-testing/scripts/run-product-detail-load.sh)
 
-I prepared load test scripts and supporting analysis files, including individual flow runners, an all-flows runner, and a JTL analyzer. The purpose of load testing was to simulate expected day-to-day traffic, measure response time, throughput, and error rate, and identify bottlenecks under concurrent usage. In terms of configuration, I assumed day-to-day traffic would be 100 concurrent users and used a default profile with 100 users, a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration.
+The purpose of load testing was to simulate expected day-to-day traffic, measure response time, throughput, and error rate, and identify bottlenecks under concurrent usage. In terms of configuration, I assumed day-to-day traffic would be 100 concurrent users and used a default profile with 100 users, a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration.
+
+Each `.jmx` file defines a JMeter test plan for one flow. Each matching `.sh` script runs the test plan with the shared load profile and exports JTL and HTML report outputs. I also added `run-all-load.sh` to execute all flows in one command and `analyze-jtl.mjs` to summarize response time, throughput, and error rate from the generated JTL files. 
 
 
 ### Wong Sheen Kerr (A0269647J)

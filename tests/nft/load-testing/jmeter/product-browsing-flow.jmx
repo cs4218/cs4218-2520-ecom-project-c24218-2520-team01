@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+AI Usage Declaration
+
+Tool Used:
+- GPT-5.3-Codex
+
+Prompt:
+ Help me refine the product-browsing load test for catalog browsing, category view, search, price filtering, and pagination.
+ Help me structure endpoint sequence, request data usage, and assertions for realistic browsing traffic.
+
+How the AI Output Was Used:
+ Used the AI output as a reference for this browsing-focused JMeter test plan
+-->
+
 <!-- Rachel Tai Ke Jia (A0258603A) -->
+
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="NFT - Product Browsing Flow Load Test" enabled="true">

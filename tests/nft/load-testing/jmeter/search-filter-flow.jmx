@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+AI Usage Declaration
+
+Tool Used:
+- GPT-5.3-Codex
+
+Prompt:
+ Help me refine the search-and-filter load test for category bootstrap, keyword search, and combined category-price filtering.
+ Help me structure test data usage and flow assertions so search and filter behavior can be measured consistently.
+
+How the AI Output Was Used:
+ Used the AI output as a reference for this search-and-filter JMeter test plan
+-->
+
 <!-- Rachel Tai Ke Jia (A0258603A) -->
+
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="NFT - Search and Filter Flow Load Test" enabled="true">

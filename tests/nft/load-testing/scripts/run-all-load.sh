@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
+
+# AI Usage Declaration
+#
+# Tool Used:
+# - GPT-5.3-Codex
+#
+# Prompt:
+# - Help me design and refine a single runner that executes all load-test flows with one command.
+# - Help me structure shared environment variables and sequential flow execution for reproducible runs.
+#
+# How the AI Output Was Used:
+# - Used the AI output as a reference for the orchestration script 
+
 ## Rachel Tai Ke Jia (A0258603A)
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
+
+# AI Usage Declaration
+#
+# Tool Used:
+# - GPT-5.3-Codex
+#
+# Prompt:
+# - Help me design and refine a runner script for the search-and-filter flow load test.
+# - Help me structure search/filter data files, thresholds, and reporting for repeatable measurements.
+#
+# How the AI Output Was Used:
+# - Used the AI output as a reference for this search-filter runner script 
+
 ## Rachel Tai Ke Jia (A0258603A)
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

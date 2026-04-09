@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+AI Usage Declaration
+
+Tool Used:
+- GPT-5.3-Codex
+
+Prompt:
+ Help me refine the order-checkout load test covering login, payment token retrieval, payment submission, and order retrieval
+ Help me structure checkout transaction steps, assertions, and thresholds for concurrent order placement
+
+How the AI Output Was Used:
+ Used the AI output as a reference for this checkout-focused JMeter test plan
+-->
+
 <!-- Rachel Tai Ke Jia (A0258603A) -->
+
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="NFT - Order Checkout Flow Load Test" enabled="true">
