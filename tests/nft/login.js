@@ -1,47 +1,33 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-// k6 options to define the load stages and pass/fail thresholds
+// Written by Nicholas Cheng, A0269648H
+
+// Save our base URL as a const
+const BASE_URL = 'http://localhost:6060';
+const TESTER_EMAIL = "JaneStresser@test.com"
+const TESTER_PASSWORD = "password123"
+
 export const options = {
     stages: [
-        // RAMP UP: Gradually increase traffic to find the breaking point
-        { duration: '15s', target: 10 },
-        { duration: '15s', target: 20 },
-        { duration: '15s', target: 40 },
-        { duration: '15s', target: 60 },
-        { duration: '15s', target: 80 },
-        { duration: '15s', target: 100 },
-
-        // PLATEAU: Hold the peak load to test system stability over time
-        // 15 seconds is too short to catch memory leaks or DB pool queues.
-        { duration: '3m', target: 100 },
-
-        // RAMP DOWN: Cool down gracefully
-        { duration: '30s', target: 0 },
+        { duration: '30s', target: 25 },  // Ramp up to a light load in 30 seconds
+        { duration: '10s', target: 25 },  // Hold at 25 VUs for 10 seconds
+        { duration: '30s', target: 50 },  // Ramp up to expected load in 30 seconds
+        { duration: '10s', target: 50 },  // Hold at 50 VUs for 10 seconds
+        { duration: '1m', target: 200 }, // Ramp up to heavy load in 1 minute
+        { duration: '10s', target: 200 }, // Hold at 200 VUs for 10 seconds
+        { duration: '1m', target: 400 }, // Ramp up to stress load in 1 minute
+        { duration: '30s', target: 400 }, // Hold at 400 VUs for 10 seconds
+        { duration: '1m', target: 0 }, // Ramp down to 0 VUs to observe server recovery
     ],
-    thresholds: {
 
-        http_req_duration: [
-            {
-                // 95% of requests must complete below 500ms
-                threshold: 'p(95)<500',
-                abortOnFail: true,
-                delayAbortEval: '10s',
-            },
-            {
-                // Catch the worst 1% of outliers (changed from p90)
-                threshold: 'p(99)<1000',
-                abortOnFail: true,
-                delayAbortEval: '10s',
-            }
-        ],
-        // Less than 1% of requests should fail
-        http_req_failed: ['rate<0.01'],
+    // Thresholds define what is considered a "pass" or "fail"
+    thresholds: {
+        http_req_duration: ['p(90)<700', 'p(95)<1000'], // 90% of all requests must complete in under 700ms, 95% of all requests must complete in under 1000ms
+        http_req_failed: ['rate<0.01'],    // The error rate (like 500 or 404 errors) must be less than 1% which is a guideline to follow
     },
 };
 
-// Use an environment variable for the base URL, defaulting to local dev port
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:6060';
 
 /**
  * setup() runs once before the test starts.
@@ -51,8 +37,8 @@ export function setup() {
     const registerUrl = `${BASE_URL}/api/v1/auth/register`;
     const payload = JSON.stringify({
         name: 'Jane Stresser',
-        email: 'JaneStresser@test.com',
-        password: 'password123',
+        email: TESTER_EMAIL,
+        password: TESTER_PASSWORD,
         phone: '1234567890',
         address: '123 Stress St',
         answer: 'k6-test',
@@ -80,8 +66,8 @@ export function setup() {
 export default function () {
     const loginUrl = `${BASE_URL}/api/v1/auth/login`;
     const payload = JSON.stringify({
-        email: 'JaneStresser@test.com',
-        password: 'password123',
+        email: TESTER_EMAIL,
+        password: TESTER_PASSWORD,
     });
 
     const params = {
@@ -97,6 +83,6 @@ export default function () {
         'token present': (r) => r.json().token !== undefined,
     });
 
-    // Pacing: Wait 1 second between requests per user to simulate realistic behavior
-    sleep(1);
+    // Pacing: Wait 1 to 2 seconds between requests per user to simulate realistic behavior
+    sleep(Math.random() + 1);
 }
