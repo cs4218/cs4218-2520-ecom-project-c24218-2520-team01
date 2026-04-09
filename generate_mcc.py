@@ -116,7 +116,11 @@ def generate_mcc_report(filename, model="gemini-2.5-flash"):
         print(f"[INFO] Successfully received response from Gemini API! (Request took {elapsed:.2f} seconds)")
         print(f"[INFO] Generated Report Size: {report_lines} lines, {len(report)} characters")
         
-        output_filename = f"{os.path.basename(filename)}_mcc_report.md"
+        output_dir = "mcc_reports"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+            
+        output_filename = os.path.join(output_dir, f"{os.path.basename(filename)}_mcc_report.md")
         with open(output_filename, "w", encoding="utf-8") as out:
             out.write(report)
             
