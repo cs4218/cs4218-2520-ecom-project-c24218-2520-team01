@@ -1,6 +1,8 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
+// Lim Jia Wei, A0277381W
+
 export const options = {
   stages: [
     { duration: '10s', target: 50 },
