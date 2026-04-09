@@ -449,6 +449,8 @@ I am responsible for implementing and validating an AI-driven metamorphic testin
   - `ai/metamorphic-testing/models/structured_response.py`
 - Generated artifacts:
   - `ai/metamorphic-testing/output/*.test.js`
+- Test configuration:
+  - `ai/metamorphic-testing/jest.generated.config.cjs`
 
 **What I implemented:**
 - Refined a two-stage agent workflow:
@@ -461,10 +463,9 @@ I am responsible for implementing and validating an AI-driven metamorphic testin
   - JSON block extraction from model text output
   - Pydantic validation before downstream use
 - Added clearer pipeline logging (stage progress and timing) to make execution and debugging observable.
-
-**Validation Outcome:**
-- Successfully ran end-to-end generation for target functions, where an example is `deleteCategoryController`.
-- Pipeline produced a generated test artifact in `ai/metamorphic-testing/output/deleteCategoryController.test.js`.
+- Added Jest configuration to run generated tests in fully autonomouse mode or semi-autonomous mode
+    - Fully autonomous mode: AI generates relations and tests, then tests are executed directly.
+    - Semi-automatic mode: AI proposes relations/tests first, then humans review or refine before execution.
 
 
 ### Wong Sheen Kerr (A0269647J)
