@@ -5,7 +5,8 @@ import { check, sleep } from 'k6';
 
 // Save our base URL as a const
 const BASE_URL = 'http://localhost:6060';
-const TESTER_PASSWORD = 'ILoveSoftwareTesting';
+const TESTER_PASSWORD = "password123"
+
 
 /**
  * Since we are doing registration there will be less registration requests as there are login requests.
