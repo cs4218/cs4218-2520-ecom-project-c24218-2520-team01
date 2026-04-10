@@ -2,6 +2,8 @@ import json
 from langchain_core.tools import tool
 from pathlib import Path
 
+# Written by Nicholas Cheng, A0269648H
+
 # Get the directory where this current Python file is located
 script_dir = Path(__file__).parent
 

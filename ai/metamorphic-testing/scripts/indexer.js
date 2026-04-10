@@ -1,6 +1,8 @@
 import { Project } from "ts-morph";
 import fs from "fs";
 
+// Written by Nicholas Cheng, A0269648H
+
 const INCLUDE = [
     "../../../client/src/**/*.{js,jsx,ts,tsx}",
     "../../../config/**/*.{js,ts}",

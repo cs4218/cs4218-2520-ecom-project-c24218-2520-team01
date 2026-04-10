@@ -12,6 +12,8 @@ from langchain.agents import create_agent
 from models.structured_response import FunctionMetamorphicAnalysis
 from tools.relations_agent_tools import fetch_relevant_functions, fetch_source_code
 
+# Written by Nicholas Cheng, A0269648H
+
 # Load environment variables
 project_root = Path(__file__).resolve().parents[1]
 load_dotenv(project_root / ".env")

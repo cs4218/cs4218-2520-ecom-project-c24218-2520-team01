@@ -14,6 +14,8 @@ YELLOW = "\033[93m"
 CYAN = "\033[96m"
 RESET = "\033[0m"
 
+# Written by Nicholas Cheng, A0269648H
+
 def linearize_metamorphic_analysis(analysis: FunctionMetamorphicAnalysis) -> str:
     """
     Flattens a FunctionMetamorphicAnalysis Pydantic object into a clean, 
@@ -62,6 +64,8 @@ def validate_pipeline(target_function: str) -> None:
     print(f"Target file: {context['target_file_path']}")
     print(f"Function span: {context['target_function']['startLine']} -> {context['target_function']['endLine']}")
     print(f"Extracted source length: {len(source)} chars")
+
+# Written by Nicholas Cheng, A0269648H
 
 def main():
     # Load env here to display the model name in the CLI

@@ -11,6 +11,8 @@ from models.structured_response import TestGenerationResult
 from tools.relations_agent_tools import fetch_relevant_functions, fetch_source_code
 from tools.mr_test_generation_tools import write_test_to_file
 
+# Written by Nicholas Cheng, A0269648H
+
 # Load environment variables
 project_root = Path(__file__).resolve().parents[1]
 # Keep agent configuration aligned with the local .env file so terminal runs and VS Code runs behave the same.
