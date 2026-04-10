@@ -54,11 +54,11 @@ export function getUsageText() {
     return [
         "Usage:",
         '  node tests/ai/unit-tests/ai.scenario.js generate "<goal>" [--out tests/ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
-        '  npm run run:ai -- generate "<goal>" [--out tests/ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
+        '  npm run test:ai-unit -- generate "<goal>" [--out tests/ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
         "",
         "Examples:",
         '  node tests/ai/unit-tests/ai.scenario.js generate "Describe the user flow you want to test"',
-        '  npm run run:ai -- generate "Open a page, complete a form, and verify the result" --out tests/ai/generated/example-flow.stagehand.js',
+        '  npm run test:ai-unit -- generate "Open a page, complete a form, and verify the result" --out tests/ai/generated/example-flow.stagehand.js',
     ].join("\n");
 }
 
