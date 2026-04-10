@@ -24,7 +24,7 @@ import path from "node:path";
 import dotenv from "dotenv";
 
 // These defaults are shared by generation time and by emitted replay artifacts.
-// The source code now lives under unit-tests, but generated replay files still
+// The source code now lives under ui-tests, but generated replay files still
 // belong in tests/ai/generated so they stay separate from the implementation.
 export const DEFAULT_APP_URL = "http://localhost:3000";
 export const DEFAULT_MODEL = "gpt-4o";
