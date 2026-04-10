@@ -13,6 +13,7 @@ Files:
 - `soak.k6.js`: main endurance suite
 - `run-soak.ps1`: PowerShell wrapper that runs k6 and saves CSV outputs
 - `monitor-process-memory.ps1`: optional process-level memory sampler for the backend PID
+- `analyze_k6_results.py`: Python summary script for the latest k6 CSV export plus its matching process-memory CSV
 
 ## What Each File Does
 
@@ -26,6 +27,8 @@ Files:
   Optional Windows convenience runner for launching k6 with CSV output and memory-monitoring support.
 - `monitor-process-memory.ps1`
   Optional process-level memory sampler for the backend PID during long runs.
+- `analyze_k6_results.py`
+  Streaming analyzer for the latest soak run in `tests/nft/soak/results/`. It computes statistics for overall, per-scenario, per-window, failure-breakdown, and process-memory summary data and outputs a JSON file in the same folder.
 
 ## Prerequisites
 
@@ -107,6 +110,14 @@ The PowerShell runner writes timestamped files into `tests/nft/soak/results/`:
 
 - `soak-YYYYMMDD-HHMMSS.csv`
 - `soak-YYYYMMDD-HHMMSS-process-memory.csv` when `-ServerPid` is used
+
+You can then analyze the latest run with:
+
+```powershell
+python .\tests\nft\soak\analyze_k6_results.py
+```
+
+The analyzer auto-discovers the latest soak CSV in `tests/nft/soak/results/`, finds its matching `-process-memory.csv` file, and writes the matching `-summary.json` file beside them.
 
 ## Scenarios Covered
 

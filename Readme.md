@@ -478,7 +478,7 @@ I implemented an API-level soak/endurance testing suite for the main shopper wor
 - search/filter
 - checkout/orders
 
-Files added:
+Files added: 
 - `tests/nft/soak/helpers.js`
   Shared soak-test setup, reset-route data preparation, fixed VU allocation, and summary output.
 - `tests/nft/soak/scenarios.js`
@@ -491,13 +491,18 @@ Files added:
   Optional process-level memory monitor for collecting backend memory usage during long runs.
 - `tests/nft/soak/README.md`
   Usage notes and instructions for running the soak tests.
+- `tests/nft/soak/analyze_k6_results.py`
+  Analyzer for the soak tests result CSV and matching process-memory CSV. It summarizes overall, per-scenario, per-window, failure, and memory-growth statistics into a JSON file.
+- `tests/nft/soak/soak-20260408-205833-summary.json`
+   JSON summary output of my 14 hours soak test run.
+
 
 What I did:
 - designed and implemented the soak/endurance test workflows
 - configured the suite to run the 4 scenarios concurrently as a mixed workload
 - used the existing reset route so each run starts with the same shopper, products, categories, and fake payment setup
-- ran long-duration soak testing and collected CSV-based performance results
-- monitored process-level memory as supporting evidence for retained-memory growth
+- ran a ~14 hour+ soak testing and collected [CSV-based performance results](https://drive.google.com/drive/folders/1xlbKnMzNcM-F2xSUkU0uP9nyn12aTigt?usp=sharing)
+- collected backend process memory during the soak run to check for memory leak.
 
 
 ## 7. MS1 CI URL
