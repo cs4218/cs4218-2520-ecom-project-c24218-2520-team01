@@ -28,7 +28,7 @@ export const options = {
 
     // Thresholds define what is considered a "pass" or "fail"
     thresholds: {
-        http_req_duration: ['p(90)<1000', 'p(95)<1200'], // 90% of all requests must complete in under 1000ms, 95% of all requests must complete in under 1500ms
+        http_req_duration: ['p(90)<1000', 'p(95)<1200'], // 90% of all requests must complete in under 1000ms, 95% of all requests must complete in under 1200ms
         http_req_failed: ['rate<0.01'],    // The error rate (like 500 or 404 errors) must be less than 1% which is a guideline to follow
     },
 };
