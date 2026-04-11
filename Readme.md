@@ -465,7 +465,7 @@ The first profile is a uniform baseline of 100 users per flow. This profile is u
 
 The funnel-based profile is justified by typical conversion behavior: browsing sits at the top of the funnel, search and product detail are used by a smaller subset of visitors, authentication is a low-frequency session action, and checkout is the smallest but most critical transaction stage. 
 
-Each flow is tested independently under its selected load profile, with a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration. Each `.jmx` file defines a JMeter test plan for one flow. Each matching `.sh` script runs the test plan with its configured load profile and exports JTL and HTML report outputs. I also added `run-all-load.sh` to execute all flows in sequence and `analyze-jtl.mjs` to summarize response time, throughput, and error rate from the generated JTL files.
+Each flow is tested independently under its selected load profile, with a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration. Each `.jmx` file defines a JMeter test plan for one flow. Each matching `.sh` script runs the test plan with its configured load profile and exports JTL and HTML report outputs. I also added `run-all-load.sh` to execute all flows in sequence and `analyze-jtl.mjs` to summarize response time, throughput, and error rate from the generated JTL files. The analyzer applies the flow thresholds based on the generated JTL filename, so each runner output is checked against the correct browsing, product detail, search & filter, authentication, or order & payment limits.
 
 
 ### Wong Sheen Kerr (A0269647J)

@@ -184,6 +184,16 @@ function findLabelStat(stats, candidates) {
   });
 }
 
+function inferFlowTypeFromPath(filePath) {
+  const name = path.basename(filePath).toLowerCase();
+  if (name.includes("browsing-flow")) return "browsing";
+  if (name.includes("product-detail")) return "product_detail";
+  if (name.includes("search-filter")) return "search_filter";
+  if (name.includes("auth-flow") || name.includes("authentication")) return "authentication";
+  if (name.includes("order-checkout") || name.includes("payment")) return "order_payment";
+  return "unknown";
+}
+
 const file = fs.readFileSync(jtlPath, "utf8").trim();
 if (!file) {
   console.error("JTL file is empty");
@@ -252,33 +262,36 @@ const cpuUtilisation =
     ? (cpuBusySeconds / cpuTotalSeconds) * 100
     : null;
 
+const flowType = inferFlowTypeFromPath(jtlPath);
+const flowThresholdDefaults = {
+  browsing: { p90Ms: 50, p95Ms: 100 },
+  product_detail: { p90Ms: 50, p95Ms: 100 },
+  search_filter: { p90Ms: 100, p95Ms: 200 },
+  authentication: { p90Ms: 200, p95Ms: 300 },
+  order_payment: { p90Ms: 900, p95Ms: 1000 },
+  unknown: { p90Ms: 100, p95Ms: 200 },
+};
+
+const selectedDefaults = flowThresholdDefaults[flowType] || flowThresholdDefaults.unknown;
+const flowP90ThresholdMs = parseThreshold("FLOW_P90_THRESHOLD_MS", selectedDefaults.p90Ms);
+const flowP95ThresholdMs = parseThreshold("FLOW_P95_THRESHOLD_MS", selectedDefaults.p95Ms);
+
 const thresholds = {
-  overallP95Ms: parseThreshold("OVERALL_P95_THRESHOLD_MS", 1500),
-  searchP95Ms: parseThreshold("SEARCH_P95_THRESHOLD_MS", 900),
-  filterP95Ms: parseThreshold("FILTER_P95_THRESHOLD_MS", 1200),
-  authRegisterP95Ms: parseThreshold("AUTH_REGISTER_P95_THRESHOLD_MS", 1200),
-  authLoginP95Ms: parseThreshold("AUTH_LOGIN_P95_THRESHOLD_MS", 900),
-  authUserAuthP95Ms: parseThreshold("AUTH_USER_AUTH_P95_THRESHOLD_MS", 700),
-  orderPlacementP95Ms: parseThreshold("ORDER_PLACEMENT_P95_THRESHOLD_MS", 2500),
-  paymentFlowP95Ms: parseThreshold("PAYMENT_FLOW_P95_THRESHOLD_MS", 2200),
-  checkoutFlowP95Ms: parseThreshold("CHECKOUT_FLOW_P95_THRESHOLD_MS", 3000),
+  flowP90Ms: parseThreshold(`${flowType.toUpperCase()}_P90_THRESHOLD_MS`, flowP90ThresholdMs),
+  flowP95Ms: parseThreshold(`${flowType.toUpperCase()}_P95_THRESHOLD_MS`, flowP95ThresholdMs),
   errorRatePct: parseThreshold("ERROR_RATE_THRESHOLD_PCT", 1),
   minThroughputReqPerSec: parseThreshold("MIN_THROUGHPUT_REQ_PER_SEC", 5),
 };
 
-const searchStat = findLabelStat(labelStats, ["flow 1 - search", "get search products"]);
-const filterStat = findLabelStat(labelStats, ["flow 2 - filter results", "flow 4 - price filter", "post product filters"]);
-const authRegisterStat = findLabelStat(labelStats, ["flow 1 - register", "post register"]);
-const authLoginStat = findLabelStat(labelStats, ["flow 2 - login", "post login"]);
-const authUserAuthStat = findLabelStat(labelStats, ["flow 3 - validate auth token", "get user auth"]);
-const paymentFlowStat = findLabelStat(labelStats, ["flow 2 - payment token request", "get braintree token"]);
-const orderPlacementStat = findLabelStat(labelStats, ["flow 3 - concurrent order placement", "post braintree payment"]);
-const checkoutFlowStat = findLabelStat(labelStats, ["flow 4 - checkout end-to-end validation", "get user orders"]);
-
 const checks = [
   {
-    name: `Overall P95 <= ${thresholds.overallP95Ms}ms`,
-    pass: overall.p95 <= thresholds.overallP95Ms,
+    name: `Flow P90 <= ${thresholds.flowP90Ms}ms`,
+    pass: overall.p90 <= thresholds.flowP90Ms,
+    actual: `${overall.p90.toFixed(1)}ms`,
+  },
+  {
+    name: `Flow P95 <= ${thresholds.flowP95Ms}ms`,
+    pass: overall.p95 <= thresholds.flowP95Ms,
     actual: `${overall.p95.toFixed(1)}ms`,
   },
   {
@@ -292,70 +305,6 @@ const checks = [
     actual: `${overall.throughput.toFixed(2)} req/s`,
   },
 ];
-
-if (searchStat) {
-  checks.push({
-    name: `Search P95 <= ${thresholds.searchP95Ms}ms`,
-    pass: searchStat.p95 <= thresholds.searchP95Ms,
-    actual: `${searchStat.p95.toFixed(1)}ms (${searchStat.label})`,
-  });
-}
-
-if (filterStat) {
-  checks.push({
-    name: `Filter P95 <= ${thresholds.filterP95Ms}ms`,
-    pass: filterStat.p95 <= thresholds.filterP95Ms,
-    actual: `${filterStat.p95.toFixed(1)}ms (${filterStat.label})`,
-  });
-}
-
-if (authRegisterStat) {
-  checks.push({
-    name: `Auth Register P95 <= ${thresholds.authRegisterP95Ms}ms`,
-    pass: authRegisterStat.p95 <= thresholds.authRegisterP95Ms,
-    actual: `${authRegisterStat.p95.toFixed(1)}ms (${authRegisterStat.label})`,
-  });
-}
-
-if (authLoginStat) {
-  checks.push({
-    name: `Auth Login P95 <= ${thresholds.authLoginP95Ms}ms`,
-    pass: authLoginStat.p95 <= thresholds.authLoginP95Ms,
-    actual: `${authLoginStat.p95.toFixed(1)}ms (${authLoginStat.label})`,
-  });
-}
-
-if (authUserAuthStat) {
-  checks.push({
-    name: `Auth User-Auth P95 <= ${thresholds.authUserAuthP95Ms}ms`,
-    pass: authUserAuthStat.p95 <= thresholds.authUserAuthP95Ms,
-    actual: `${authUserAuthStat.p95.toFixed(1)}ms (${authUserAuthStat.label})`,
-  });
-}
-
-if (paymentFlowStat) {
-  checks.push({
-    name: `Payment Flow P95 <= ${thresholds.paymentFlowP95Ms}ms`,
-    pass: paymentFlowStat.p95 <= thresholds.paymentFlowP95Ms,
-    actual: `${paymentFlowStat.p95.toFixed(1)}ms (${paymentFlowStat.label})`,
-  });
-}
-
-if (orderPlacementStat) {
-  checks.push({
-    name: `Order Placement P95 <= ${thresholds.orderPlacementP95Ms}ms`,
-    pass: orderPlacementStat.p95 <= thresholds.orderPlacementP95Ms,
-    actual: `${orderPlacementStat.p95.toFixed(1)}ms (${orderPlacementStat.label})`,
-  });
-}
-
-if (checkoutFlowStat) {
-  checks.push({
-    name: `Checkout Flow P95 <= ${thresholds.checkoutFlowP95Ms}ms`,
-    pass: checkoutFlowStat.p95 <= thresholds.checkoutFlowP95Ms,
-    actual: `${checkoutFlowStat.p95.toFixed(1)}ms (${checkoutFlowStat.label})`,
-  });
-}
 
 const failedChecks = checks.filter((check) => !check.pass);
 
