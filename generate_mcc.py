@@ -8,6 +8,8 @@ from google.genai import types
 
 from dotenv import load_dotenv
 
+# Lim Jia Wei, A0277381W
+
 #
 # AI Usage Declaration
 #
