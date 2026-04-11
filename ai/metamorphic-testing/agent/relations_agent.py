@@ -13,6 +13,7 @@ from models.structured_response import FunctionMetamorphicAnalysis
 from tools.relations_agent_tools import fetch_relevant_functions, fetch_source_code
 
 # Written by Nicholas Cheng, A0269648H
+# And written by Rachel Tai, A0258603A
 
 # Load environment variables
 project_root = Path(__file__).resolve().parents[1]

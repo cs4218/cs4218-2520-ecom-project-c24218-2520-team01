@@ -15,6 +15,7 @@ CYAN = "\033[96m"
 RESET = "\033[0m"
 
 # Written by Nicholas Cheng, A0269648H
+# And written by Rachel Tai, A0258603A
 
 def linearize_metamorphic_analysis(analysis: FunctionMetamorphicAnalysis) -> str:
     """

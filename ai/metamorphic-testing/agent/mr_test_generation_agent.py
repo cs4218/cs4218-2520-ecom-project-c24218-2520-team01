@@ -12,6 +12,7 @@ from tools.relations_agent_tools import fetch_relevant_functions, fetch_source_c
 from tools.mr_test_generation_tools import write_test_to_file
 
 # Written by Nicholas Cheng, A0269648H
+# And written by Rachel Tai, A0258603A
 
 # Load environment variables
 project_root = Path(__file__).resolve().parents[1]

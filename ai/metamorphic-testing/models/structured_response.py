@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 
 # Written by Nicholas Cheng, A0269648H
+# And written by Rachel Tai, A0258603A
 
 class ArgumentInfo(BaseModel):
     name: Optional[str] = Field(description="Name of the argument or request body field")
