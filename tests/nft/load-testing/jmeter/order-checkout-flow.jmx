@@ -282,6 +282,7 @@ def cart = [[_id: cartProductId, price: parsedPrice]]
 def nonce = vars.get('defaultNonce') ?: 'fake-valid-nonce'
 def paymentBody = [nonce: nonce, cart: cart]
 vars.put('checkoutPaymentBody', groovy.json.JsonOutput.toJson(paymentBody))
+              </stringProp>
               <stringProp name="scriptLanguage">groovy</stringProp>
             </JSR223PreProcessor>
             <hashTree/>
