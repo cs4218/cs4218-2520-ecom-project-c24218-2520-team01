@@ -1,5 +1,7 @@
 // Configuration for Jest to run the generated metamorphic tests
 
+// Written by Rachel Tai, A0258603A
+
 module.exports = {
     displayName: "generated-mt",
     rootDir: "../..",
