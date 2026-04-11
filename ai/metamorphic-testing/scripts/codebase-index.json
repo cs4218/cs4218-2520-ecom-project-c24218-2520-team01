@@ -1,0 +1,4429 @@
+[
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/server.js",
+    "functions": [
+      {
+        "name": "startServer",
+        "kind": "arrow",
+        "startLine": 44,
+        "endLine": 52
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "express",
+        "named": [],
+        "default": "express"
+      },
+      {
+        "from": "dotenv",
+        "named": [],
+        "default": "dotenv"
+      },
+      {
+        "from": "morgan",
+        "named": [],
+        "default": "morgan"
+      },
+      {
+        "from": "./config/db.js",
+        "named": [],
+        "default": "connectDB"
+      },
+      {
+        "from": "./routes/authRoute.js",
+        "named": [],
+        "default": "authRoutes"
+      },
+      {
+        "from": "./routes/categoryRoutes.js",
+        "named": [],
+        "default": "categoryRoutes"
+      },
+      {
+        "from": "./routes/productRoutes.js",
+        "named": [],
+        "default": "productRoutes"
+      },
+      {
+        "from": "./tests/e2e/UiTestingSetupSheen.js",
+        "named": [],
+        "default": "uiTestingSetupSheen"
+      },
+      {
+        "from": "./routes/userRoutes.js",
+        "named": [],
+        "default": "userRoutes"
+      },
+      {
+        "from": "cors",
+        "named": [],
+        "default": "cors"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/config/db.js",
+    "functions": [
+      {
+        "name": "connectDB",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 10
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "mongoose",
+        "named": [],
+        "default": "mongoose"
+      },
+      {
+        "from": "colors",
+        "named": [],
+        "default": "colors"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/controllers/authController.js",
+    "functions": [
+      {
+        "name": "registerController",
+        "kind": "arrow",
+        "startLine": 7,
+        "endLine": 64
+      },
+      {
+        "name": "loginController",
+        "kind": "arrow",
+        "startLine": 67,
+        "endLine": 118
+      },
+      {
+        "name": "forgotPasswordController",
+        "kind": "arrow",
+        "startLine": 122,
+        "endLine": 164
+      },
+      {
+        "name": "testController",
+        "kind": "arrow",
+        "startLine": 170,
+        "endLine": 177
+      },
+      {
+        "name": "updateProfileController",
+        "kind": "arrow",
+        "startLine": 180,
+        "endLine": 212
+      },
+      {
+        "name": "getOrdersController",
+        "kind": "arrow",
+        "startLine": 217,
+        "endLine": 241
+      },
+      {
+        "name": "getAllOrdersController",
+        "kind": "arrow",
+        "startLine": 244,
+        "endLine": 261
+      },
+      {
+        "name": "orderStatusController",
+        "kind": "arrow",
+        "startLine": 264,
+        "endLine": 307
+      },
+      {
+        "name": "getUsersController",
+        "kind": "arrow",
+        "startLine": 311,
+        "endLine": 330
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "../models/userModel.js",
+        "named": [],
+        "default": "userModel"
+      },
+      {
+        "from": "../models/orderModel.js",
+        "named": [],
+        "default": "orderModel"
+      },
+      {
+        "from": "./../helpers/authHelper.js",
+        "named": [
+          "comparePassword",
+          "hashPassword"
+        ]
+      },
+      {
+        "from": "jsonwebtoken",
+        "named": [],
+        "default": "JWT"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/controllers/categoryController.js",
+    "functions": [
+      {
+        "name": "createCategoryController",
+        "kind": "arrow",
+        "startLine": 6,
+        "endLine": 44
+      },
+      {
+        "name": "updateCategoryController",
+        "kind": "arrow",
+        "startLine": 47,
+        "endLine": 93
+      },
+      {
+        "name": "categoryController",
+        "kind": "arrow",
+        "startLine": 96,
+        "endLine": 112
+      },
+      {
+        "name": "singleCategoryController",
+        "kind": "arrow",
+        "startLine": 115,
+        "endLine": 148
+      },
+      {
+        "name": "deleteCategoryController",
+        "kind": "arrow",
+        "startLine": 151,
+        "endLine": 183
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "../models/categoryModel.js",
+        "named": [],
+        "default": "categoryModel"
+      },
+      {
+        "from": "slugify",
+        "named": [],
+        "default": "slugify"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/controllers/productController.js",
+    "functions": [
+      {
+        "name": "createProductController",
+        "kind": "arrow",
+        "startLine": 34,
+        "endLine": 85
+      },
+      {
+        "name": "getProductController",
+        "kind": "arrow",
+        "startLine": 88,
+        "endLine": 110
+      },
+      {
+        "name": "getSingleProductController",
+        "kind": "arrow",
+        "startLine": 112,
+        "endLine": 139
+      },
+      {
+        "name": "productPhotoController",
+        "kind": "arrow",
+        "startLine": 142,
+        "endLine": 170
+      },
+      {
+        "name": "deleteProductController",
+        "kind": "arrow",
+        "startLine": 173,
+        "endLine": 218
+      },
+      {
+        "name": "updateProductController",
+        "kind": "arrow",
+        "startLine": 221,
+        "endLine": 278
+      },
+      {
+        "name": "productFiltersController",
+        "kind": "arrow",
+        "startLine": 281,
+        "endLine": 301
+      },
+      {
+        "name": "productCountController",
+        "kind": "arrow",
+        "startLine": 304,
+        "endLine": 319
+      },
+      {
+        "name": "productListController",
+        "kind": "arrow",
+        "startLine": 322,
+        "endLine": 346
+      },
+      {
+        "name": "searchProductController",
+        "kind": "arrow",
+        "startLine": 349,
+        "endLine": 369
+      },
+      {
+        "name": "relatedProductController",
+        "kind": "arrow",
+        "startLine": 372,
+        "endLine": 395
+      },
+      {
+        "name": "productCategoryController",
+        "kind": "arrow",
+        "startLine": 399,
+        "endLine": 418
+      },
+      {
+        "name": "braintreeTokenController",
+        "kind": "arrow",
+        "startLine": 424,
+        "endLine": 454
+      },
+      {
+        "name": "brainTreePaymentController",
+        "kind": "arrow",
+        "startLine": 457,
+        "endLine": 547
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "../models/categoryModel.js",
+        "named": [],
+        "default": "categoryModel"
+      },
+      {
+        "from": "../models/orderModel.js",
+        "named": [],
+        "default": "orderModel"
+      },
+      {
+        "from": "../models/productModel.js",
+        "named": [],
+        "default": "productModel"
+      },
+      {
+        "from": "braintree",
+        "named": [],
+        "default": "braintree"
+      },
+      {
+        "from": "dotenv",
+        "named": [],
+        "default": "dotenv"
+      },
+      {
+        "from": "fs",
+        "named": [],
+        "default": "fs"
+      },
+      {
+        "from": "slugify",
+        "named": [],
+        "default": "slugify"
+      },
+      {
+        "from": "../tests/e2e/e2eFixturesSheen.js",
+        "named": [
+          "e2ePayment"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/helpers/authHelper.js",
+    "functions": [
+      {
+        "name": "hashPassword",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 12
+      },
+      {
+        "name": "comparePassword",
+        "kind": "arrow",
+        "startLine": 14,
+        "endLine": 16
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "bcrypt",
+        "named": [],
+        "default": "bcrypt"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/middlewares/authMiddleware.js",
+    "functions": [
+      {
+        "name": "requireSignIn",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 21
+      },
+      {
+        "name": "isAdmin",
+        "kind": "arrow",
+        "startLine": 24,
+        "endLine": 43
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "jsonwebtoken",
+        "named": [],
+        "default": "JWT"
+      },
+      {
+        "from": "../models/userModel.js",
+        "named": [],
+        "default": "userModel"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/models/categoryModel.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "mongoose",
+        "named": [],
+        "default": "mongoose"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/models/orderModel.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "mongoose",
+        "named": [],
+        "default": "mongoose"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/models/productModel.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "mongoose",
+        "named": [],
+        "default": "mongoose"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/models/userModel.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "mongoose",
+        "named": [],
+        "default": "mongoose"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/routes/authRoute.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "express",
+        "named": [],
+        "default": "express"
+      },
+      {
+        "from": "../controllers/authController.js",
+        "named": [
+          "forgotPasswordController",
+          "getAllOrdersController",
+          "getOrdersController",
+          "getUsersController",
+          "loginController",
+          "orderStatusController",
+          "registerController",
+          "testController",
+          "updateProfileController"
+        ]
+      },
+      {
+        "from": "../middlewares/authMiddleware.js",
+        "named": [
+          "isAdmin",
+          "requireSignIn"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/routes/categoryRoutes.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "express",
+        "named": [],
+        "default": "express"
+      },
+      {
+        "from": "./../middlewares/authMiddleware.js",
+        "named": [
+          "isAdmin",
+          "requireSignIn"
+        ]
+      },
+      {
+        "from": "./../controllers/categoryController.js",
+        "named": [
+          "categoryController",
+          "createCategoryController",
+          "deleteCategoryController",
+          "singleCategoryController",
+          "updateCategoryController"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/routes/productRoutes.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "express",
+        "named": [],
+        "default": "express"
+      },
+      {
+        "from": "express-formidable",
+        "named": [],
+        "default": "formidable"
+      },
+      {
+        "from": "../controllers/productController.js",
+        "named": [
+          "brainTreePaymentController",
+          "braintreeTokenController",
+          "createProductController",
+          "deleteProductController",
+          "getProductController",
+          "getSingleProductController",
+          "productCategoryController",
+          "productCountController",
+          "productFiltersController",
+          "productListController",
+          "productPhotoController",
+          "relatedProductController",
+          "searchProductController",
+          "updateProductController"
+        ]
+      },
+      {
+        "from": "../middlewares/authMiddleware.js",
+        "named": [
+          "isAdmin",
+          "requireSignIn"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/routes/userRoutes.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "express",
+        "named": [],
+        "default": "express"
+      },
+      {
+        "from": "../controllers/authController.js",
+        "named": [
+          "getUsersController"
+        ]
+      },
+      {
+        "from": "../middlewares/authMiddleware.js",
+        "named": [
+          "isAdmin",
+          "requireSignIn"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/App.js",
+    "functions": [
+      {
+        "name": "App",
+        "params": [],
+        "returnType": "React.JSX.Element",
+        "startLine": 27,
+        "endLine": 61
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Routes",
+          "Route"
+        ]
+      },
+      {
+        "from": "./pages/HomePage",
+        "named": [],
+        "default": "HomePage"
+      },
+      {
+        "from": "./pages/About",
+        "named": [],
+        "default": "About"
+      },
+      {
+        "from": "./pages/Contact",
+        "named": [],
+        "default": "Contact"
+      },
+      {
+        "from": "./pages/Policy",
+        "named": [],
+        "default": "Policy"
+      },
+      {
+        "from": "./pages/Pagenotfound",
+        "named": [],
+        "default": "Pagenotfound"
+      },
+      {
+        "from": "./pages/Auth/Register",
+        "named": [],
+        "default": "Register"
+      },
+      {
+        "from": "./pages/Auth/Login",
+        "named": [],
+        "default": "Login"
+      },
+      {
+        "from": "./pages/Auth/ForgotPassword",
+        "named": [],
+        "default": "ForgotPassword"
+      },
+      {
+        "from": "./pages/user/Dashboard",
+        "named": [],
+        "default": "Dashboard"
+      },
+      {
+        "from": "./components/Routes/Private",
+        "named": [],
+        "default": "PrivateRoute"
+      },
+      {
+        "from": "./components/Routes/AdminRoute",
+        "named": [],
+        "default": "AdminRoute"
+      },
+      {
+        "from": "./pages/admin/AdminDashboard",
+        "named": [],
+        "default": "AdminDashboard"
+      },
+      {
+        "from": "./pages/admin/CreateCategory",
+        "named": [],
+        "default": "CreateCategory"
+      },
+      {
+        "from": "./pages/admin/CreateProduct",
+        "named": [],
+        "default": "CreateProduct"
+      },
+      {
+        "from": "./pages/admin/Users",
+        "named": [],
+        "default": "Users"
+      },
+      {
+        "from": "./pages/user/Orders",
+        "named": [],
+        "default": "Orders"
+      },
+      {
+        "from": "./pages/user/Profile",
+        "named": [],
+        "default": "Profile"
+      },
+      {
+        "from": "./pages/admin/Products",
+        "named": [],
+        "default": "Products"
+      },
+      {
+        "from": "./pages/admin/UpdateProduct",
+        "named": [],
+        "default": "UpdateProduct"
+      },
+      {
+        "from": "./pages/Search",
+        "named": [],
+        "default": "Search"
+      },
+      {
+        "from": "./pages/ProductDetails",
+        "named": [],
+        "default": "ProductDetails"
+      },
+      {
+        "from": "./pages/Categories",
+        "named": [],
+        "default": "Categories"
+      },
+      {
+        "from": "./pages/CategoryProduct",
+        "named": [],
+        "default": "CategoryProduct"
+      },
+      {
+        "from": "./pages/CartPage",
+        "named": [],
+        "default": "CartPage"
+      },
+      {
+        "from": "./pages/admin/AdminOrders",
+        "named": [],
+        "default": "AdminOrders"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/index.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-dom/client",
+        "named": [],
+        "default": "ReactDOM"
+      },
+      {
+        "from": "./index.css",
+        "named": []
+      },
+      {
+        "from": "./App",
+        "named": [],
+        "default": "App"
+      },
+      {
+        "from": "./reportWebVitals",
+        "named": [],
+        "default": "reportWebVitals"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "BrowserRouter"
+        ]
+      },
+      {
+        "from": "./context/auth",
+        "named": [
+          "AuthProvider"
+        ]
+      },
+      {
+        "from": "./context/search",
+        "named": [
+          "SearchProvider"
+        ]
+      },
+      {
+        "from": "./context/cart",
+        "named": [
+          "CartProvider"
+        ]
+      },
+      {
+        "from": "antd/dist/reset.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/reportWebVitals.js",
+    "functions": [
+      {
+        "name": "reportWebVitals",
+        "kind": "arrow",
+        "startLine": 1,
+        "endLine": 11
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/setupTests.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "@testing-library/jest-dom",
+        "named": []
+      },
+      {
+        "from": "util",
+        "named": [
+          "TextDecoder",
+          "TextEncoder"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/404.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/App.js",
+    "functions": [
+      {
+        "name": "App",
+        "params": [],
+        "returnType": "React.JSX.Element",
+        "startLine": 26,
+        "endLine": 59
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Routes",
+          "Route"
+        ]
+      },
+      {
+        "from": "./pages/HomePage",
+        "named": [],
+        "default": "HomePage"
+      },
+      {
+        "from": "./pages/About",
+        "named": [],
+        "default": "About"
+      },
+      {
+        "from": "./pages/Contact",
+        "named": [],
+        "default": "Contact"
+      },
+      {
+        "from": "./pages/Policy",
+        "named": [],
+        "default": "Policy"
+      },
+      {
+        "from": "./pages/Pagenotfound",
+        "named": [],
+        "default": "Pagenotfound"
+      },
+      {
+        "from": "./pages/Auth/Register",
+        "named": [],
+        "default": "Register"
+      },
+      {
+        "from": "./pages/Auth/Login",
+        "named": [],
+        "default": "Login"
+      },
+      {
+        "from": "./pages/user/Dashboard",
+        "named": [],
+        "default": "Dashboard"
+      },
+      {
+        "from": "./components/Routes/Private",
+        "named": [],
+        "default": "PrivateRoute"
+      },
+      {
+        "from": "./components/Routes/AdminRoute",
+        "named": [],
+        "default": "AdminRoute"
+      },
+      {
+        "from": "./pages/admin/AdminDashboard",
+        "named": [],
+        "default": "AdminDashboard"
+      },
+      {
+        "from": "./pages/admin/CreateCategory",
+        "named": [],
+        "default": "CreateCategory"
+      },
+      {
+        "from": "./pages/admin/CreateProduct",
+        "named": [],
+        "default": "CreateProduct"
+      },
+      {
+        "from": "./pages/admin/Users",
+        "named": [],
+        "default": "Users"
+      },
+      {
+        "from": "./pages/user/Orders",
+        "named": [],
+        "default": "Orders"
+      },
+      {
+        "from": "./pages/user/Profile",
+        "named": [],
+        "default": "Profile"
+      },
+      {
+        "from": "./pages/admin/Products",
+        "named": [],
+        "default": "Products"
+      },
+      {
+        "from": "./pages/admin/UpdateProduct",
+        "named": [],
+        "default": "UpdateProduct"
+      },
+      {
+        "from": "./pages/Search",
+        "named": [],
+        "default": "Search"
+      },
+      {
+        "from": "./pages/ProductDetails",
+        "named": [],
+        "default": "ProductDetails"
+      },
+      {
+        "from": "./pages/Categories",
+        "named": [],
+        "default": "Categories"
+      },
+      {
+        "from": "./pages/CategoryProduct",
+        "named": [],
+        "default": "CategoryProduct"
+      },
+      {
+        "from": "./pages/CartPage",
+        "named": [],
+        "default": "CartPage"
+      },
+      {
+        "from": "./pages/admin/AdminOrders",
+        "named": [],
+        "default": "AdminOrders"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/index.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-dom/client",
+        "named": [],
+        "default": "ReactDOM"
+      },
+      {
+        "from": "./index.css",
+        "named": []
+      },
+      {
+        "from": "./App",
+        "named": [],
+        "default": "App"
+      },
+      {
+        "from": "./reportWebVitals",
+        "named": [],
+        "default": "reportWebVitals"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "BrowserRouter"
+        ]
+      },
+      {
+        "from": "./context/auth",
+        "named": [
+          "AuthProvider"
+        ]
+      },
+      {
+        "from": "./context/search",
+        "named": [
+          "SearchProvider"
+        ]
+      },
+      {
+        "from": "./context/cart",
+        "named": [
+          "CartProvider"
+        ]
+      },
+      {
+        "from": "antd/dist/reset.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/index.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/reportWebVitals.js",
+    "functions": [
+      {
+        "name": "reportWebVitals",
+        "kind": "arrow",
+        "startLine": 1,
+        "endLine": 11
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/setupTests.js",
+    "functions": [],
+    "classes": [],
+    "imports": [
+      {
+        "from": "@testing-library/jest-dom",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/AdminMenu.js",
+    "functions": [
+      {
+        "name": "AdminMenu",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 43
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "NavLink"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Footer.js",
+    "functions": [
+      {
+        "name": "Footer",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 14
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Link"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Header.js",
+    "functions": [
+      {
+        "name": "Header",
+        "kind": "arrow",
+        "startLine": 11,
+        "endLine": 139
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "NavLink",
+          "Link"
+        ]
+      },
+      {
+        "from": "../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "./Form/SearchInput",
+        "named": [],
+        "default": "SearchInput"
+      },
+      {
+        "from": "../hooks/useCategory",
+        "named": [],
+        "default": "useCategory"
+      },
+      {
+        "from": "../context/cart",
+        "named": [
+          "useCart"
+        ]
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Badge"
+        ]
+      },
+      {
+        "from": "../styles/Header.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Layout.js",
+    "functions": [
+      {
+        "name": "Layout",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 26
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./Footer",
+        "named": [],
+        "default": "Footer"
+      },
+      {
+        "from": "./Header",
+        "named": [],
+        "default": "Header"
+      },
+      {
+        "from": "react-helmet",
+        "named": [
+          "Helmet"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [
+          "Toaster"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Prices.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Spinner.js",
+    "functions": [
+      {
+        "name": "Spinner",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 32
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate",
+          "useLocation"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/UserMenu.js",
+    "functions": [
+      {
+        "name": "UserMenu",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "NavLink"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/context/auth.js",
+    "functions": [
+      {
+        "name": "AuthProvider",
+        "kind": "arrow",
+        "startLine": 6,
+        "endLine": 39
+      },
+      {
+        "name": "useAuth",
+        "kind": "arrow",
+        "startLine": 42,
+        "endLine": 42
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useContext",
+          "createContext",
+          "useEffect"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      }
+    ],
+    "exports": [
+      {
+        "named": [
+          "useAuth",
+          "AuthProvider"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/context/cart.js",
+    "functions": [
+      {
+        "name": "CartProvider",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 52
+      },
+      {
+        "name": "useCart",
+        "kind": "arrow",
+        "startLine": 55,
+        "endLine": 55
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useContext",
+          "createContext",
+          "useEffect"
+        ],
+        "default": "React"
+      }
+    ],
+    "exports": [
+      {
+        "named": [
+          "useCart",
+          "CartProvider"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/context/search.js",
+    "functions": [
+      {
+        "name": "SearchProvider",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 15
+      },
+      {
+        "name": "useSearch",
+        "kind": "arrow",
+        "startLine": 18,
+        "endLine": 18
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useContext",
+          "createContext"
+        ],
+        "default": "React"
+      }
+    ],
+    "exports": [
+      {
+        "named": [
+          "useSearch",
+          "SearchProvider"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/hooks/useCategory.js",
+    "functions": [
+      {
+        "name": "useCategory",
+        "params": [],
+        "returnType": "any[]",
+        "startLine": 7,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/About.js",
+    "functions": [
+      {
+        "name": "About",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 23
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/CartPage.js",
+    "functions": [
+      {
+        "name": "calculateTotalPrice",
+        "kind": "arrow",
+        "startLine": 12,
+        "endLine": 32
+      },
+      {
+        "name": "CartPage",
+        "kind": "arrow",
+        "startLine": 34,
+        "endLine": 305
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../context/cart",
+        "named": [
+          "useCart"
+        ]
+      },
+      {
+        "from": "../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "braintree-web-drop-in-react",
+        "named": [],
+        "default": "DropIn"
+      },
+      {
+        "from": "react-icons/ai",
+        "named": [
+          "AiFillWarning"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../styles/CartStyles.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/Categories.js",
+    "functions": [
+      {
+        "name": "Categories",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 22
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Link"
+        ]
+      },
+      {
+        "from": "../hooks/useCategory",
+        "named": [],
+        "default": "useCategory"
+      },
+      {
+        "from": "../components/Layout",
+        "named": [],
+        "default": "Layout"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/CategoryProduct.js",
+    "functions": [
+      {
+        "name": "CategoryProduct",
+        "kind": "arrow",
+        "startLine": 9,
+        "endLine": 101
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "react-toastify",
+        "named": [
+          "toast"
+        ]
+      },
+      {
+        "from": "../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useParams",
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "../styles/CategoryProductStyles.css",
+        "named": []
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "../context/cart",
+        "named": [
+          "useCart"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/Contact.js",
+    "functions": [
+      {
+        "name": "Contact",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 35
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "react-icons/bi",
+        "named": [
+          "BiMailSend",
+          "BiPhoneCall",
+          "BiSupport"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/HomePage.js",
+    "functions": [
+      {
+        "name": "HomePage",
+        "kind": "arrow",
+        "startLine": 12,
+        "endLine": 228
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Checkbox",
+          "Radio"
+        ]
+      },
+      {
+        "from": "../components/Prices",
+        "named": [
+          "Prices"
+        ]
+      },
+      {
+        "from": "../context/cart",
+        "named": [
+          "useCart"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "react-icons/ai",
+        "named": [
+          "AiOutlineReload"
+        ]
+      },
+      {
+        "from": "../styles/Homepages.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/Pagenotfound.js",
+    "functions": [
+      {
+        "name": "Pagenotfound",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 17
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Link"
+        ]
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/Policy.js",
+    "functions": [
+      {
+        "name": "Policy",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 27
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/ProductDetails.js",
+    "functions": [
+      {
+        "name": "ProductDetails",
+        "kind": "arrow",
+        "startLine": 9,
+        "endLine": 144
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "react-toastify",
+        "named": [
+          "toast"
+        ]
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useParams",
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "../context/cart",
+        "named": [
+          "useCart"
+        ]
+      },
+      {
+        "from": "../styles/ProductDetailsStyles.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/Search.js",
+    "functions": [
+      {
+        "name": "Search",
+        "kind": "arrow",
+        "startLine": 6,
+        "endLine": 42
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../context/search",
+        "named": [
+          "useSearch"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/tests/searchTestUtils.js",
+    "functions": [
+      {
+        "name": "createContext",
+        "kind": "arrow",
+        "startLine": 45,
+        "endLine": 67
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "@testing-library/react",
+        "named": [
+          "render"
+        ]
+      },
+      {
+        "from": "../context/search",
+        "named": [
+          "SearchProvider",
+          "useSearch"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/AdminMenu.js",
+    "functions": [
+      {
+        "name": "AdminMenu",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 43
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "NavLink"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Footer.js",
+    "functions": [
+      {
+        "name": "Footer",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 14
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Link"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Header.js",
+    "functions": [
+      {
+        "name": "Header",
+        "kind": "arrow",
+        "startLine": 10,
+        "endLine": 138
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "NavLink",
+          "Link"
+        ]
+      },
+      {
+        "from": "../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "./Form/SearchInput",
+        "named": [],
+        "default": "SearchInput"
+      },
+      {
+        "from": "../hooks/useCategory",
+        "named": [],
+        "default": "useCategory"
+      },
+      {
+        "from": "../context/cart",
+        "named": [
+          "useCart"
+        ]
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Badge"
+        ]
+      },
+      {
+        "from": "../styles/Header.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Layout.js",
+    "functions": [
+      {
+        "name": "Layout",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 26
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./Footer",
+        "named": [],
+        "default": "Footer"
+      },
+      {
+        "from": "./Header",
+        "named": [],
+        "default": "Header"
+      },
+      {
+        "from": "react-helmet",
+        "named": [
+          "Helmet"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [
+          "Toaster"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Prices.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Spinner.js",
+    "functions": [
+      {
+        "name": "Spinner",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 30
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate",
+          "useLocation"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/UserMenu.js",
+    "functions": [
+      {
+        "name": "UserMenu",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "NavLink"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic1a.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic1b.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic1c.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic1d.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic1e.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic1f.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic1g.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic2a.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic2b.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic2c.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic2d.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic2e.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic2f.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic2g.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic3.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic4a.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic4b.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/contents/topic5.page-vue-render.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/context/auth.js",
+    "functions": [
+      {
+        "name": "AuthProvider",
+        "kind": "arrow",
+        "startLine": 6,
+        "endLine": 32
+      },
+      {
+        "name": "useAuth",
+        "kind": "arrow",
+        "startLine": 35,
+        "endLine": 35
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useContext",
+          "createContext",
+          "useEffect"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      }
+    ],
+    "exports": [
+      {
+        "named": [
+          "useAuth",
+          "AuthProvider"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/context/cart.js",
+    "functions": [
+      {
+        "name": "CartProvider",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 17
+      },
+      {
+        "name": "useCart",
+        "kind": "arrow",
+        "startLine": 20,
+        "endLine": 20
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useContext",
+          "createContext",
+          "useEffect"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "named": [
+          "useCart",
+          "CartProvider"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/context/search.js",
+    "functions": [
+      {
+        "name": "SearchProvider",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 15
+      },
+      {
+        "name": "useSearch",
+        "kind": "arrow",
+        "startLine": 18,
+        "endLine": 18
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useContext",
+          "createContext"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "named": [
+          "useSearch",
+          "SearchProvider"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/hooks/useCategory.js",
+    "functions": [
+      {
+        "name": "useCategory",
+        "params": [],
+        "returnType": "any[]",
+        "startLine": 4,
+        "endLine": 22
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/About.js",
+    "functions": [
+      {
+        "name": "About",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 23
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/CartPage.js",
+    "functions": [
+      {
+        "name": "CartPage",
+        "kind": "arrow",
+        "startLine": 12,
+        "endLine": 201
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../context/cart",
+        "named": [
+          "useCart"
+        ]
+      },
+      {
+        "from": "../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "braintree-web-drop-in-react",
+        "named": [],
+        "default": "DropIn"
+      },
+      {
+        "from": "react-icons/ai",
+        "named": [
+          "AiFillWarning"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../styles/CartStyles.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/Categories.js",
+    "functions": [
+      {
+        "name": "Categories",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 22
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Link"
+        ]
+      },
+      {
+        "from": "../hooks/useCategory",
+        "named": [],
+        "default": "useCategory"
+      },
+      {
+        "from": "../components/Layout",
+        "named": [],
+        "default": "Layout"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/CategoryProduct.js",
+    "functions": [
+      {
+        "name": "CategoryProduct",
+        "kind": "arrow",
+        "startLine": 6,
+        "endLine": 98
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useParams",
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "../styles/CategoryProductStyles.css",
+        "named": []
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/Contact.js",
+    "functions": [
+      {
+        "name": "Contact",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 34
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "react-icons/bi",
+        "named": [
+          "BiMailSend",
+          "BiPhoneCall",
+          "BiSupport"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/HomePage.js",
+    "functions": [
+      {
+        "name": "HomePage",
+        "kind": "arrow",
+        "startLine": 12,
+        "endLine": 224
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Checkbox",
+          "Radio"
+        ]
+      },
+      {
+        "from": "../components/Prices",
+        "named": [
+          "Prices"
+        ]
+      },
+      {
+        "from": "../context/cart",
+        "named": [
+          "useCart"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "react-icons/ai",
+        "named": [
+          "AiOutlineReload"
+        ]
+      },
+      {
+        "from": "../styles/Homepages.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/Pagenotfound.js",
+    "functions": [
+      {
+        "name": "Pagenotfound",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 17
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Link"
+        ]
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/Policy.js",
+    "functions": [
+      {
+        "name": "Policy",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 27
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/ProductDetails.js",
+    "functions": [
+      {
+        "name": "ProductDetails",
+        "kind": "arrow",
+        "startLine": 7,
+        "endLine": 123
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useParams",
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "../styles/ProductDetailsStyles.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/Search.js",
+    "functions": [
+      {
+        "name": "Search",
+        "kind": "arrow",
+        "startLine": 4,
+        "endLine": 40
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "./../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../context/search",
+        "named": [
+          "useSearch"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Form/CategoryForm.js",
+    "functions": [
+      {
+        "name": "CategoryForm",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 23
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Form/SearchInput.js",
+    "functions": [
+      {
+        "name": "SearchInput",
+        "kind": "arrow",
+        "startLine": 6,
+        "endLine": 39
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "../../context/search",
+        "named": [
+          "useSearch"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Routes/AdminRoute.js",
+    "functions": [
+      {
+        "name": "AdminRoute",
+        "params": [],
+        "returnType": "React.JSX.Element",
+        "startLine": 8,
+        "endLine": 30
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ]
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Outlet"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "../Spinner",
+        "named": [],
+        "default": "Spinner"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/components/Routes/Private.js",
+    "functions": [
+      {
+        "name": "PrivateRoute",
+        "params": [],
+        "returnType": "React.JSX.Element",
+        "startLine": 8,
+        "endLine": 30
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ]
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Outlet"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "../Spinner",
+        "named": [],
+        "default": "Spinner"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/admin/AdminDashboard.js",
+    "functions": [
+      {
+        "name": "AdminDashboard",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/admin/AdminOrders.js",
+    "functions": [
+      {
+        "name": "AdminOrders",
+        "kind": "arrow",
+        "startLine": 11,
+        "endLine": 116
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "moment",
+        "named": [],
+        "default": "moment"
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Select"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/admin/CreateCategory.js",
+    "functions": [
+      {
+        "name": "CreateCategory",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 160
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useEffect",
+          "useState"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "./../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "../../components/Form/CategoryForm",
+        "named": [],
+        "default": "CategoryForm"
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Modal"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/admin/CreateProduct.js",
+    "functions": [
+      {
+        "name": "CreateProduct",
+        "kind": "arrow",
+        "startLine": 10,
+        "endLine": 199
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "./../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Select"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/admin/Products.js",
+    "functions": [
+      {
+        "name": "Products",
+        "kind": "arrow",
+        "startLine": 7,
+        "endLine": 58
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Link"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/admin/UpdateProduct.js",
+    "functions": [
+      {
+        "name": "UpdateProduct",
+        "kind": "arrow",
+        "startLine": 10,
+        "endLine": 239
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "./../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Select"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate",
+          "useParams"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/admin/Users.js",
+    "functions": [
+      {
+        "name": "Users",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 70
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/Auth/ForgotPassword.js",
+    "functions": [
+      {
+        "name": "ForgotPassword",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 82
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../../styles/AuthStyles.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/Auth/Login.js",
+    "functions": [
+      {
+        "name": "Login",
+        "kind": "arrow",
+        "startLine": 11,
+        "endLine": 99
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate",
+          "useLocation"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../../styles/AuthStyles.css",
+        "named": []
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/Auth/Register.js",
+    "functions": [
+      {
+        "name": "Register",
+        "kind": "arrow",
+        "startLine": 7,
+        "endLine": 132
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../../styles/AuthStyles.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/user/Dashboard.js",
+    "functions": [
+      {
+        "name": "Dashboard",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../components/UserMenu",
+        "named": [],
+        "default": "UserMenu"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/user/Orders.js",
+    "functions": [
+      {
+        "name": "Orders",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 85
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "../../components/UserMenu",
+        "named": [],
+        "default": "UserMenu"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "moment",
+        "named": [],
+        "default": "moment"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/pages/user/Profile.js",
+    "functions": [
+      {
+        "name": "Profile",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 125
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "../../components/UserMenu",
+        "named": [],
+        "default": "UserMenu"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/tests/integration/testUtils.js",
+    "functions": [
+      {
+        "name": "setMockAuth",
+        "kind": "arrow",
+        "startLine": 6,
+        "endLine": 12
+      },
+      {
+        "name": "mockAdminAuthAPI",
+        "kind": "arrow",
+        "startLine": 15,
+        "endLine": 19
+      },
+      {
+        "name": "mockLoginAPI",
+        "kind": "arrow",
+        "startLine": 22,
+        "endLine": 35
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Form/CategoryForm.js",
+    "functions": [
+      {
+        "name": "CategoryForm",
+        "kind": "arrow",
+        "startLine": 3,
+        "endLine": 23
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Form/SearchInput.js",
+    "functions": [
+      {
+        "name": "SearchInput",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 38
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "../../context/search",
+        "named": [
+          "useSearch"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Routes/AdminRoute.js",
+    "functions": [
+      {
+        "name": "AdminRoute",
+        "params": [],
+        "returnType": "React.JSX.Element",
+        "startLine": 8,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ]
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Outlet"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "mongoose",
+        "named": [
+          "set"
+        ]
+      },
+      {
+        "from": "../Spinner",
+        "named": [],
+        "default": "Spinner"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/components/Routes/Private.js",
+    "functions": [
+      {
+        "name": "PrivateRoute",
+        "params": [],
+        "returnType": "React.JSX.Element",
+        "startLine": 8,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ]
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Outlet"
+        ]
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "mongoose",
+        "named": [
+          "set"
+        ]
+      },
+      {
+        "from": "../Spinner",
+        "named": [],
+        "default": "Spinner"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/markbind/js/bootstrap-utility.min.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/markbind/js/markbind.min.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/markbind/js/polyfill.min.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/markbind/js/vue.min.js",
+    "functions": [],
+    "classes": [],
+    "imports": [],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/admin/AdminDashboard.js",
+    "functions": [
+      {
+        "name": "AdminDashboard",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/admin/AdminOrders.js",
+    "functions": [
+      {
+        "name": "AdminOrders",
+        "kind": "arrow",
+        "startLine": 11,
+        "endLine": 117
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "moment",
+        "named": [],
+        "default": "moment"
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Select"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/admin/CreateCategory.js",
+    "functions": [
+      {
+        "name": "CreateCategory",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 159
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useEffect",
+          "useState"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "./../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "../../components/Form/CategoryForm",
+        "named": [],
+        "default": "CategoryForm"
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Modal"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/admin/CreateProduct.js",
+    "functions": [
+      {
+        "name": "CreateProduct",
+        "kind": "arrow",
+        "startLine": 10,
+        "endLine": 178
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "./../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Select"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/admin/Products.js",
+    "functions": [
+      {
+        "name": "Products",
+        "kind": "arrow",
+        "startLine": 7,
+        "endLine": 58
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "Link"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/admin/UpdateProduct.js",
+    "functions": [
+      {
+        "name": "UpdateProduct",
+        "kind": "arrow",
+        "startLine": 10,
+        "endLine": 233
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "./../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "antd",
+        "named": [
+          "Select"
+        ]
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate",
+          "useParams"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/admin/Users.js",
+    "functions": [
+      {
+        "name": "Users",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 20
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../components/AdminMenu",
+        "named": [],
+        "default": "AdminMenu"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/Auth/Login.js",
+    "functions": [
+      {
+        "name": "Login",
+        "kind": "arrow",
+        "startLine": 9,
+        "endLine": 99
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate",
+          "useLocation"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../../styles/AuthStyles.css",
+        "named": []
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/Auth/Register.js",
+    "functions": [
+      {
+        "name": "Register",
+        "kind": "arrow",
+        "startLine": 7,
+        "endLine": 132
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "react-router-dom",
+        "named": [
+          "useNavigate"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "../../styles/AuthStyles.css",
+        "named": []
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/user/Dashboard.js",
+    "functions": [
+      {
+        "name": "Dashboard",
+        "kind": "arrow",
+        "startLine": 5,
+        "endLine": 25
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [],
+        "default": "React"
+      },
+      {
+        "from": "../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../components/UserMenu",
+        "named": [],
+        "default": "UserMenu"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/user/Orders.js",
+    "functions": [
+      {
+        "name": "Orders",
+        "kind": "arrow",
+        "startLine": 8,
+        "endLine": 85
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "../../components/UserMenu",
+        "named": [],
+        "default": "UserMenu"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "moment",
+        "named": [],
+        "default": "moment"
+      }
+    ],
+    "exports": []
+  },
+  {
+    "path": "C:/Users/NiCheng/OneDrive - National University of Singapore/Desktop/cs4218-2520-ecom-project-c24218-2520-team01/client/src/_site/pages/user/Profile.js",
+    "functions": [
+      {
+        "name": "Profile",
+        "kind": "arrow",
+        "startLine": 7,
+        "endLine": 126
+      }
+    ],
+    "classes": [],
+    "imports": [
+      {
+        "from": "react",
+        "named": [
+          "useState",
+          "useEffect"
+        ],
+        "default": "React"
+      },
+      {
+        "from": "../../components/UserMenu",
+        "named": [],
+        "default": "UserMenu"
+      },
+      {
+        "from": "./../../components/Layout",
+        "named": [],
+        "default": "Layout"
+      },
+      {
+        "from": "../../context/auth",
+        "named": [
+          "useAuth"
+        ]
+      },
+      {
+        "from": "react-hot-toast",
+        "named": [],
+        "default": "toast"
+      },
+      {
+        "from": "axios",
+        "named": [],
+        "default": "axios"
+      }
+    ],
+    "exports": []
+  }
+]
