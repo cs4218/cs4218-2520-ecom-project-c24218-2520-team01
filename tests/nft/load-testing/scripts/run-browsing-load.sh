@@ -40,6 +40,12 @@ SEARCH_DATA_FILE="${SEARCH_DATA_FILE:-${ROOT_DIR}/tests/nft/load-testing/data/se
 CATEGORY_DATA_FILE="${CATEGORY_DATA_FILE:-${ROOT_DIR}/tests/nft/load-testing/data/category-slugs.csv}"
 PRICE_DATA_FILE="${PRICE_DATA_FILE:-${ROOT_DIR}/tests/nft/load-testing/data/price-ranges.csv}"
 AUTO_CPU_UTILIZATION="${AUTO_CPU_UTILIZATION:-1}"
+case "${LOAD_PROFILE}" in
+  baseline) DEFAULT_MIN_THROUGHPUT_REQ_PER_SEC=8 ;;
+  funnel) DEFAULT_MIN_THROUGHPUT_REQ_PER_SEC=8 ;;
+  *) DEFAULT_MIN_THROUGHPUT_REQ_PER_SEC=8 ;;
+esac
+MIN_THROUGHPUT_REQ_PER_SEC="${MIN_THROUGHPUT_REQ_PER_SEC:-${DEFAULT_MIN_THROUGHPUT_REQ_PER_SEC}}"
 
 if ! command -v jmeter >/dev/null 2>&1; then
   echo "JMeter is required but not found in PATH."
@@ -185,8 +191,10 @@ if command -v node >/dev/null 2>&1; then
   if [[ -n "$CPU_BUSY_SECONDS" && -n "$CPU_TOTAL_SECONDS" ]]; then
     echo "CPU sample window: busy=${CPU_BUSY_SECONDS}s total=${CPU_TOTAL_SECONDS}s"
     CPU_BUSY_SECONDS="$CPU_BUSY_SECONDS" CPU_TOTAL_SECONDS="$CPU_TOTAL_SECONDS" \
+      MIN_THROUGHPUT_REQ_PER_SEC="$MIN_THROUGHPUT_REQ_PER_SEC" \
       node "${ROOT_DIR}/tests/nft/load-testing/scripts/analyze-jtl.mjs" "${JTL_FILE}"
   else
+      MIN_THROUGHPUT_REQ_PER_SEC="$MIN_THROUGHPUT_REQ_PER_SEC" \
     node "${ROOT_DIR}/tests/nft/load-testing/scripts/analyze-jtl.mjs" "${JTL_FILE}"
   fi
 else
