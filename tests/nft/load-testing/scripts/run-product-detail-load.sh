@@ -108,7 +108,7 @@ run_single_profile() {
     cpu_pid=$!
   fi
 
-  trap "kill -9 $cpu_pid 2>/dev/null || true; rm -f '$cpu_log'" EXIT
+  trap "kill $cpu_pid 2>/dev/null || true; wait $cpu_pid 2>/dev/null || true; rm -f '$cpu_log'" EXIT
 
   jmeter -n \
     -t "${PLAN}" \
