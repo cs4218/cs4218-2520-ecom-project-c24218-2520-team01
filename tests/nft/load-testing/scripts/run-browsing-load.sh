@@ -24,10 +24,17 @@ RESULTS_DIR="${ROOT_DIR}/tests/nft/load-testing/results"
 HOST="${HOST:-localhost}"
 PORT="${PORT:-6060}"
 PROTOCOL="${PROTOCOL:-http}"
-USERS="${USERS:-100}"
+LOAD_PROFILE="${LOAD_PROFILE:-baseline}"
+case "${LOAD_PROFILE}" in
+  baseline) DEFAULT_USERS=100 ;;
+  funnel) DEFAULT_USERS=100 ;;
+  *) DEFAULT_USERS=100 ;;
+esac
+USERS="${USERS:-${DEFAULT_USERS}}"
 RAMP_UP_SECONDS="${RAMP_UP_SECONDS:-60}"
 LOOPS="${LOOPS:-3}"
 DURATION_SECONDS="${DURATION_SECONDS:-900}"
+PROFILE_RESULTS_DIR="${RESULTS_DIR}/${LOAD_PROFILE}"
 
 SEARCH_DATA_FILE="${SEARCH_DATA_FILE:-${ROOT_DIR}/tests/nft/load-testing/data/search-keywords.csv}"
 CATEGORY_DATA_FILE="${CATEGORY_DATA_FILE:-${ROOT_DIR}/tests/nft/load-testing/data/category-slugs.csv}"
@@ -43,11 +50,11 @@ fi
 prune_old_browsing_artifacts() {
   shopt -s nullglob
   local files=(
-    "${RESULTS_DIR}/browsing-flow-"*.jtl
-    "${RESULTS_DIR}/browsing-flow-"*-response-time-over-time.csv
-    "${RESULTS_DIR}/browsing-flow-"*-response-time-by-endpoint.csv
+    "${PROFILE_RESULTS_DIR}/browsing-flow-"*.jtl
+    "${PROFILE_RESULTS_DIR}/browsing-flow-"*-response-time-over-time.csv
+    "${PROFILE_RESULTS_DIR}/browsing-flow-"*-response-time-by-endpoint.csv
   )
-  local dirs=("${RESULTS_DIR}/browsing-flow-report-"*)
+  local dirs=("${PROFILE_RESULTS_DIR}/browsing-flow-report-"*)
   if ((${#files[@]} > 0)); then
     rm -f "${files[@]}"
   fi
@@ -129,13 +136,14 @@ cleanup() {
 trap cleanup EXIT
 
 timestamp="$(date +%Y%m%d-%H%M%S)"
-JTL_FILE="${RESULTS_DIR}/browsing-flow-${timestamp}.jtl"
-REPORT_DIR="${RESULTS_DIR}/browsing-flow-report-${timestamp}"
+JTL_FILE="${PROFILE_RESULTS_DIR}/browsing-flow-${timestamp}.jtl"
+REPORT_DIR="${PROFILE_RESULTS_DIR}/browsing-flow-report-${timestamp}"
 
 mkdir -p "${RESULTS_DIR}"
+mkdir -p "${PROFILE_RESULTS_DIR}"
 prune_old_browsing_artifacts
 
-echo "Running browsing-flow load test"
+echo "Running browsing-flow load test (${LOAD_PROFILE})"
 echo "Target: ${PROTOCOL}://${HOST}:${PORT}"
 echo "Users=${USERS}, RampUp=${RAMP_UP_SECONDS}s, Loops=${LOOPS}, Duration=${DURATION_SECONDS}s"
 

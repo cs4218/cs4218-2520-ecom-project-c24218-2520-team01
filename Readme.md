@@ -451,9 +451,21 @@ I am responsible for the load testing setup using JMeter under `tests/nft/load-t
     - [product-detail-flow.jmx](tests/nft/load-testing/jmeter/product-detail-flow.jmx)
     - [run-product-detail-load.sh](tests/nft/load-testing/scripts/run-product-detail-load.sh)
 
-The purpose of load testing was to simulate expected day-to-day traffic, measure response time, throughput, and error rate, and identify bottlenecks under concurrent usage. In terms of configuration, I assumed day-to-day traffic would be 100 concurrent users and used a default profile with 100 users, a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration.
+The purpose of load testing was to simulate expected day-to-day traffic, measure response time, throughput, and error rate, and identify bottlenecks under concurrent usage. Two independent load-testing profiles were defined so the results could be interpreted from both a controlled benchmark view and a realistic funnel-based view.
 
-Each `.jmx` file defines a JMeter test plan for one flow. Each matching `.sh` script runs the test plan with the shared load profile and exports JTL and HTML report outputs. I also added `run-all-load.sh` to execute all flows in one command and `analyze-jtl.mjs` to summarize response time, throughput, and error rate from the generated JTL files. 
+The first profile is a uniform baseline of 100 users per flow. This profile is useful for comparing flows under the same concurrency level and for exposing relative performance differences without traffic-distribution bias. The second profile reflects expected day-to-day usage based on the e-commerce funnel and assigns different load levels to each flow:
+
+| Flow | Profile 1: Uniform Baseline | Profile 2: Funnel-Based Expected Load |
+| --- | ---: | ---: |
+| Product Browsing | 100 | 100 |
+| Product Detail | 100 | 60 |
+| Search & Filter | 100 | 40 |
+| Authentication | 100 | 15 |
+| Order Checkout | 100 | 5 |
+
+The funnel-based profile is justified by typical conversion behavior: browsing sits at the top of the funnel, search and product detail are used by a smaller subset of visitors, authentication is a low-frequency session action, and checkout is the smallest but most critical transaction stage. 
+
+Each flow is tested independently under its selected load profile, with a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration. Each `.jmx` file defines a JMeter test plan for one flow. Each matching `.sh` script runs the test plan with its configured load profile and exports JTL and HTML report outputs. I also added `run-all-load.sh` to execute all flows in sequence and `analyze-jtl.mjs` to summarize response time, throughput, and error rate from the generated JTL files.
 
 
 ### Wong Sheen Kerr (A0269647J)
