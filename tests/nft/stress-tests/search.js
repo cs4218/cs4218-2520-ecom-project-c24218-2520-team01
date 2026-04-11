@@ -25,7 +25,7 @@ export const options = {
         { duration: '30s', target: 500 }, // Ramp up to heavy load in 30 seconds
         { duration: '30s', target: 500 }, // Hold at 500 VUs for 30 seconds
         { duration: '30s', target: 1000 }, // Ramp up to stress load in 30 seconds
-        { duration: '30s', target: 1000 }, // Hold at 1000 VUs for 30 seconds
+        { duration: '4m', target: 1000 }, // Hold at 1000 VUs for 4 minutes
         { duration: '1m', target: 0 }, // Ramp down to 0 VUs to observe server recovery
     ],
 

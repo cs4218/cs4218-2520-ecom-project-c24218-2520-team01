@@ -16,7 +16,7 @@ export const options = {
         { duration: '30s', target: 200 },  // Ramp up to heavy load
         { duration: '30s', target: 200 },  // Hold at 200 VUs
         { duration: '30s', target: 500 },  // Ramp up to stress load
-        { duration: '30s', target: 500 },  // Hold at 500 VUs
+        { duration: '4m', target: 500 },  // Hold at 500 VUs for a longer time to observe how our system behaves under prolonged stress
         { duration: '1m', target: 0 },     // Ramp down
     ],
 

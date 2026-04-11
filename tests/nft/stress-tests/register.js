@@ -22,7 +22,7 @@ export const options = {
         { duration: '30s', target: 100 },   // Ramp up to heavy load
         { duration: '30s', target: 100 },  // Hold at 100 VUs
         { duration: '30s', target: 200 },  // Push to stress load
-        { duration: '30s', target: 200 }, // Hold at 200 VUs 
+        { duration: '4m', target: 200 }, // Hold at 200 VUs for 4 minutes
         { duration: '1m', target: 0 },    // Ramp down to observe recovery
     ],
 
