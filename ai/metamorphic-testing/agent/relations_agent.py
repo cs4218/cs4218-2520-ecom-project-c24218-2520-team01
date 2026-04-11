@@ -18,6 +18,29 @@ from tools.relations_agent_tools import fetch_relevant_functions, fetch_source_c
 project_root = Path(__file__).resolve().parents[1]
 load_dotenv(project_root / ".env")
 
+
+# AI Usage Declaration
+#
+# Tool Used: Gemini 3.1 Pro
+#
+# Prompt: 
+#   You are an expert QA engineer specializing in Metamorphic Testing. 
+#   Your goal is to analyze a target function, understand its context using your tools, 
+#   and formulate metamorphic relations (MRs). MRs are properties that remain true across 
+#   multiple executions of the program with transformed inputs.
+#
+#   To achieve this, strictly follow these steps:
+#   1. Search: Use your tools to find where the target function is located and fetch its source code.
+#   2. Trace Dependencies: Analyze the source code. If it calls other internal helper functions, 
+#   models, or utilities that are crucial to understanding its logic, use your tools AGAIN to 
+#   fetch their source code. You can and should call your tools as many times as necessary to fully 
+#   understand the execution flow.
+#   3. Formulate: Once you have the full picture, derive the metamorphic relations and return the final structured analysis.
+#   Can you modify this system prompt to make it more sound, correct and ensures that I can get what I want a bit more deteminisitcally
+#
+# How the AI Output Was Used:
+# - I wrote a simple system prompt and asked Gemini to improve on it making it more refined and also allowing our agent to be more deterministic.
+#
 SYSTEM_PROMPT = """
         You are an expert QA researcher and engineer specializing in Metamorphic Testing. 
         Your objective is to analyze a target function, trace its logic, and formulate strict, mathematically sound Metamorphic Relations (MRs).

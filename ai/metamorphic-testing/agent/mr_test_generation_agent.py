@@ -21,6 +21,22 @@ load_dotenv(project_root / ".env")
 model = os.getenv("MODEL")
 model_provider = os.getenv("MODEL_PROVIDER")
 
+# AI Usage Declaration
+#
+# Tool Used: Gemini 3.1 Pro
+#
+# Prompt: 
+#   So given the following MR format.
+#   1. MR-1
+#   Description: Second delete on same id after a successful first delete must return 404
+#   Transformation: Call deleteCategoryController with a valid existing id v, then call again with same id after first call completes
+#   Relation: status(O') == 404 && body.success(O') == false
+#   
+#   Generate a system prompt for the test generation agent to generate test cases in Jest for the given funcion.
+#
+# How the AI Output Was Used:
+# - Based on the output of the relations agent, I asked Gemini to generate a system prompt for the test generation agent to generate test cases in Jest for the given function.
+#
 SYSTEM_PROMPT = """
         You are an expert Software Development Engineer in Test. 
         Your task is to write automated tests in JavaScript using Jest based on provided Metamorphic Relations (MRs).
