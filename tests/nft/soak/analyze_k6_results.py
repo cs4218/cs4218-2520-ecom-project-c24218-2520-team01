@@ -34,9 +34,9 @@ Summary field meanings used in the generated JSON:
 - avg / median / p95 / p99 / min / max: Response-time statistics from k6 `http_req_duration` samples, in milliseconds.
 - requests: Number of `http_reqs` rows seen for that block.
 - throughput_rps: Requests per second over the observed runtime or window.
-- failure_rate: Failure ratio from 0.0 to 1.0. Multiply by 100 to convert it to a percent.
+- failure_rate: Failure percentage, already scaled to the 0.0 to 100.0 range.
 - failures: Number of failed requests, based on `http_req_failed`.
-- iteration_success_rate: Success ratio from 0.0 to 1.0 from the custom `scenario_iteration_success` metric.
+- iteration_success_rate: Success percentage, already scaled to the 0.0 to 100.0 range, from the custom `scenario_iteration_success` metric.
 
 Note: All floating-point values written to the summary JSON are rounded to
 4 decimal places for readability.
@@ -373,12 +373,13 @@ def analyze_k6_csv(csv_path: Path) -> dict:
             "requests": requests,
             # Requests per second across the full observed runtime.
             "throughput_rps": requests / runtime_seconds if runtime_seconds else None,
-            # Failure ratio in the range 0.0 to 1.0; multiply by 100 for percent.
-            "failure_rate": failures / requests if requests else None,
+            # Failure percentage in the range 0.0 to 100.0.
+            "failure_rate": (failures / requests) * 100.0 if requests else None,
             "failures": failures,
-            # Success ratio from the custom scenario_iteration_success metric.
+            # Success percentage from the custom scenario_iteration_success metric.
             "iteration_success_rate": (
-                scenario_iteration_success[scenario] / scenario_iteration_total[scenario]
+                (scenario_iteration_success[scenario] / scenario_iteration_total[scenario])
+                * 100.0
                 if scenario_iteration_total[scenario]
                 else None
             ),
@@ -395,8 +396,8 @@ def analyze_k6_csv(csv_path: Path) -> dict:
             "requests": requests,
             # Requests per second within this third of the run only.
             "throughput_rps": requests / (runtime_seconds / 3.0) if runtime_seconds else None,
-            # Failure ratio in the range 0.0 to 1.0 for this window.
-            "failure_rate": failures / requests if requests else None,
+            # Failure percentage in the range 0.0 to 100.0 for this window.
+            "failure_rate": (failures / requests) * 100.0 if requests else None,
             "failures": failures,
         }
 
@@ -421,7 +422,7 @@ def analyze_k6_csv(csv_path: Path) -> dict:
                 request_counts["overall"] / runtime_seconds if runtime_seconds else None
             ),
             "failure_rate": (
-                failure_counts["overall"] / request_counts["overall"]
+                (failure_counts["overall"] / request_counts["overall"]) * 100.0
                 if request_counts["overall"]
                 else None
             ),
