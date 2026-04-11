@@ -7,6 +7,7 @@ from google import genai
 from google.genai import types
 
 from dotenv import load_dotenv
+from markdown_pdf import MarkdownPdf, Section
 
 # Lim Jia Wei, A0277381W
 
@@ -126,8 +127,17 @@ def generate_mcc_report(filename, model="gemini-2.5-flash"):
         with open(output_filename, "w", encoding="utf-8") as out:
             out.write(report)
             
+        pdf_output_filename = os.path.join(output_dir, f"{os.path.basename(filename)}_mcc_report.pdf")
+        try:
+            pdf = MarkdownPdf(toc_level=2)
+            pdf.add_section(Section(report))
+            pdf.save(pdf_output_filename)
+        except Exception as e:
+            print(f"\n[WARNING] Could not save to PDF: {e}")
+            
         # logs
         print(f"\n[SUCCESS] Multiple Condition Coverage report saved to: {output_filename}")
+        print(f"[SUCCESS] PDF report saved to: {pdf_output_filename}")
         print("\n--- Report Preview (First 15 lines) ---")
         print('\n'.join(report.split('\n')[:15]) + "\n...")
 
@@ -141,7 +151,7 @@ if __name__ == "__main__":
 
     # parse arguments
     # python generate_mcc.py (filename)
-    # example: python generate_mcc.py authController.js
+    # example: python generate_mcc.py controllers/authController.js
     parser = argparse.ArgumentParser(description="Generate Multiple Condition Coverage (MCC) test requirements using Google Gemini.")
     parser.add_argument("filename", help="Path to the source code file to analyze.")
     parser.add_argument("--model", default="gemini-2.5-flash", help="Gemini model to use (default: gemini-2.5-flash).")
