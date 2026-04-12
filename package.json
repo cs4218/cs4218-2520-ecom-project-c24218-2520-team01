@@ -16,6 +16,14 @@
         "test:backend": "node node_modules/jest/bin/jest.js --config jest.backend.config.js",
         "test:integration": "node node_modules/jest/bin/jest.js --config jest.integration.config.js",
         "test:security": "node node_modules/jest/bin/jest.js --config jest.security.config.js"
+        "test:soak": "powershell -ExecutionPolicy Bypass -File .\\tests\\nft\\soak\\run-soak.ps1"
+        "nft:load:browsing": "bash tests/nft/load-testing/scripts/run-browsing-load.sh",
+        "nft:load:search-filter": "bash tests/nft/load-testing/scripts/run-search-filter-load.sh",
+        "nft:load:auth": "bash tests/nft/load-testing/scripts/run-auth-load.sh",
+        "nft:load:order": "bash tests/nft/load-testing/scripts/run-order-load.sh",
+        "nft:load:product-detail": "bash tests/nft/load-testing/scripts/run-product-detail-load.sh",
+        "nft:load:all": "bash tests/nft/load-testing/scripts/run-all-load.sh",
+        "nft:load:analyze": "node tests/nft/load-testing/scripts/analyze-jtl.mjs"
     },
     "keywords": [],
     "author": "RP",

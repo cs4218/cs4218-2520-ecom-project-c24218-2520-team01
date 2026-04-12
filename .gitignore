@@ -9,3 +9,7 @@ coverage/
 .scannerwork
 .vscode
 sonar-project.properties
+
+# Load testing generated artifacts
+jmeter.log
+tests/nft/load-testing/results/
