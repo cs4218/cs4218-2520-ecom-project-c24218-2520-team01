@@ -550,9 +550,6 @@ The funnel-based profile is justified by typical conversion behavior: browsing s
 
 Each flow is tested independently under its selected load profile, with a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration. Each `.jmx` file defines a JMeter test plan for one flow. Each matching `.sh` script runs the test plan with its configured load profile and exports JTL and HTML report outputs. I also added `run-all-load.sh` to execute all flows in sequence and `analyze-jtl.mjs` to summarize response time, throughput, and error rate from the generated JTL files. The analyzer applies the flow thresholds based on the generated JTL filename, so each runner output is checked against the correct browsing, product detail, search & filter, authentication, or order & payment limits.
 
-
-### Wong Sheen Kerr (A0269647J)
-
 ### Wong Sheen Kerr (A0269647J)
 
 I am in charge of the unit testing for the authentication module across both the backend and frontend, namely:
@@ -593,7 +590,7 @@ I am responsible for testing the following components:
     - **Cart & Product Flows** (_tests/e2e/cartAndProduct.spec.js_): Browsing products on the homepage, viewing product details, adding/removing items from the cart, observing guest cart states, and completing the authenticated checkout process.
     - **Search & Filtering Flows** (_tests/e2e/searchAndFilter.spec.js_): Handling search edge case (e.g., no products found), applying category and price filters, and resetting filters.
 
-### Milestone 3 Non-Functional Tests
+#### Milestone 3 Non-Functional Tests
 
 I implemented an API-level **Soak/Endurance testing** suite for the main shopper workflows using `k6`. The suite tests long-running system stability under a mixed workload made up of:
 
