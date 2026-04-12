@@ -237,9 +237,14 @@ For the AI-driven testing component, I was assigned to develop the test metrics 
 
 A `readme.md` file has been included in the same directory for easier setup.
 
+
+- Product model
+  - `models/productModel`
+
 ### Muhammad Zaidan bin Sani (A0273278U)
 
 I am responsible for testing the following components:
+
 **Unit Tests**
 
 - Product CRUD
@@ -258,8 +263,7 @@ I am responsible for testing the following components:
         - `searchProductController`
         - `relatedProductsController`
         - `productCategoryController`
-- Product model
-  - `models/productModel`
+- Product model - `models/productModel`
 
 **Integration tests**
 
@@ -286,54 +290,13 @@ I am responsible for testing the following components:
 
 For **milestone 1**, I unit tested every function seen under Product CRUD and product filters above, and left the product model for integration testing (_more information can be seen in the MS1 report_).
 
-#### Milestone 2 Integration & E2E UI Tests
+#### Milestone 2 Integration and E2E tests
 
-I am responsible for testing the following components:
+For **milestone 2**, I added unit tests for the product model, and bottom-up integration tests for the product and order integration flows, which involved integration with the relevant models, and integration tests.
 
-**Integration Scopes:**
-- Profile Management:
-  - `client/src/pages/user/Profile.js`
-  - `context/auth.js`
-  - `routes/authRoute.js`
-  - `middlewares/authMiddleware.js`
-  - `controllers/authController.js` → `updateProfileController`
-  - `helpers/authHelper.js`
-  - `models/userModel.js`
-- Cart Full Flow:
-  - `pages/HomePage.js`
-  - `pages/CartPage.js`
-  - `context/cart.js`
-  - `components/Header.js`
-  - browser localStorage
-- Search Flow:
-  - `components/Form/SearchInput.js`
-  - `components/Header.js`
-  - `pages/Search.js`
-  - `context/search.js`
-  - `routes/productRoutes.js`
-  - `controllers/productController.js` → `searchProductController`
-  - `models/productModel.js`
-- Browsing + Filtering:
-  - `pages/HomePage.js`
-  - `components/Prices.js`
-  - `routes/productRoutes.js`
-  - `controllers/productController.js` → `productFiltersController`
-  - `productListController`
-  - `productCountController`
-  - `models/productModel.js`
-  - `models/categoryModel.js`
+I also added E2E tests for 4 scenarios as seen above.
 
-**E2E UI Flows:**
-- Filter products by price range on the home page *(Main Browsing & Filtering)*
-- View product details, price, category, and images on ProductDetails *(Product Viewing Flow)*
-- Search for a product and click through to its detail page *(Search Flow)*
-- Reset forgotten password and log in with new password *(Password Recovery Flow)*
-- Attempt to register with an already-registered email *(Registration Flow)*
-- Delete a product from the Update Product page *(Delete Product Flow)*
-
-For the integration tests, I used a combination of top-down and bottom-up incremental approaches depending on the scope. For the search flow, I used a top-down approach, beginning with SearchInput and SearchContext with a stubbed API, then incrementally adding Header navigation, the Search results page, and finally replacing the stub with a live backend call against a real test database. For the cart flow, I started from the top with HomePage integrating into CartContext, and separately from the bottom with CartPage reading from localStorage. 
-
-For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable. 
+(_more information can be seen in the MS2 report_).
 
 #### Milestone 3 Non-Functional Tests
 
@@ -341,7 +304,7 @@ For **milestone 3**, I added tests to check for IDOR (Insecure Direct Object Ref
 
 In addition, I used a white-box LLM-powered vulnerability scanner to find more vulnerabilities in the system.
 
-(*more information can be seen in the MS3 report*).
+(_more information can be seen in the MS3 report_).
 
 ### Nicholas Cheng De Fei (A0269648H)
 
