@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+AI Usage Declaration
+
+Tool Used:
+- GPT-5.3-Codex
+
+Prompt:
+ Help me refine the authentication load test that covers register, login, and token validation flows
+
+How the AI Output Was Used:
+ Used the AI output as a reference for the authentication-focused JMeter test plan
+-->
+
+<!-- Rachel Tai Ke Jia (A0258603A) -->
+
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="NFT - Authentication Flow Load Test" enabled="true">
+      <stringProp name="TestPlan.comments">Non-functional load testing for day-to-day authentication traffic (register, login, token validation).</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="basePath" elementType="Argument">
+            <stringProp name="Argument.name">basePath</stringProp>
+            <stringProp name="Argument.value">/api/v1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Authentication Users" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${__P(loops,3)}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(users,100)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(rampUpSeconds,60)}</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(durationSeconds,900)}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+          <stringProp name="HTTPSampler.domain">${__P(host,localhost)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,6060)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${__P(protocol,http)}</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">5000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">15000</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Common Headers" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+
+        <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+          <collectionProp name="CookieManager.cookies"/>
+          <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+          <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
+        </CookieManager>
+        <hashTree/>
+
+        <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Think Time (300-1200ms)" enabled="true">
+          <stringProp name="ConstantTimer.delay">300</stringProp>
+          <stringProp name="RandomTimer.range">900</stringProp>
+        </UniformRandomTimer>
+        <hashTree/>
+
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Flow 1 - Register" enabled="true">
+          <boolProp name="TransactionController.includeTimers">false</boolProp>
+          <boolProp name="TransactionController.parent">true</boolProp>
+        </TransactionController>
+        <hashTree>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Create Dynamic User Payload (Once Per Iteration)" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">def now = System.currentTimeMillis()
+def threadNum = ctx.getThreadNum()
+def iteration = vars.getIteration() ?: &quot;0&quot;
+def email = &quot;load.user.${threadNum}.${iteration}.${now}@example.com&quot;
+def password = &quot;Passw0rd!23&quot;
+
+def registerBody = [
+  name: &quot;Load User ${threadNum}&quot;,
+  email: email,
+  password: password,
+  phone: &quot;900000${String.format('%03d', threadNum % 1000)}&quot;,
+  address: &quot;Load Street ${threadNum}&quot;,
+  answer: &quot;blue&quot;
+]
+
+def loginBody = [
+  email: email,
+  password: password
+]
+
+vars.put(&quot;authRegisterBody&quot;, groovy.json.JsonOutput.toJson(registerBody))
+vars.put(&quot;authLoginBody&quot;, groovy.json.JsonOutput.toJson(loginBody))
+vars.put(&quot;authToken&quot;, &quot;&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST Register" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">${authRegisterBody}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">${basePath}/auth/register</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Register Returns 201" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="1">201</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Register endpoint failed</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Flow 1 Duration under 3000ms" enabled="true">
+            <stringProp name="DurationAssertion.duration">3000</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+        </hashTree>
+
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Flow 2 - Login" enabled="true">
+          <boolProp name="TransactionController.includeTimers">false</boolProp>
+          <boolProp name="TransactionController.parent">true</boolProp>
+        </TransactionController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST Login" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">${authLoginBody}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">${basePath}/auth/login</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Login Returns 200" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="1">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Login endpoint failed</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Extract Auth Token" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">authToken</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.token</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues"></stringProp>
+              <boolProp name="JSONPostProcessor.compute_concat">false</boolProp>
+            </JSONPostProcessor>
+            <hashTree/>
+          </hashTree>
+
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Flow 2 Duration under 2500ms" enabled="true">
+            <stringProp name="DurationAssertion.duration">2500</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+        </hashTree>
+
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="Flow 3 Gate - Run only when token exists" enabled="true">
+          <stringProp name="IfController.condition">${__groovy(vars.get('authToken') != null &amp;&amp; vars.get('authToken').trim().length() &gt; 0,)}</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+          <boolProp name="IfController.useExpression">true</boolProp>
+        </IfController>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Auth Bearer Header" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">${authToken}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+
+          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Flow 3 - Validate Auth Token" enabled="true">
+            <boolProp name="TransactionController.includeTimers">false</boolProp>
+            <boolProp name="TransactionController.parent">true</boolProp>
+          </TransactionController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET User Auth" enabled="true">
+              <stringProp name="HTTPSampler.path">${basePath}/auth/user-auth</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="User Auth Returns 200" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="1">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message">User auth endpoint failed</stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">2</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+
+            <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Flow 3 Duration under 2000ms" enabled="true">
+              <stringProp name="DurationAssertion.duration">2000</stringProp>
+            </DurationAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
