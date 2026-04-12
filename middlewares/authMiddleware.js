@@ -3,41 +3,71 @@ import userModel from "../models/userModel.js";
 
 // Protected routes token base
 export const requireSignIn = async (req, res, next) => {
-	try {
-		const decode = JWT.verify(
-			req.headers.authorization,
-			process.env.JWT_SECRET,
-		);
-		req.user = decode;
-		next();
-	} catch (error) {
-		// Bug: Added 401 response, previously sent no response
-		console.log(error);
-		res.status(401).send({
-			success: false,
-			message: "Unauthorized",
-		});
-	}
+    try {
+        const decode = JWT.verify(
+            req.headers.authorization,
+            process.env.JWT_SECRET,
+        );
+
+        // A0273278U, Zaidan
+        // Session replay fix: reject tokens whose account no longer exists.
+        // A structurally valid JWT can still be replayed after the user is deleted;
+        // verifying DB existence closes that window.
+        const user = await userModel.findById(decode._id);
+        if (!user) {
+            return res.status(401).send({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+
+        // A0273278U, Zaidan
+        // Session replay fix: reject tokens issued before a password change.
+        // loginController embeds the last 8 chars of the bcrypt hash (pwdFingerprint)
+        // at issue time. If the password has since changed the stored hash differs,
+        // so any pre-change token is invalidated here.
+        if (
+            decode.pwdFingerprint !== undefined &&
+            decode.pwdFingerprint !== user.password.slice(-8)
+        ) {
+            return res.status(401).send({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+
+        req.user = decode;
+        next();
+    } catch (error) {
+        // Bug: catch block previously sent no response, so invalid/missing tokens fell
+        // through silently to the next middleware.
+        // AUTHZ-VULN-03: Even after requireSignIn+isAdmin were added to DELETE /delete-product/:pid, a non-admin with any token (or no token) could still reach the controller because requireSignIn never stopped the request on failure.
+        console.log(error);
+        res.status(401).send({
+            success: false,
+            message: "Unauthorized",
+        });
+    }
 };
 
 //admin access
 export const isAdmin = async (req, res, next) => {
-	try {
-		const user = await userModel.findById(req.user._id);
-		if (user.role !== 1) {
-			return res.status(401).send({
-				success: false,
-				message: "Unauthorized Access",
-			});
-		} else {
-			next();
-		}
-	} catch (error) {
-		console.log(error);
-		res.status(401).send({
-			success: false,
-			error,
-			message: "Error in admin middleware",
-		});
-	}
+    try {
+        const user = await userModel.findById(req.user._id);
+        if (user.role !== 1) {
+            return res.status(401).send({
+                success: false,
+                message: "Unauthorized Access",
+            });
+        } else {
+            next();
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(401).send({
+            success: false,
+            error,
+            message: "Error in admin middleware",
+        });
+    }
 };
