@@ -12,3 +12,7 @@ coverage/
 .vscode
 sonar-project.properties
 /ai/metamorphic-testing/scripts/*.json
+
+# Load testing generated artifacts
+jmeter.log
+tests/nft/load-testing/results/

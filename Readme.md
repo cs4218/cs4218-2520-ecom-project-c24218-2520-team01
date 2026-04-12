@@ -448,6 +448,42 @@ For the integration tests, I used a combination of top-down and bottom-up increm
 
 For the E2E UI tests, I used Playwright to simulate complete user journeys across six flows, covering both success paths and an error and edge cases, with MongoDB seeded directly before each run to keep tests deterministic and repeatable. 
 
+#### Milestone 3 Non-Functional Testing
+
+I am responsible for the load testing setup using JMeter under `tests/nft/load-testing`, covering the main non-functional flows of the ecommerce platform:
+
+- **Product browsing flow** for catalog, category, search, price filter, and pagination endpoints: 
+    - [product-browsing-flow.jmx](tests/nft/load-testing/jmeter/product-browsing-flow.jmx) 
+    - [run-browsing-load.sh](tests/nft/load-testing/scripts/run-browsing-load.sh) 
+- **Search and filter flow** for category bootstrap, keyword search, and combined category-and-price filtering: 
+    - [search-filter-flow.jmx](tests/nft/load-testing/jmeter/search-filter-flow.jmx) 
+    - [run-search-filter-load.sh](tests/nft/load-testing/scripts/run-search-filter-load.sh) 
+- **Authentication flow** for register, login, and token validation
+    - [authentication-flow.jmx](tests/nft/load-testing/jmeter/authentication-flow.jmx) 
+    - [run-auth-load.sh](tests/nft/load-testing/scripts/run-auth-load.sh)
+- **Order checkout flow** for login, braintree token, payment submission, and order retrieval validation: 
+    - [order-checkout-flow.jmx](tests/nft/load-testing/jmeter/order-checkout-flow.jmx) 
+    - [run-order-load.sh](tests/nft/load-testing/scripts/run-order-load.sh) 
+- **Product detail flow** for viewing details of a single product:
+    - [product-detail-flow.jmx](tests/nft/load-testing/jmeter/product-detail-flow.jmx)
+    - [run-product-detail-load.sh](tests/nft/load-testing/scripts/run-product-detail-load.sh)
+
+The purpose of load testing was to simulate expected day-to-day traffic, measure response time, throughput, and error rate, and identify bottlenecks under concurrent usage. Two independent load-testing profiles were defined so the results could be interpreted from both a controlled benchmark view and a realistic funnel-based view.
+
+The first profile is a uniform baseline of 100 users per flow. This profile is useful for comparing flows under the same concurrency level and for exposing relative performance differences without traffic-distribution bias. The second profile reflects expected day-to-day usage based on the e-commerce funnel and assigns different load levels to each flow:
+
+| Flow | Profile 1: Uniform Baseline | Profile 2: Funnel-Based Expected Load |
+| --- | ---: | ---: |
+| Product Browsing | 100 | 100 |
+| Product Detail | 100 | 60 |
+| Search & Filter | 100 | 40 |
+| Authentication | 100 | 15 |
+| Order Checkout | 100 | 5 |
+
+The funnel-based profile is justified by typical conversion behavior: browsing sits at the top of the funnel, search and product detail are used by a smaller subset of visitors, authentication is a low-frequency session action, and checkout is the smallest but most critical transaction stage. 
+
+Each flow is tested independently under its selected load profile, with a 60-second ramp-up, 3 iterations per user, and a 900-second maximum duration. Each `.jmx` file defines a JMeter test plan for one flow. Each matching `.sh` script runs the test plan with its configured load profile and exports JTL and HTML report outputs. I also added `run-all-load.sh` to execute all flows in sequence and `analyze-jtl.mjs` to summarize response time, throughput, and error rate from the generated JTL files. The analyzer applies the flow thresholds based on the generated JTL filename, so each runner output is checked against the correct browsing, product detail, search & filter, authentication, or order & payment limits.
+
 
 ### Wong Sheen Kerr (A0269647J)
 
