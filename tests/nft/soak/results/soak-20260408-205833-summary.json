@@ -1,0 +1,207 @@
+{
+  "k6": {
+    "source_csv": "C:\\Users\\Admin\\Desktop\\Codes\\cs4218-2520-ecom-project-c24218-2520-team01\\tests\\nft\\soak\\results\\soak-20260408-205833.csv",
+    "start_timestamp": 1775653117,
+    "end_timestamp": 1775704091,
+    "start_iso": "2026-04-08T12:58:37+00:00",
+    "end_iso": "2026-04-09T03:08:11+00:00",
+    "runtime_seconds": 50974,
+    "runtime_hours": 14.1594,
+    "window_boundaries": {
+      "early_start": "2026-04-08T12:58:37+00:00",
+      "early_end_middle_start": "2026-04-08T17:41:48+00:00",
+      "middle_end_late_start": "2026-04-08T22:24:59+00:00",
+      "late_end": "2026-04-09T03:08:11+00:00"
+    },
+    "overall": {
+      "count": 1951152,
+      "avg": 1366.0957,
+      "median": 377.564,
+      "p95": 5294.5102,
+      "p99": 7442.9923,
+      "min": 0.0,
+      "max": 60009.0652,
+      "requests": 1951152,
+      "throughput_rps": 38.2774,
+      "failure_rate": 0.3597,
+      "failures": 7018
+    },
+    "per_scenario": {
+      "catalogBrowsing": {
+        "count": 808299,
+        "avg": 1272.0289,
+        "median": 443.9429,
+        "p95": 5432.7942,
+        "p99": 6934.4747,
+        "min": 333.5965,
+        "max": 16376.97,
+        "requests": 808299,
+        "throughput_rps": 15.8571,
+        "failure_rate": 0.0,
+        "failures": 0,
+        "iteration_success_rate": 100.0
+      },
+      "authSession": {
+        "count": 510718,
+        "avg": 745.5398,
+        "median": 222.3796,
+        "p95": 4437.0828,
+        "p99": 6377.469,
+        "min": 0.0,
+        "max": 15123.7288,
+        "requests": 510718,
+        "throughput_rps": 10.0192,
+        "failure_rate": 0.0051,
+        "failures": 26,
+        "iteration_success_rate": 100.0
+      },
+      "searchAndFilter": {
+        "count": 571388,
+        "avg": 979.5982,
+        "median": 198.3685,
+        "p95": 4974.9192,
+        "p99": 6374.3482,
+        "min": 166.2432,
+        "max": 14925.1149,
+        "requests": 571388,
+        "throughput_rps": 11.2094,
+        "failure_rate": 0.0091,
+        "failures": 52,
+        "iteration_success_rate": 100.0
+      },
+      "checkoutAndOrders": {
+        "count": 60745,
+        "avg": 11470.6936,
+        "median": 805.406,
+        "p95": 60000.3402,
+        "p99": 60000.5213,
+        "min": 0.0,
+        "max": 60009.0652,
+        "requests": 60745,
+        "throughput_rps": 1.1917,
+        "failure_rate": 11.4248,
+        "failures": 6940,
+        "iteration_success_rate": 100.0
+      }
+    },
+    "per_window": {
+      "early": {
+        "count": 821830,
+        "avg": 816.2536,
+        "median": 364.8375,
+        "p95": 2671.6657,
+        "p99": 4218.956,
+        "min": 0.0,
+        "max": 60000.5089,
+        "requests": 821830,
+        "throughput_rps": 48.3676,
+        "failure_rate": 0.0005,
+        "failures": 4
+      },
+      "middle": {
+        "count": 673016,
+        "avg": 1279.4331,
+        "median": 378.0802,
+        "p95": 4235.8256,
+        "p99": 6465.5057,
+        "min": 0.0,
+        "max": 60009.0652,
+        "requests": 673016,
+        "throughput_rps": 39.6094,
+        "failure_rate": 0.4392,
+        "failures": 2956
+      },
+      "late": {
+        "count": 456306,
+        "avg": 2484.2096,
+        "median": 757.2638,
+        "p95": 6524.8163,
+        "p99": 12923.8671,
+        "min": 0.0,
+        "max": 60001.537,
+        "requests": 456306,
+        "throughput_rps": 26.8552,
+        "failure_rate": 0.8893,
+        "failures": 4058
+      }
+    },
+    "failure_counts_by_request_name": {
+      "orders-list": 6860,
+      "checkout-payment": 80,
+      "search-filter": 52,
+      "auth-login": 26
+    },
+    "failure_counts_by_error_type": {
+      "request timeout": 6860,
+      "read: connection reset by peer": 158
+    },
+    "first_failure_timestamp_by_request_name": {
+      "orders-list": "2026-04-08T17:30:10+00:00",
+      "checkout-payment": "2026-04-09T02:28:33+00:00",
+      "search-filter": "2026-04-09T02:29:43+00:00",
+      "auth-login": "2026-04-09T02:40:23+00:00"
+    }
+  },
+  "memory": {
+    "source_csv": "C:\\Users\\Admin\\Desktop\\Codes\\cs4218-2520-ecom-project-c24218-2520-team01\\tests\\nft\\soak\\results\\soak-20260408-205833-process-memory.csv",
+    "windows": {
+      "early": {
+        "rss_bytes": {
+          "min_gib": 0.0778,
+          "max_gib": 1.0439
+        },
+        "private_memory_bytes": {
+          "min_gib": 0.0996,
+          "max_gib": 1.0878
+        },
+        "virtual_memory_bytes": {
+          "min_gib": 5.2235,
+          "max_gib": 6.1953
+        },
+        "paged_memory_bytes": {
+          "min_gib": 0.0996,
+          "max_gib": 1.0878
+        }
+      },
+      "middle": {
+        "rss_bytes": {
+          "min_gib": 0.982,
+          "max_gib": 1.2898
+        },
+        "private_memory_bytes": {
+          "min_gib": 1.0246,
+          "max_gib": 1.3362
+        },
+        "virtual_memory_bytes": {
+          "min_gib": 6.1435,
+          "max_gib": 6.4529
+        },
+        "paged_memory_bytes": {
+          "min_gib": 1.0246,
+          "max_gib": 1.3362
+        }
+      },
+      "late": {
+        "rss_bytes": {
+          "min_gib": 1.1838,
+          "max_gib": 2.0573
+        },
+        "private_memory_bytes": {
+          "min_gib": 1.2304,
+          "max_gib": 2.1309
+        },
+        "virtual_memory_bytes": {
+          "min_gib": 6.3519,
+          "max_gib": 7.2496
+        },
+        "paged_memory_bytes": {
+          "min_gib": 1.2304,
+          "max_gib": 2.1309
+        }
+      }
+    },
+    "private_memory_start_gib": 0.0996,
+    "private_memory_end_gib": 2.0926,
+    "private_growth_mib_per_hour": 144.1186
+  }
+}

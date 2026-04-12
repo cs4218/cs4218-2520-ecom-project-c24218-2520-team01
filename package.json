@@ -15,6 +15,7 @@
         "test:ui": "playwright test tests/e2e",
         "test:backend": "node node_modules/jest/bin/jest.js --config jest.backend.config.js",
         "test:integration": "node node_modules/jest/bin/jest.js --config jest.integration.config.js",
+        "test:soak": "powershell -ExecutionPolicy Bypass -File .\\tests\\nft\\soak\\run-soak.ps1"
         "nft:load:browsing": "bash tests/nft/load-testing/scripts/run-browsing-load.sh",
         "nft:load:search-filter": "bash tests/nft/load-testing/scripts/run-search-filter-load.sh",
         "nft:load:auth": "bash tests/nft/load-testing/scripts/run-auth-load.sh",
