@@ -25,7 +25,7 @@ import dotenv from "dotenv";
 
 // These defaults are shared by generation time and by emitted replay artifacts.
 // The source code now lives under ui-tests, but generated replay files still
-// belong in tests/ai/generated so they stay separate from the implementation.
+// belong in ai/generated so they stay separate from the implementation.
 export const DEFAULT_APP_URL = "http://localhost:3000";
 export const DEFAULT_MODEL = "gpt-4o";
 export const DEFAULT_ASSERT_TIMEOUT_MS = 10000;
@@ -35,7 +35,7 @@ export const DEFAULT_NAVIGATION_TIMEOUT_MS = 30000;
 export const DEFAULT_SELECTOR_TIMEOUT_MS = 10000;
 export const DEFAULT_NODE_CHECK_TIMEOUT_MS = 15000;
 export const DEFAULT_RESOLUTION_CANDIDATE_LIMIT = 12;
-export const DEFAULT_GENERATED_DIR = path.resolve("tests/ai/generated");
+export const DEFAULT_GENERATED_DIR = path.resolve("ai/generated");
 
 const TRUE_VALUES = new Set(["1", "true", "yes", "on"]);
 

@@ -53,12 +53,12 @@ function readCliOptionValue(tokens, index, optionName) {
 export function getUsageText() {
     return [
         "Usage:",
-        '  node tests/ai/ui-tests/ai.scenario.js generate "<goal>" [--out tests/ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
-        '  npm run test:ai-ui -- generate "<goal>" [--out tests/ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
+        '  node ai/ui-tests/ai.scenario.js generate "<goal>" [--out ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
+        '  npm run test:ai-ui -- generate "<goal>" [--out ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
         "",
         "Examples:",
-        '  node tests/ai/ui-tests/ai.scenario.js generate "Describe the user flow you want to test"',
-        '  npm run test:ai-ui -- generate "Open a page, complete a form, and verify the result" --out tests/ai/generated/example-flow.stagehand.js',
+        '  node ai/ui-tests/ai.scenario.js generate "Describe the user flow you want to test"',
+        '  npm run test:ai-ui -- generate "Open a page, complete a form, and verify the result" --out ai/generated/example-flow.stagehand.js',
     ].join("\n");
 }
 
@@ -112,7 +112,7 @@ export function parseCliArguments(argv) {
 
     const goal = goalParts.join(" ").trim();
     if (!goal) {
-        throw new Error('Missing goal. Usage: node tests/ai/ui-tests/ai.scenario.js generate "<goal>"');
+        throw new Error('Missing goal. Usage: node ai/ui-tests/ai.scenario.js generate "<goal>"');
     }
 
     return {
