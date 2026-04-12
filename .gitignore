@@ -1,3 +1,5 @@
+__pycache__
+/output/
 node_modules
 /test-results/
 playwright-report/
@@ -9,6 +11,7 @@ coverage/
 .scannerwork
 .vscode
 sonar-project.properties
+/ai/metamorphic-testing/scripts/*.json
 
 # Load testing generated artifacts
 jmeter.log
