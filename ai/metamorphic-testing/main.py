@@ -66,8 +66,6 @@ def validate_pipeline(target_function: str) -> None:
     print(f"Function span: {context['target_function']['startLine']} -> {context['target_function']['endLine']}")
     print(f"Extracted source length: {len(source)} chars")
 
-# Written by Nicholas Cheng, A0269648H
-
 def main():
     # Load env here to display the model name in the CLI
     load_dotenv()
