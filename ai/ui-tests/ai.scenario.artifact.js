@@ -20,91 +20,111 @@
  * after generation completes.
  */
 
+
+// Written by: A0273278U Zaidan & Wong Sheen Kerr (A0269647J)
+
 import path from "node:path";
 import {
-    DEFAULT_ASSERT_TIMEOUT_MS,
-    DEFAULT_FINAL_WAIT_MS,
-    DEFAULT_GENERATED_DIR,
-    DEFAULT_LOAD_STATE_TIMEOUT_MS,
+	DEFAULT_ASSERT_TIMEOUT_MS,
+	DEFAULT_FINAL_WAIT_MS,
+	DEFAULT_GENERATED_DIR,
+	DEFAULT_LOAD_STATE_TIMEOUT_MS,
 } from "./ai.scenario.config.js";
 import {
-    ALLOWED_SEMANTIC_STEP_TYPES,
-    FORBIDDEN_ARTIFACT_PATTERNS,
-    FORBIDDEN_UNRESOLVED_STEP_TOKENS,
-    makeSlug,
-    RESOLVED_STEP_REQUIRED_FIELDS,
-    ensureNonEmptyString,
+	ALLOWED_SEMANTIC_STEP_TYPES,
+	FORBIDDEN_ARTIFACT_PATTERNS,
+	FORBIDDEN_UNRESOLVED_STEP_TOKENS,
+	makeSlug,
+	RESOLVED_STEP_REQUIRED_FIELDS,
+	ensureNonEmptyString,
 } from "./ai.scenario.shared.js";
 
 // Artifact helpers validate the resolved scenario and render the standalone
 // replay script that can run without any planner access.
 function assertOutputFilePath(outputPath) {
-    if (!outputPath.endsWith(".stagehand.js")) {
-        throw new Error(`Generated artifact paths must end with ".stagehand.js". Received "${outputPath}".`);
-    }
+	if (!outputPath.endsWith(".stagehand.js")) {
+		throw new Error(
+			`Generated artifact paths must end with ".stagehand.js". Received "${outputPath}".`,
+		);
+	}
 }
 
 export function buildOutputPath(goal, scenarioName, explicitOutputPath) {
-    if (explicitOutputPath) {
-        const resolvedOutputPath = path.resolve(explicitOutputPath);
-        assertOutputFilePath(resolvedOutputPath);
-        return resolvedOutputPath;
-    }
+	if (explicitOutputPath) {
+		const resolvedOutputPath = path.resolve(explicitOutputPath);
+		assertOutputFilePath(resolvedOutputPath);
+		return resolvedOutputPath;
+	}
 
-    const slug = makeSlug(scenarioName || goal);
-    return path.join(DEFAULT_GENERATED_DIR, `${slug}.stagehand.js`);
+	const slug = makeSlug(scenarioName || goal);
+	return path.join(DEFAULT_GENERATED_DIR, `${slug}.stagehand.js`);
 }
 
 function ensureResolvedStepFields(step, index, ...fieldNames) {
-    for (const fieldName of fieldNames) {
-        ensureNonEmptyString(step[fieldName], `Resolved step ${index + 1} ${fieldName}`);
-    }
+	for (const fieldName of fieldNames) {
+		ensureNonEmptyString(
+			step[fieldName],
+			`Resolved step ${index + 1} ${fieldName}`,
+		);
+	}
 }
 
 function validateResolvedStep(step, index) {
-    if (!step || typeof step !== "object") {
-        throw new Error(`Resolved step ${index + 1} must be an object.`);
-    }
+	if (!step || typeof step !== "object") {
+		throw new Error(`Resolved step ${index + 1} must be an object.`);
+	}
 
-    if (!ALLOWED_SEMANTIC_STEP_TYPES.has(step.type)) {
-        throw new Error(`Resolved step ${index + 1} has unsupported type "${step.type}".`);
-    }
+	if (!ALLOWED_SEMANTIC_STEP_TYPES.has(step.type)) {
+		throw new Error(
+			`Resolved step ${index + 1} has unsupported type "${step.type}".`,
+		);
+	}
 
-    ensureResolvedStepFields(step, index, ...RESOLVED_STEP_REQUIRED_FIELDS[step.type]);
+	ensureResolvedStepFields(
+		step,
+		index,
+		...RESOLVED_STEP_REQUIRED_FIELDS[step.type],
+	);
 }
 
 export function validateResolvedScenario(scenario) {
-    if (!scenario || typeof scenario !== "object") {
-        throw new Error("Resolved scenario payload must be an object.");
-    }
+	if (!scenario || typeof scenario !== "object") {
+		throw new Error("Resolved scenario payload must be an object.");
+	}
 
-    const metadata = scenario.metadata;
-    if (!metadata || typeof metadata !== "object") {
-        throw new Error("Resolved scenario metadata is required.");
-    }
+	const metadata = scenario.metadata;
+	if (!metadata || typeof metadata !== "object") {
+		throw new Error("Resolved scenario metadata is required.");
+	}
 
-    for (const fieldName of ["name", "goal", "generatedAt", "baseUrl", "generatorModel"]) {
-        ensureNonEmptyString(metadata[fieldName], `Scenario metadata.${fieldName}`);
-    }
+	for (const fieldName of [
+		"name",
+		"goal",
+		"generatedAt",
+		"baseUrl",
+		"generatorModel",
+	]) {
+		ensureNonEmptyString(metadata[fieldName], `Scenario metadata.${fieldName}`);
+	}
 
-    if (!Array.isArray(scenario.steps) || scenario.steps.length === 0) {
-        throw new Error("Resolved scenarios must include at least one step.");
-    }
+	if (!Array.isArray(scenario.steps) || scenario.steps.length === 0) {
+		throw new Error("Resolved scenarios must include at least one step.");
+	}
 
-    for (const [index, step] of scenario.steps.entries()) {
-        validateResolvedStep(step, index);
-    }
+	for (const [index, step] of scenario.steps.entries()) {
+		validateResolvedStep(step, index);
+	}
 
-    return scenario;
+	return scenario;
 }
 
 export function renderGeneratedArtifact(scenario) {
-    validateResolvedScenario(scenario);
-    const serializedScenario = JSON.stringify(scenario, null, 2);
+	validateResolvedScenario(scenario);
+	const serializedScenario = JSON.stringify(scenario, null, 2);
 
-    // The emitted file is intentionally self-contained so replay remains a
-    // single `node ...stagehand.js` command with no imports from this folder.
-    return `import { LLMClient, Stagehand } from "@browserbasehq/stagehand";
+	// The emitted file is intentionally self-contained so replay remains a
+	// single `node ...stagehand.js` command with no imports from this folder.
+	return `import { LLMClient, Stagehand } from "@browserbasehq/stagehand";
 import dotenv from "dotenv";
 import { pathToFileURL } from "node:url";
 
@@ -447,23 +467,27 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
 }
 
 export function validateGeneratedArtifactContent(artifactContent) {
-    // Reject any artifact that accidentally reintroduces unresolved planner
-    // data or runtime LLM calls.
-    if (typeof artifactContent !== "string" || !artifactContent.trim()) {
-        throw new Error("Generated artifact content must be a non-empty string.");
-    }
+	// Reject any artifact that accidentally reintroduces unresolved planner
+	// data or runtime LLM calls.
+	if (typeof artifactContent !== "string" || !artifactContent.trim()) {
+		throw new Error("Generated artifact content must be a non-empty string.");
+	}
 
-    for (const forbiddenPattern of FORBIDDEN_ARTIFACT_PATTERNS) {
-        if (forbiddenPattern.pattern.test(artifactContent)) {
-            throw new Error(`Generated artifact contains forbidden pattern "${forbiddenPattern.label}".`);
-        }
-    }
+	for (const forbiddenPattern of FORBIDDEN_ARTIFACT_PATTERNS) {
+		if (forbiddenPattern.pattern.test(artifactContent)) {
+			throw new Error(
+				`Generated artifact contains forbidden pattern "${forbiddenPattern.label}".`,
+			);
+		}
+	}
 
-    for (const unresolvedToken of FORBIDDEN_UNRESOLVED_STEP_TOKENS) {
-        if (artifactContent.includes(unresolvedToken)) {
-            throw new Error(`Generated artifact still contains unresolved step field ${unresolvedToken}.`);
-        }
-    }
+	for (const unresolvedToken of FORBIDDEN_UNRESOLVED_STEP_TOKENS) {
+		if (artifactContent.includes(unresolvedToken)) {
+			throw new Error(
+				`Generated artifact still contains unresolved step field ${unresolvedToken}.`,
+			);
+		}
+	}
 
-    return artifactContent;
+	return artifactContent;
 }

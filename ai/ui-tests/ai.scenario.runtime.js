@@ -20,6 +20,8 @@
  * and execution of already-resolved steps.
  */
 
+// Written by: A0273278U Zaidan & Wong Sheen Kerr (A0269647J)
+
 import { LLMClient } from "@browserbasehq/stagehand";
 import { DEFAULT_LOAD_STATE_TIMEOUT_MS } from "./ai.scenario.config.js";
 import {

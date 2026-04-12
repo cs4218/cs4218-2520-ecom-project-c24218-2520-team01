@@ -20,6 +20,8 @@
  * endpoint, parses JSON replies, and surfaces provider failures clearly.
  */
 
+// Written by: A0273278U Zaidan & Wong Sheen Kerr (A0269647J)
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import OpenAI from "openai";

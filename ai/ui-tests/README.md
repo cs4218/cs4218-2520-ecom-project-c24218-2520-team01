@@ -1,6 +1,8 @@
 # AI-Assisted UI Testing
 
-This folder contains an AI-assisted UI testing flow. A user provides a UI testing goal in plain English, the generator turns it into a small scenario, resolves each step to concrete selectors against the live app, validates the steps once, and writes a replay script to `ai/generated`. The generated `.stagehand.js` script replays with Stagehand only.
+This folder contains an AI-assisted UI testing flow. A user provides a UI testing goal in plain English, the generator turns it into a small scenario, resolves each step to concrete selectors against the live app, validates the steps once, and writes a replay script to `ai/ui-tests/generated`. The generated `.stagehand.js` script replays with Stagehand only. 
+
+Written by: A0273278U Zaidan & Wong Sheen Kerr (A0269647J)
 
 ## Quick Run
 
@@ -15,7 +17,7 @@ npm run test:ai-ui -- generate "Open the homepage, search for iPhone, and verify
 4. Replay the generated file:
 
 ```bash
-node ai/generated/browse-iphone.stagehand.js
+node ai/ui-tests/generated/browse-iphone.stagehand.js
 ```
 
 ## How It Works

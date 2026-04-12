@@ -8,7 +8,7 @@ dotenv.config();
 const SCENARIO = {
   "metadata": {
     "baseUrl": "http://localhost:3000",
-    "generatedAt": "2026-04-10T16:43:12.400Z",
+    "generatedAt": "2026-04-12T10:48:50.228Z",
     "generatorModel": "glm-4.5-air:free",
     "goal": "Open the homepage, search for iPhone, and verify the results page",
     "name": "Browse iPhone"
@@ -28,9 +28,8 @@ const SCENARIO = {
       "type": "click"
     },
     {
-      "contains": "Search Results",
-      "selector": "xpath=//h1[normalize-space(.)=\"Search Results\"]",
-      "type": "assertText"
+      "includes": "/search",
+      "type": "assertUrl"
     }
   ]
 };

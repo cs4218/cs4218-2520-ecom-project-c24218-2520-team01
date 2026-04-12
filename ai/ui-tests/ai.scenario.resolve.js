@@ -20,6 +20,8 @@
  * and only uses the model as a tie-breaker when heuristics are inconclusive.
  */
 
+// Written by: A0273278U Zaidan & Wong Sheen Kerr (A0269647J)
+
 import {
     buildMeaningfulTarget,
     createResolvedTargetStep,

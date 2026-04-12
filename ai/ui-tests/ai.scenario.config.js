@@ -19,13 +19,14 @@
  * It is the single place where the AI scenario tool reads model settings,
  * app URLs, browser flags, and timeout values.
  */
+// Written by: A0273278U Zaidan & Wong Sheen Kerr (A0269647J)
 
 import path from "node:path";
 import dotenv from "dotenv";
 
 // These defaults are shared by generation time and by emitted replay artifacts.
-// The source code now lives under ui-tests, but generated replay files still
-// belong in ai/generated so they stay separate from the implementation.
+// Generated replay files live under ai/ui-tests/generated so they stay close
+// to the generator implementation.
 export const DEFAULT_APP_URL = "http://localhost:3000";
 export const DEFAULT_MODEL = "gpt-4o";
 export const DEFAULT_ASSERT_TIMEOUT_MS = 10000;
@@ -35,7 +36,7 @@ export const DEFAULT_NAVIGATION_TIMEOUT_MS = 30000;
 export const DEFAULT_SELECTOR_TIMEOUT_MS = 10000;
 export const DEFAULT_NODE_CHECK_TIMEOUT_MS = 15000;
 export const DEFAULT_RESOLUTION_CANDIDATE_LIMIT = 12;
-export const DEFAULT_GENERATED_DIR = path.resolve("ai/generated");
+export const DEFAULT_GENERATED_DIR = path.resolve("ai/ui-tests/generated");
 
 const TRUE_VALUES = new Set(["1", "true", "yes", "on"]);
 

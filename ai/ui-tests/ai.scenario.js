@@ -20,11 +20,13 @@
  * and hands the request to the scenario engine.
  */
 
+// Written by: A0273278U Zaidan & Wong Sheen Kerr (A0269647J)
+
 import { pathToFileURL } from "node:url";
 import { generateStagehandScenarioArtifact } from "./ai.scenario.engine.js";
 
-// Thin CLI wrapper for the AI scenario flow. The generated replay artifacts
-// still live in ../generated even though the source modules now live here.
+// Thin CLI wrapper for the AI scenario flow. Generated replay artifacts live
+// under ./generated alongside the generator modules.
 const ALLOWED_COMMANDS = new Set(["generate"]);
 
 /**
@@ -53,12 +55,12 @@ function readCliOptionValue(tokens, index, optionName) {
 export function getUsageText() {
     return [
         "Usage:",
-        '  node ai/ui-tests/ai.scenario.js generate "<goal>" [--out ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
-        '  npm run test:ai-ui -- generate "<goal>" [--out ai/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
+        '  node ai/ui-tests/ai.scenario.js generate "<goal>" [--out ai/ui-tests/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
+        '  npm run test:ai-ui -- generate "<goal>" [--out ai/ui-tests/generated/<slug>.stagehand.js] [--vars path/to/vars.json] [--name "Scenario Name"]',
         "",
         "Examples:",
         '  node ai/ui-tests/ai.scenario.js generate "Describe the user flow you want to test"',
-        '  npm run test:ai-ui -- generate "Open a page, complete a form, and verify the result" --out ai/generated/example-flow.stagehand.js',
+        '  npm run test:ai-ui -- generate "Open a page, complete a form, and verify the result" --out ai/ui-tests/generated/example-flow.stagehand.js',
     ].join("\n");
 }
 

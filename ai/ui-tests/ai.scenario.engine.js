@@ -20,6 +20,8 @@
  * validates each resolved step once, and writes the replay artifact.
  */
 
+// Written by: A0273278U Zaidan & Wong Sheen Kerr (A0269647J)
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import { execFile } from "node:child_process";
