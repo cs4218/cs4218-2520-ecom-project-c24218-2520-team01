@@ -237,10 +237,6 @@ For the AI-driven testing component, I was assigned to develop the test metrics 
 
 A `readme.md` file has been included in the same directory for easier setup.
 
-
-- Product model
-  - `models/productModel`
-
 ### Muhammad Zaidan bin Sani (A0273278U)
 
 I am responsible for testing the following components:
@@ -263,7 +259,9 @@ I am responsible for testing the following components:
         - `searchProductController`
         - `relatedProductsController`
         - `productCategoryController`
-- Product model - `models/productModel`
+
+- Product model
+    - `models/productModel`
 
 **Integration tests**
 
